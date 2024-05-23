@@ -32,6 +32,7 @@ subprojects {
 
         implementation(rootProject.libs.kommand.api)
         implementation(rootProject.libs.kommand.core)
+        implementation(rootProject.libs.monun.heartbeat.coroutines)
         implementation(rootProject.libs.kotlinx.serialization.json)
         implementation(rootProject.libs.kotlinx.serialization.protobuf)
         implementation(rootProject.libs.exposed.core)
@@ -46,7 +47,7 @@ subprojects {
 tasks {
     register<DefaultTask>("setupModules") {
         doLast {
-            val defaultPrefix = "sample "
+            val defaultPrefix = "hobeaktown"
             val projectPrefix = rootProject.name
 
             // Rename: project name
@@ -67,10 +68,7 @@ tasks {
                     }
                 }
 
-                rename("api")
-                rename("core")
-                rename("plugin")
-                rename("publish")
+                rename("")
 
                 fun renameWithLog(from: File, to: File) {
                     if (from.exists()) {
@@ -102,7 +100,7 @@ tasks {
                     file("$projectPrefix-core/v1.20.1/src/main/kotlin/io/github/donghune")
                 )
                 renameWithLog(
-                    file("$projectPrefix-core/v1.20.1/src/main/kotlin/io/github/donghune/sample"),
+                    file("$projectPrefix-core/v1.20.1/src/main/kotlin/io/github/donghune/hobeaktown"),
                     file("$projectPrefix-core/v1.20.1/src/main/kotlin/io/github/donghune/$projectPrefix")
                 )
 
@@ -111,7 +109,7 @@ tasks {
                     """
                     kotlin.code.style=official
                     org.gradle.jvmargs=-Xmx4G
-                    group=io.github.donghune
+                    group=io.github.hxxniverse
                     version=0.0.1
                 """.trimIndent()
                 )

@@ -1,6 +1,5 @@
-rootProject.name = "sample"
+rootProject.name = "hobeak-town"
 
 val prefix = rootProject.name
 
-include("$prefix-plugin")
-include("$prefix-publish")
+include(prefix)
