@@ -8,7 +8,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 object Stocks : IntIdTable() {
     val name = varchar("name", 50)
-    val amount = integer("amount")
+    val remainingAmount = integer("remaining_amount")
     val currentPrice = integer("current_price")
     val beforePrice = integer("before_price")
     val fluctuation = integer("fluctuation")
@@ -16,10 +16,15 @@ object Stocks : IntIdTable() {
 
 class Stock(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<Stock>(Stocks) {
-        fun new(name: String, amount: Int, currentPrice: Int, fluctuation: Int) = transaction {
+        fun new(
+            name: String,
+            remainingAmount: Int,
+            currentPrice: Int,
+            fluctuation: Int,
+        ) = transaction {
             Stock.new {
                 this.name = name
-                this.amount = amount
+                this.remainingAmount = remainingAmount
                 this.currentPrice = currentPrice
                 this.beforePrice = currentPrice
                 this.fluctuation = fluctuation
@@ -28,7 +33,7 @@ class Stock(id: EntityID<Int>) : IntEntity(id) {
     }
 
     var name by Stocks.name
-    var amount by Stocks.amount
+    var remainingAmount by Stocks.remainingAmount
     var currentPrice by Stocks.currentPrice
     var beforePrice by Stocks.beforePrice
     var fluctuation by Stocks.fluctuation

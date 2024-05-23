@@ -35,4 +35,12 @@ class EntityListPager<out T : Entity<Int>>(
     fun getCurrentPageNumber(): Int {
         return page
     }
+
+    fun hasNextPage(): Boolean {
+        return transaction { entityClass.count() > limit * (page + 1) }
+    }
+
+    fun hasPreviousPage(): Boolean {
+        return page > 0
+    }
 }

@@ -1,7 +1,7 @@
 package io.github.hxxniverse.hobeaktown.util.inventory
 
+import io.github.hxxniverse.hobeaktown.HobeakTownPlugin.Companion.plugin
 import io.github.hxxniverse.hobeaktown.util.ItemStackBuilder
-import io.github.hxxniverse.hobeaktown.util.extension.PersistentDataSupport.Companion.plugin
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -12,6 +12,7 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.event.inventory.InventoryType
+import org.bukkit.inventory.AnvilInventory
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 
@@ -44,7 +45,6 @@ data class Icon(
     }
 }
 
-
 abstract class CustomInventory private constructor(
     private val inventory: Inventory,
 ) : Listener {
@@ -75,6 +75,14 @@ abstract class CustomInventory private constructor(
 
     fun inventory(block: () -> Unit) {
         content = block
+    }
+
+    fun getAnvilInventory() = inventory as AnvilInventory
+
+    fun background(itemStack: ItemStack) {
+        for (i in 0 until inventory.size) {
+            setItem(i, itemStack)
+        }
     }
 
     fun button(itemStack: ItemStack, index: Int, block: (InventoryClickEvent) -> Unit) =

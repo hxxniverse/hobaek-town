@@ -1,11 +1,14 @@
-package io.github.hxxniverse.hobeaktown.feature.stock.entity
+package io.github.hxxniverse.hobeaktown.feature.stock
 
 import io.github.hxxniverse.hobeaktown.HobeakTownConfig
-import io.github.hxxniverse.hobeaktown.feature.stock.PriceChangeTask
-import io.github.hxxniverse.hobeaktown.feature.stock.StockConfig
+import io.github.hxxniverse.hobeaktown.feature.stock.entity.Stock
+import io.github.hxxniverse.hobeaktown.feature.stock.entity.Stocks
+import io.github.hxxniverse.hobeaktown.feature.stock.ui.StockStatusUi
 import io.github.hxxniverse.hobeaktown.util.base.BaseCommand
-import io.github.monun.kommand.*
 import io.github.monun.kommand.KommandArgument.Companion.dynamic
+import io.github.monun.kommand.getValue
+import io.github.monun.kommand.kommand
+import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -30,6 +33,10 @@ class StockCommand : BaseCommand {
     override fun register(plugin: JavaPlugin) {
         plugin.kommand {
             register("stock", "주식") {
+                executes {
+                    require(sender is Player)
+                    StockStatusUi().open(player)
+                }
                 then("help") {
                     executes {
                         sender.sendMessage(
@@ -38,7 +45,7 @@ class StockCommand : BaseCommand {
                             /stock item delete (stockName)
                             /stock item update (stockName) (amount) (price) (fluctuation)
                             /stock fluctuation (time)
-                            """.trimIndent()
+                            """.trimIndent(),
                         )
                     }
                 }
@@ -47,7 +54,7 @@ class StockCommand : BaseCommand {
                         executes {
                             val stocks = transaction {
                                 Stock.all()
-                                    .joinToString("\n") { "${it.name}\t| ${it.amount} \t| ${it.currentPrice} \t| ${it.beforePrice - it.currentPrice}" }
+                                    .joinToString("\n") { "${it.name}\t| ${it.remainingAmount} \t| ${it.currentPrice} \t| ${it.beforePrice - it.currentPrice}" }
                             }
 
                             val leftInterval = PriceChangeTask.getLeftInterval() / 1000
@@ -75,7 +82,8 @@ class StockCommand : BaseCommand {
 
                                             if (transaction {
                                                     Stock.find { Stocks.name eq stockName }.firstOrNull()
-                                                } != null) {
+                                                } != null
+                                            ) {
                                                 sender.sendMessage("이미 존재하는 주식 종목입니다.")
                                                 return@executes
                                             }
@@ -83,9 +91,9 @@ class StockCommand : BaseCommand {
                                             val stock = transaction {
                                                 Stock.new(
                                                     name = stockName,
-                                                    amount = amount,
+                                                    remainingAmount = amount,
                                                     currentPrice = price,
-                                                    fluctuation = fluctuation
+                                                    fluctuation = fluctuation,
                                                 )
                                             }
 
@@ -122,7 +130,7 @@ class StockCommand : BaseCommand {
 
                                             transaction {
                                                 stock.apply {
-                                                    this.amount = amount
+                                                    this.remainingAmount = amount
                                                     this.currentPrice = price
                                                     this.fluctuation = fluctuation
                                                 }
@@ -142,7 +150,7 @@ class StockCommand : BaseCommand {
                             val time: Int by it
 
                             val stockConfig: StockConfig = HobeakTownConfig.get<StockConfig>()?.copy(
-                                fluctuationTime = time
+                                fluctuationTime = time,
                             ) ?: StockConfig(fluctuationTime = time)
                             HobeakTownConfig.set(stockConfig)
 
