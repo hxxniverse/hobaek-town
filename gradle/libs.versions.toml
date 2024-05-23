@@ -1,0 +1,28 @@
+[versions]
+kotlin = "1.8.22"
+dokka = "1.8.20"
+shadow = "7.1.2"
+paper = "1.17.1-R0.1-SNAPSHOT"
+paperweight = "1.5.5"
+kommand = "3.1.7"
+heartbeat-coroutines = "0.0.5"
+kotlin-serialization = "1.7.0-RC"
+exposed = "0.50.1"
+
+[libraries]
+paper = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper" }
+kommand-api = { group = "io.github.monun", name = "kommand-api", version.ref = "kommand" }
+kommand-core = { group = "io.github.monun", name = "kommand-core", version.ref = "kommand" }
+monun-heartbeat-coroutines = { group = "io.github.monun", name = "heartbeat-coroutines", version.ref = "heartbeat-coroutines" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlin-serialization" }
+kotlinx-serialization-protobuf = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-protobuf", version.ref = "kotlin-serialization" }
+exposed-core = { group = "org.jetbrains.exposed", name = "exposed-core", version.ref = "exposed" }
+exposed-dao = { group = "org.jetbrains.exposed", name = "exposed-dao", version.ref = "exposed" }
+exposed-jdbc = { group = "org.jetbrains.exposed", name = "exposed-jdbc", version.ref = "exposed" }
+exposed-java-time = { group = "org.jetbrains.exposed", name = "exposed-java-time", version.ref = "exposed" }
+
+[plugins]
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+paperweight = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight" }
+shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow" }
