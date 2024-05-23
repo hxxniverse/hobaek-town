@@ -2,6 +2,7 @@ plugins {
     idea
     alias(libs.plugins.kotlin)
     alias(libs.plugins.dokka)
+    kotlin("plugin.serialization") version "1.7.0-RC"
 }
 
 java {
