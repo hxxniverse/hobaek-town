@@ -83,6 +83,14 @@ abstract class CustomInventory private constructor(
     fun button(itemStack: ItemStack, index: Pair<Int, Int>, block: (InventoryClickEvent) -> Unit) =
         setItem((index.first - 1) + (index.second - 1) * 9, itemStack, block)
 
+    fun button(itemStack: ItemStack, from: Pair<Int, Int>, to: Pair<Int, Int>, block: (InventoryClickEvent) -> Unit) {
+        for (i in from.first..to.first) {
+            for (j in from.second..to.second) {
+                setItem((i - 1) + (j - 1) * 9, itemStack, block)
+            }
+        }
+    }
+
     fun onInventoryClose(block: InventoryCloseEvent.() -> Unit) {
         onInventoryClose = block
     }
