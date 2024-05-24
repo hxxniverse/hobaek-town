@@ -9,8 +9,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class StockFeature : BaseFeature {
     override fun enable(plugin: JavaPlugin) {
         transaction {
-            SchemaUtils.drop(Stocks, PlayerStocks, StockHistories)
-            SchemaUtils.create(Stocks, PlayerStocks, StockHistories)
+            SchemaUtils.drop(Stocks, UserStocks, StockHistories)
+            SchemaUtils.create(Stocks, UserStocks, StockHistories)
 
             Stock.new("후스텔", 100, 5000000, 70)
             Stock.new("후뱅크", 100, 5000000, 70)

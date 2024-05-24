@@ -1,6 +1,7 @@
 package io.github.hxxniverse.hobeaktown.feature.stock.ui
 
 import io.github.hxxniverse.hobeaktown.feature.stock.entity.Stock
+import io.github.hxxniverse.hobeaktown.feature.stock.entity.TradeType
 import io.github.hxxniverse.hobeaktown.feature.stock.util.toGraphItemStack
 import io.github.hxxniverse.hobeaktown.feature.stock.util.toItemStack
 import io.github.hxxniverse.hobeaktown.util.ItemStackBuilder

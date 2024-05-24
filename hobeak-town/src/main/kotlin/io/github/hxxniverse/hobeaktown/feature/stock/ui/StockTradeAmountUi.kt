@@ -1,6 +1,7 @@
 package io.github.hxxniverse.hobeaktown.feature.stock.ui
 
 import io.github.hxxniverse.hobeaktown.feature.stock.entity.Stock
+import io.github.hxxniverse.hobeaktown.feature.stock.entity.TradeType
 import io.github.hxxniverse.hobeaktown.feature.stock.util.addStock
 import io.github.hxxniverse.hobeaktown.feature.stock.util.removeStock
 import io.github.hxxniverse.hobeaktown.util.extension.text
@@ -10,10 +11,7 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.ItemStack
 import org.jetbrains.exposed.sql.transactions.transaction
 
-enum class TradeType {
-    BUY,
-    SELL,
-}
+
 
 class StockTradeAmountUi(
     private val tradeType: TradeType,
