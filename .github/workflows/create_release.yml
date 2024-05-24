@@ -45,3 +45,11 @@ jobs:
           asset_path: ./build/libs/hobeak-town.jar
           asset_name: hobeak-town.jar
           asset_content_type: application/java-archive
+
+      - name: Discord Webhook Action
+        uses: tsickert/discord-webhook@v6.0.0
+        with:
+          url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          content: "New release: ${{ github.ref }}\nhttps://github.com/donghune/hobeak-town/tags"
+          username: "GitHub Actions"
+          avatar_url: "https://avatars.githubusercontent.com/u/44036562"
