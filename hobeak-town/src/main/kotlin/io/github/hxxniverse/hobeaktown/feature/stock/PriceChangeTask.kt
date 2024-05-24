@@ -9,7 +9,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 object PriceChangeTask : BaseScheduler(
     repeat = true,
-    interval = 3000 // HobeakTownConfig.get(StockConfig()).fluctuationTime.toLong() * 60 * 1000,
+    interval = StockConfig.configData.fluctuationTime.toLong() * 1000
 ) {
     override suspend fun onStart() {
     }
