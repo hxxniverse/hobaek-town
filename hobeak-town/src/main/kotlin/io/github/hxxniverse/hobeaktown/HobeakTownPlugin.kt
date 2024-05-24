@@ -1,5 +1,6 @@
 package io.github.hxxniverse.hobeaktown
 
+import io.github.hxxniverse.hobeaktown.feature.economy.EconomyFeature
 import io.github.hxxniverse.hobeaktown.feature.stock.StockFeature
 import io.github.hxxniverse.hobeaktown.feature.vote.VoteFeature
 import io.github.hxxniverse.hobeaktown.util.base.BaseFeature
@@ -14,7 +15,8 @@ class HobeakTownPlugin : JavaPlugin() {
 
     private val features = mutableListOf(
         StockFeature(),
-        VoteFeature()
+        VoteFeature(),
+        EconomyFeature()
     )
 
     override fun onEnable() {
