@@ -44,9 +44,6 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./hobeak-town/build/libs/hobeak-town.jar
           asset_name: hobeak-town.jar
-<<<<<<< Updated upstream
-          asset_content_type: application/java-archive
-=======
           asset_content_type: application/java-archive
 
       - name: Discord Webhook Action
@@ -56,4 +53,3 @@ jobs:
           content: "New release: ${{ github.ref }}\nhttps://github.com/donghune/hobeak-town/tags"
           username: "GitHub Actions"
           avatar_url: "https://avatars.githubusercontent.com/u/44036562"
->>>>>>> Stashed changes
