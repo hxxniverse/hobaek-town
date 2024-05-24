@@ -1,7 +1,9 @@
 package io.github.hxxniverse.hobeaktown
 
-import io.github.monun.kommand.kommand
+import io.github.hxxniverse.hobeaktown.feature.stock.StockFeature
+import io.github.hxxniverse.hobeaktown.util.base.BaseFeature
 import org.bukkit.plugin.java.JavaPlugin
+import org.jetbrains.exposed.sql.Database
 
 class HobeakTownPlugin : JavaPlugin() {
 
@@ -9,21 +11,29 @@ class HobeakTownPlugin : JavaPlugin() {
         lateinit var plugin: JavaPlugin
     }
 
+    private val features = mutableListOf<BaseFeature>(
+        StockFeature()
+    )
+
     override fun onEnable() {
         super.onEnable()
         plugin = this
-        println("Hello, Kommand! 9asdasasdasd")
 
-        kommand {
-            register("hello") {
-                executes {
-                    sender.sendMessage("Hello, Kommand!")
-                }
-            }
+        if (!dataFolder.exists()) {
+            dataFolder.mkdirs()
+        }
+
+        Database.connect("jdbc:sqlite:${dataFolder.path}/hobeaktown.db", "org.sqlite.JDBC")
+
+        features.forEach {
+            it.enable(this)
         }
     }
 
     override fun onDisable() {
+        features.forEach {
+            it.disable(this)
+        }
         super.onDisable()
     }
 }

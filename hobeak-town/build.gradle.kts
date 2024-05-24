@@ -53,10 +53,8 @@ tasks {
 
         register<ShadowJar>(taskName) {
             println("Executing $taskName")
-            archiveClassifier.set(name)
-            archiveAppendix.set("bundle")
-
             from(sourceSets["main"].output)
+            archiveVersion.set("")
 
             exclude("bundle-plugin.yml")
             rename("clip-plugin.yml", "plugin.yml")
@@ -64,8 +62,6 @@ tasks {
             doLast {
                 val plugins = rootProject.file(".server/plugins-$name")
                 val update = plugins.resolve("update")
-
-                println(archiveFile.get().asFile.path)
 
                 copy {
                     println("Copying ${archiveFileName.get()} to $plugins")
@@ -85,3 +81,4 @@ tasks {
 
     registerJar("reobf")
 }
+

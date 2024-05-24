@@ -1,7 +1,7 @@
 package io.github.hxxniverse.hobeaktown.util.inventory
 
+import io.github.hxxniverse.hobeaktown.HobeakTownPlugin.Companion.plugin
 import io.github.hxxniverse.hobeaktown.util.ItemStackBuilder
-import io.github.hxxniverse.hobeaktown.util.extension.PersistentDataSupport.Companion.plugin
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -12,6 +12,7 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.event.inventory.InventoryType
+import org.bukkit.inventory.AnvilInventory
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 
@@ -43,7 +44,6 @@ data class Icon(
             .build()
     }
 }
-
 
 abstract class CustomInventory private constructor(
     private val inventory: Inventory,
@@ -77,11 +77,27 @@ abstract class CustomInventory private constructor(
         content = block
     }
 
+    fun getAnvilInventory() = inventory as AnvilInventory
+
+    fun background(itemStack: ItemStack) {
+        for (i in 0 until inventory.size) {
+            setItem(i, itemStack)
+        }
+    }
+
     fun button(itemStack: ItemStack, index: Int, block: (InventoryClickEvent) -> Unit) =
         setItem(index, itemStack, block)
 
     fun button(itemStack: ItemStack, index: Pair<Int, Int>, block: (InventoryClickEvent) -> Unit) =
         setItem((index.first - 1) + (index.second - 1) * 9, itemStack, block)
+
+    fun button(itemStack: ItemStack, from: Pair<Int, Int>, to: Pair<Int, Int>, block: (InventoryClickEvent) -> Unit) {
+        for (i in from.first..to.first) {
+            for (j in from.second..to.second) {
+                setItem((i - 1) + (j - 1) * 9, itemStack, block)
+            }
+        }
+    }
 
     fun onInventoryClose(block: InventoryCloseEvent.() -> Unit) {
         onInventoryClose = block
