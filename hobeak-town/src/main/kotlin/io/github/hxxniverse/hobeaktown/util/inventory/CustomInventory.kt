@@ -28,12 +28,14 @@ data class Icon(
     var type: Material = Material.BOOK,
     var name: Component = Component.text(""),
     var lore: List<Component> = listOf(),
+    var amount: Int = 1,
 ) {
 
     fun build(): ItemStack {
         return ItemStackBuilder(ItemStack(type))
             .setDisplayName(name)
             .setLore(*lore.toTypedArray())
+            .setAmount(amount)
             .build()
     }
 
@@ -41,6 +43,7 @@ data class Icon(
         return ItemStackBuilder(itemStack)
             .setDisplayName(name)
             .setLore(*lore.toTypedArray())
+            .setAmount(amount)
             .build()
     }
 }
@@ -85,13 +88,18 @@ abstract class CustomInventory private constructor(
         }
     }
 
-    fun button(itemStack: ItemStack, index: Int, block: (InventoryClickEvent) -> Unit) =
+    fun button(itemStack: ItemStack, index: Int, block: (InventoryClickEvent) -> Unit = {}) =
         setItem(index, itemStack, block)
 
-    fun button(itemStack: ItemStack, index: Pair<Int, Int>, block: (InventoryClickEvent) -> Unit) =
+    fun button(itemStack: ItemStack, index: Pair<Int, Int>, block: (InventoryClickEvent) -> Unit = {}) =
         setItem((index.first - 1) + (index.second - 1) * 9, itemStack, block)
 
-    fun button(itemStack: ItemStack, from: Pair<Int, Int>, to: Pair<Int, Int>, block: (InventoryClickEvent) -> Unit) {
+    fun button(
+        itemStack: ItemStack,
+        from: Pair<Int, Int>,
+        to: Pair<Int, Int>,
+        block: (InventoryClickEvent) -> Unit = {}
+    ) {
         for (i in from.first..to.first) {
             for (j in from.second..to.second) {
                 setItem((i - 1) + (j - 1) * 9, itemStack, block)
