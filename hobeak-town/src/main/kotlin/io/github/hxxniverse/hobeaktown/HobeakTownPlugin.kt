@@ -1,6 +1,7 @@
 package io.github.hxxniverse.hobeaktown
 
 import io.github.hxxniverse.hobeaktown.feature.stock.StockFeature
+import io.github.hxxniverse.hobeaktown.feature.vote.VoteFeature
 import io.github.hxxniverse.hobeaktown.util.base.BaseFeature
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.Database
@@ -11,8 +12,9 @@ class HobeakTownPlugin : JavaPlugin() {
         lateinit var plugin: JavaPlugin
     }
 
-    private val features = mutableListOf<BaseFeature>(
-        StockFeature()
+    private val features = mutableListOf(
+        StockFeature(),
+        VoteFeature()
     )
 
     override fun onEnable() {

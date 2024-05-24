@@ -1,0 +1,56 @@
+package io.github.hxxniverse.hobeaktown.feature.vote.ui
+
+import io.github.hxxniverse.hobeaktown.feature.vote.entity.Vote
+import io.github.hxxniverse.hobeaktown.feature.vote.util.setBallot
+import io.github.hxxniverse.hobeaktown.util.edit
+import io.github.hxxniverse.hobeaktown.util.extension.text
+import io.github.hxxniverse.hobeaktown.util.inventory.CustomInventory
+import io.github.hxxniverse.hobeaktown.util.inventory.icon
+import org.bukkit.Material
+import org.bukkit.enchantments.Enchantment
+import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
+import org.jetbrains.exposed.sql.transactions.transaction
+
+class VoteOptionSelectConfirmUi(
+    private val vote: Vote,
+    private val selected: Int
+) : CustomInventory("VoteOptionSelectConfirm", 54) {
+    init {
+        inventory {
+            transaction {
+                background(ItemStack(Material.GRAY_STAINED_GLASS))
+
+                button(
+                    itemStack = icon { type = Material.PAPER; name = vote.question.text() },
+                    from = 4 to 1, to = 6 to 1
+                )
+
+                button(
+                    itemStack = icon { type = Material.PAPER; name = vote.options.split(",")[selected].text() },
+                    from = 4 to 3, to = 6 to 3
+                )
+
+                button(
+                    itemStack = icon { type = Material.RED_STAINED_GLASS_PANE; name = "취소".text() },
+                    from = 5 to 1, to = 6 to 2
+                ) {
+                    VoteOptionSelectUi(vote).open(it.whoClicked as Player)
+
+                }
+
+                button(
+                    itemStack = icon { type = Material.RED_STAINED_GLASS_PANE; name = "취소".text() },
+                    from = 5 to 8, to = 6 to 9
+                ) {
+                    val player = it.whoClicked as Player
+                    player.closeInventory()
+                    player.equipment.itemInMainHand.edit {
+                        setDisplayName("투표된 종이")
+                        addUnsafeEnchantment(Enchantment.LUCK, 1)
+                    }.apply { setBallot(vote.question, selected) }
+                }
+            }
+        }
+    }
+}
