@@ -4,6 +4,7 @@ import java.util.*
 
 plugins {
     alias(libs.plugins.shadow)
+    kotlin("plugin.serialization") version "1.7.0-RC"
 }
 
 dependencies {

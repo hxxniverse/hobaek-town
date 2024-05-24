@@ -1,6 +1,5 @@
 package io.github.hxxniverse.hobeaktown.feature.stock
 
-import io.github.hxxniverse.hobeaktown.HobeakTownConfig
 import io.github.hxxniverse.hobeaktown.feature.stock.entity.Stock
 import io.github.hxxniverse.hobeaktown.feature.stock.entity.Stocks
 import io.github.hxxniverse.hobeaktown.feature.stock.ui.StockStatusUi
@@ -34,9 +33,14 @@ class StockCommand : BaseCommand {
         plugin.kommand {
             register("stock", "주식") {
                 executes {
-                    require(sender is Player)
+                    val player = sender as? Player
+                    if (player == null) {
+                        sender.sendMessage("플레이어만 사용할 수 있는 명령어입니다.")
+                        return@executes
+                    }
                     StockStatusUi().open(player)
                 }
+                requires { sender.isOp }
                 then("help") {
                     executes {
                         sender.sendMessage(
@@ -149,10 +153,9 @@ class StockCommand : BaseCommand {
                         executes {
                             val time: Int by it
 
-                            val stockConfig: StockConfig = HobeakTownConfig.get<StockConfig>()?.copy(
-                                fluctuationTime = time,
-                            ) ?: StockConfig(fluctuationTime = time)
-                            HobeakTownConfig.set(stockConfig)
+                            StockConfig.updateConfigData {
+                                copy(fluctuationTime = time)
+                            }
 
                             sender.sendMessage("주식 변동 시간이 $time 분으로 설정되었습니다.")
                         }
