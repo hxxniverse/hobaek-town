@@ -7,12 +7,12 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 class AnvilInventory(
-    private val title: String,
-    private val text: String,
-    private val itemInputLeft: ItemStack = ItemStack(Material.AIR),
-    private val itemInputRight: ItemStack = ItemStack(Material.AIR),
-    private val itemOutput: ItemStack = ItemStack(Material.AIR),
-    private val onClose: (AnvilGUI.StateSnapshot) -> Unit = {},
+    title: String,
+    text: String,
+    itemInputLeft: ItemStack = ItemStack(Material.AIR),
+    itemInputRight: ItemStack = ItemStack(Material.AIR),
+    itemOutput: ItemStack = ItemStack(Material.AIR),
+    onClose: (AnvilGUI.StateSnapshot) -> Unit = {},
     private val onClickLeft: (AnvilGUI.StateSnapshot) -> List<AnvilGUI.ResponseAction> = { emptyList() },
     private val onClickRight: (AnvilGUI.StateSnapshot) -> List<AnvilGUI.ResponseAction> = { emptyList() },
     private val onClickResult: (AnvilGUI.StateSnapshot) -> List<AnvilGUI.ResponseAction> = { emptyList() },

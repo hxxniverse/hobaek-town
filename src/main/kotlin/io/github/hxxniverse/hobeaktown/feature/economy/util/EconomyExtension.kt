@@ -38,7 +38,7 @@ var Player.cash: Int
 data class PaperMoney(val money: Int)
 
 @Serializable
-data class Cash(val money: Int)
+data class CashCoin(val money: Int)
 
 fun Int.toPaperMoney(): ItemStack {
     return ItemStackBuilder(Material.PAPER)
@@ -53,4 +53,19 @@ fun ItemStack.toPaperMoney(): PaperMoney? {
 
 fun ItemStack.isPaperMoney(): Boolean {
     return this.toPaperMoney() != null
+}
+
+fun Int.toCashCoin(): ItemStack {
+    return ItemStackBuilder(Material.GOLD_NUGGET)
+        .setDisplayName("${DecimalFormat("#,###").format(this)}원")
+        .addPersistentData(CashCoin(this))
+        .build()
+}
+
+fun ItemStack.toCashCoin(): CashCoin? {
+    return this.getPersistentData<CashCoin>()
+}
+
+fun ItemStack.isCashCoin(): Boolean {
+    return this.toCashCoin() != null
 }

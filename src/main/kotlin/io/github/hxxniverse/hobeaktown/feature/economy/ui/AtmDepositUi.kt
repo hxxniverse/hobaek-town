@@ -1,8 +1,6 @@
 package io.github.hxxniverse.hobeaktown.feature.economy.ui
 
-import io.github.hxxniverse.hobeaktown.feature.economy.util.isPaperMoney
-import io.github.hxxniverse.hobeaktown.feature.economy.util.money
-import io.github.hxxniverse.hobeaktown.feature.economy.util.toPaperMoney
+import io.github.hxxniverse.hobeaktown.feature.economy.util.*
 import io.github.hxxniverse.hobeaktown.util.extension.text
 import io.github.hxxniverse.hobeaktown.util.inventory.CustomInventory
 import io.github.hxxniverse.hobeaktown.util.inventory.icon
@@ -33,11 +31,24 @@ class AtmDepositUi : CustomInventory("Atm Deposit", 54) {
                 from = 7 to 4,
                 to = 8 to 5
             ) {
-                val paperMoneys = it.inventory.contents.filter { it?.isPaperMoney() == true }.filterNotNull()
-                val money = paperMoneys.sumOf { (it.toPaperMoney()?.money ?: 0) * it.amount }
-                paperMoneys.forEach { it.amount = 0 }
+                val paperMoneys = it.inventory.contents.filter { item -> item?.isPaperMoney() == true }.filterNotNull()
+                val cashCoins = it.inventory.contents.filter { item -> item?.isCashCoin() == true }.filterNotNull()
+
+                val money = paperMoneys.sumOf { item -> (item.toPaperMoney()?.money ?: 0) * item.amount }
+                val cashCoin = cashCoins.sumOf { item -> (item.toCashCoin()?.money ?: 0) * item.amount }
+
+                paperMoneys.forEach { item -> item.amount = 0 }
+                cashCoins.forEach { item -> item.amount = 0 }
+
                 player.money += money
-                player.sendMessage("입금 완료: ${DecimalFormat("#,###").format(money)}원")
+                player.cash += cashCoin
+
+                if (money > 0) {
+                    player.sendMessage("입금 완료: ${DecimalFormat("#,###").format(money)}원")
+                }
+                if (cashCoin > 0) {
+                    player.sendMessage("입금 완료: ${DecimalFormat("#,###").format(cashCoin)}캐시")
+                }
             }
         }
         onPlayerInventoryClick {
