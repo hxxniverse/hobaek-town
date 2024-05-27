@@ -11,23 +11,6 @@ import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.transactions.transaction
 
-/**
- * "명령어 리스트 ( Command list )
- * /주식
- *
- * /주식 종목 추가 (종목 이름) (판매개수) (가격) (변동폭 -> %로 변동)
- * ex Command ) /주식 종목 추가 후스텔라 100 5000000 30
- *
- * /주식 종목 삭제 (종목 이름)
- * ex Command ) /주식 종목 삭제 후스텔라
- *
- * /주식 종목 수정 (종목 이름) (판매개수) (가격) (변동폭 -> %로 변동)
- * ex Command ) /주식 종목 수정 후스텔라 200 8000000 20
- *
- * /주식 변동 (시간)
- * ex Command ) /주식 변동 60
- * ㄴ 60분 마다 변경됩니다."
- */
 class StockCommand : BaseCommand {
     override fun register(plugin: JavaPlugin) {
         plugin.kommand {

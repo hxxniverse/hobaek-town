@@ -1,5 +1,6 @@
 package io.github.hxxniverse.hobeaktown.feature.economy
 
+import io.github.hxxniverse.hobeaktown.feature.economy.entity.Atm
 import io.github.hxxniverse.hobeaktown.feature.economy.ui.*
 import io.github.hxxniverse.hobeaktown.feature.economy.util.money
 import io.github.hxxniverse.hobeaktown.util.base.BaseCommand
@@ -7,44 +8,52 @@ import io.github.hxxniverse.hobeaktown.util.extension.setPersistentData
 import io.github.hxxniverse.hobeaktown.util.extension.text
 import io.github.monun.kommand.getValue
 import io.github.monun.kommand.kommand
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.text.DecimalFormat
 
 
-/**
- * "명령어 리스트 ( Command list )
- * 모든 명령어는 OP만 사용가능합니다.
- * /atm remittance
- * 명령어 입력시 GUI가 출력됩니다.
- *
- * /atm deposit
- * 명령어 입력시 GUI가 출력됩니다.
- *
- * /atm withdraw
- * 명령어 입력시 GUI가 출력됩니다.
- *
- * /atm check (플레이어)
- * 플레이어가 소지하고있는 금액및 정보를 확인 할 수있습니다.
- *
- * /atm block
- * 타겟 엔티티의 정보에 isAtmBlock을 true로 변경합니다.
- *
- * /atm set (플레이어) (금액)
- * 플레이어의 ATM 금액을 변경합니다.
- *
- * /atm give (플레이어) (금액)
- * 플레이어의 ATM 금액에서 지정한 금액을 추가합니다.
- *
- * /atm take (플레이어) (금액)
- * 플레이어의 ATM 금액에서 지정한 금액을 차감합니다."
- *
- */
 class EconomyCommand : BaseCommand {
     override fun register(plugin: JavaPlugin) {
         plugin.kommand {
             register("atm") {
                 requires { sender.isOp }
+                then("help") {
+                    executes {
+                        text(
+                            """
+                         * "명령어 리스트 ( Command list )
+                         * 모든 명령어는 OP만 사용가능합니다.
+                         *
+                         * /atm remittance
+                         * 명령어 입력시 GUI가 출력됩니다.
+                         *
+                         * /atm deposit
+                         * 명령어 입력시 GUI가 출력됩니다.
+                         *
+                         * /atm withdraw
+                         * 명령어 입력시 GUI가 출력됩니다.
+                         *
+                         * /atm check (플레이어)
+                         * 플레이어가 소지하고있는 금액및 정보를 확인 할 수있습니다.
+                         *
+                         * /atm block
+                         * 바라보는 블럭을 ATM 으로 설정합니다.
+                         * 이미 등록되어 있는 블럭 일 경우 제거됩니다.
+                         *
+                         * /atm set (플레이어) (금액)
+                         * 플레이어의 ATM 금액을 변경합니다.
+                         *
+                         * /atm give (플레이어) (금액)
+                         * 플레이어의 ATM 금액에서 지정한 금액을 추가합니다.
+                         *
+                         * /atm take (플레이어) (금액)
+                         * 플레이어의 ATM 금액에서 지정한 금액을 차감합니다.""".trimIndent()
+                        ).also(sender::sendMessage)
+                    }
+                }
                 then("open") {
                     requires { sender is Player }
                     executes {
@@ -84,11 +93,28 @@ class EconomyCommand : BaseCommand {
                 then("block") {
                     requires { sender is Player }
                     executes {
-                        val entity = player.getTargetEntity(100)
+                        val block = player.getTargetBlock(null, 5)
 
-                        entity?.setPersistentData("isAtmBlock", true)
+                        if (block.type == Material.AIR) {
+                            text("블록을 찾을 수 없습니다.")
+                                .also(sender::sendMessage)
+                            return@executes
+                        }
 
-                        text("타겟 엔티티의 정보에 isAtmBlock을 true로 변경하였습니다.")
+                        transaction {
+                            val atm = Atm.findByLocation(block.location)
+
+                            if (atm != null) {
+                                atm.delete()
+                                text("ATM 블록에서 제거되었습니다.")
+                                    .also(sender::sendMessage)
+                                return@transaction
+                            } else {
+                                Atm.create(block.location)
+                                text("ATM 블록으로 설정되었습니다.")
+                                    .also(sender::sendMessage)
+                            }
+                        }
                     }
                 }
                 then("set") {

@@ -18,17 +18,20 @@ class VoteCommand : BaseCommand {
     override fun register(plugin: JavaPlugin) {
         plugin.kommand {
             register("vote") {
-                executes {
-                    sender.sendMessage("투표")
-                    sender.sendMessage("* /vote create [question] - \"투표 주제\" 를 생성합니다.")
-                    sender.sendMessage("* /vote option [id] add [option] - \"투표 주제\" 에 선택지를 추가합니다.")
-                    sender.sendMessage("* /vote option [id] remove [option] - \"투표 주제\" 에 선택지를 제거합니다.")
-                    sender.sendMessage("* /vote voting_booth [id] - 바라보는 블럭(100칸 이내)을 기표소로 설정합니다.")
-                    sender.sendMessage("* /vote vote_box [id] - 바라보는 블럭(100칸 이내)을 투표함으로 설정합니다.")
-                    sender.sendMessage("* /vote status [id] - 투표 상태를 확인합니다.")
-                    sender.sendMessage("* /vote result [id] - 투표 결과를 확인합니다.")
-                    sender.sendMessage("* /vote announcement [id] - 투표를 알립니다.")
-                    sender.sendMessage("* /vote reset [id] - 투표를 초기화합니다.")
+                requires { sender.isOp }
+                then("help") {
+                    executes {
+                        sender.sendMessage("투표")
+                        sender.sendMessage("* /vote create [question] - \"투표 주제\" 를 생성합니다.")
+                        sender.sendMessage("* /vote option [id] add [option] - \"투표 주제\" 에 선택지를 추가합니다.")
+                        sender.sendMessage("* /vote option [id] remove [option] - \"투표 주제\" 에 선택지를 제거합니다.")
+                        sender.sendMessage("* /vote voting_booth [id] - 바라보는 블럭(100칸 이내)을 기표소로 설정합니다.")
+                        sender.sendMessage("* /vote vote_box [id] - 바라보는 블럭(100칸 이내)을 투표함으로 설정합니다.")
+                        sender.sendMessage("* /vote status [id] - 투표 상태를 확인합니다.")
+                        sender.sendMessage("* /vote result [id] - 투표 결과를 확인합니다.")
+                        sender.sendMessage("* /vote announcement [id] - 투표를 알립니다.")
+                        sender.sendMessage("* /vote reset [id] - 투표를 초기화합니다.")
+                    }
                 }
                 then("create") {
                     then("question" to string(StringType.QUOTABLE_PHRASE)) {
