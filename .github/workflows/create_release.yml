@@ -23,7 +23,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build with Gradle
-        run: ./gradlew clean reobfJar
+        run: ./gradlew clean paperJar
 
       - name: Create Release
         id: create_release
