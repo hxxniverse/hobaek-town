@@ -28,7 +28,6 @@ dependencies {
 
     implementation(rootProject.libs.kommand.api)
     implementation(rootProject.libs.kommand.core)
-    implementation(rootProject.libs.monun.heartbeat.coroutines)
     implementation(rootProject.libs.kotlinx.serialization.json)
     implementation(rootProject.libs.kotlinx.serialization.protobuf)
     implementation(rootProject.libs.exposed.core)
