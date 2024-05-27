@@ -1,6 +1,6 @@
 package io.github.hxxniverse.hobeaktown.util
 
-import io.github.monun.heartbeat.coroutines.Heartbeat
+import io.github.hxxniverse.hobeaktown.util.coroutine.Hobeak
 import kotlinx.coroutines.*
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -37,7 +37,7 @@ abstract class BaseScheduler(
 
     fun start() {
         startDate = LocalDateTime.now()
-        job = CoroutineScope(Dispatchers.Heartbeat).launch {
+        job = CoroutineScope(Dispatchers.Hobeak).launch {
             onStart()
             if (repeat) {
                 delay(delay)
