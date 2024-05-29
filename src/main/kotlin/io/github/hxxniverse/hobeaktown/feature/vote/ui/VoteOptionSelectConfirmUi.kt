@@ -41,7 +41,7 @@ class VoteOptionSelectConfirmUi(
 
                 button(
                     itemStack = icon { type = Material.RED_STAINED_GLASS_PANE; name = "취소".text() },
-                    from = 5 to 8, to = 6 to 9
+                    from = 8 to 5, to = 9 to 6
                 ) {
                     val player = it.whoClicked as Player
                     player.closeInventory()
