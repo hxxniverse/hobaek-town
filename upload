@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# 파일 경로 설정
+PROPERTIES_FILE="gradle.properties"
+
+# 현재 버전 읽어오기
+CURRENT_VERSION=$(grep "^version=" $PROPERTIES_FILE | cut -d'=' -f2)
+echo "Current version: $CURRENT_VERSION"
+
+# 패치 버전 증가시키기
+IFS='.' read -r -a VERSION_PARTS <<< "$CURRENT_VERSION"
+PATCH_VERSION=${VERSION_PARTS[2]}
+NEW_PATCH_VERSION=$((PATCH_VERSION + 1))
+NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$NEW_PATCH_VERSION"
+echo "New version: $NEW_VERSION"
+
+# gradle.properties 파일에 새로운 버전 업데이트
+sed -i '' "s/^version=.*/version=$NEW_VERSION/" $PROPERTIES_FILE
+
+# 변경 사항 커밋
+git add $PROPERTIES_FILE
+git commit -m "Bump version to $NEW_VERSION"
+
+# 새로운 태그 생성
+git tag -a "v$NEW_VERSION" -m "Version $NEW_VERSION"
+
+# 변경 사항 및 태그 푸시
+git push origin main
+git push origin "v$NEW_VERSION"
+
+echo "Version updated to $NEW_VERSION and changes pushed to remote repository."
