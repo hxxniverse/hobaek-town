@@ -10,12 +10,8 @@ fun Inventory.hasSpace(vararg itemStacks: ItemStack): Boolean {
     val checkInventory = Bukkit.createInventory(null, 36, Component.text("레시피 재료 확인"))
     checkInventory.contents = storageContents
 
-    println(checkInventory.contents.map { it?.type to it?.amount })
-
     // check inventory
     val leftItems = checkInventory.addItem(*itemStacks)
-
-    println(checkInventory.contents.map { it?.type to it?.amount })
 
     return leftItems.isEmpty()
 }

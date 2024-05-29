@@ -10,7 +10,6 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class VoteFeature : BaseFeature {
     override fun enable(plugin: JavaPlugin) {
         transaction {
-            SchemaUtils.drop(Votes, VoteHistories)
             SchemaUtils.create(Votes, VoteHistories)
         }
 

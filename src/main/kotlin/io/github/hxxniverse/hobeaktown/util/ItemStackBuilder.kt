@@ -169,6 +169,11 @@ class ItemStackBuilder(
         return this
     }
 
+    fun addEnchantment(enchantment: Enchantment, level: Int): ItemStackBuilder {
+        itemStack.addEnchantment(enchantment, level)
+        return this
+    }
+
     fun removeEnchantment(enchantment: Enchantment): ItemStackBuilder {
         itemStack.removeEnchantment(enchantment)
         return this

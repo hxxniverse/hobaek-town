@@ -32,6 +32,12 @@ class VoteListener : Listener {
         val vote = votingBooth ?: voteBox ?: return
 
         if (votingBooth != null) {
+            // check already voted
+            if (transaction { vote.hasVoted(player.uniqueId) }) {
+                player.sendMessage("이미 투표하셨습니다.")
+                return
+            }
+            
             VoteOptionSelectUi(vote).open(player)
             return
         }
@@ -40,6 +46,12 @@ class VoteListener : Listener {
 
         if (ballot.question != vote.question) {
             player.sendMessage("해당 투표 용지는 이 투표에 사용할 수 없습니다.")
+            return
+        }
+
+        // check already voted
+        if (transaction { vote.hasVoted(player.uniqueId) }) {
+            player.sendMessage("이미 투표하셨습니다.")
             return
         }
 

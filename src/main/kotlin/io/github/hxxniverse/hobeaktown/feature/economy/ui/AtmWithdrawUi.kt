@@ -58,10 +58,6 @@ class AtmWithdrawUi {
                     }
                 }
 
-                paperMoney.forEach {
-                    println(it.displayName().serialize() + "/" + it.amount)
-                }
-
                 if (!player.inventory.hasSpace(*paperMoney.toTypedArray())) {
                     player.sendMessage("인벤토리 공간이 부족합니다.")
                     return@AnvilInventory listOf(AnvilGUI.ResponseAction.replaceInputText("_"))

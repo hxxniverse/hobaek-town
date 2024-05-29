@@ -26,14 +26,12 @@ class StockCommand : BaseCommand {
                 requires { sender.isOp }
                 then("help") {
                     executes {
-                        sender.sendMessage(
-                            """
-                            /stock item add (stockName) (amount) (price) (fluctuation)
-                            /stock item delete (stockName)
-                            /stock item update (stockName) (amount) (price) (fluctuation)
-                            /stock fluctuation (time)
-                            """.trimIndent(),
-                        )
+                        sender.sendMessage("주식")
+                        sender.sendMessage("* /stock item status - 주식 종목을 확인합니다.")
+                        sender.sendMessage("* /stock item create [stockName] [amount] [price] [fluctuation] - 주식 종목을 추가합니다.")
+                        sender.sendMessage("* /stock item delete [stock] - 주식 종목을 삭제합니다.")
+                        sender.sendMessage("* /stock item update [stock] [amount] [price] [fluctuation] - 주식 종목을 수정합니다.")
+                        sender.sendMessage("* /stock fluctuation [time] - 주식 변동 시간을 설정합니다.")
                     }
                 }
                 then("item") {
@@ -45,7 +43,6 @@ class StockCommand : BaseCommand {
                             }
 
                             val leftInterval = PriceChangeTask.getLeftInterval() / 1000
-                            println(leftInterval)
                             val minute = leftInterval / 60
                             val second = leftInterval % 60
 

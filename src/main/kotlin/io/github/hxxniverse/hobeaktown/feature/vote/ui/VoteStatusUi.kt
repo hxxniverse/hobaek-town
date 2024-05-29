@@ -12,18 +12,16 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class VoteStatusUi(
-    private val vote: Vote
+    private val vote: Vote,
 ) : CustomInventory(vote.question, 27) {
     init {
         inventory {
             transaction {
-                vote.options.split(",").forEachIndexed { index, option ->
+                vote.options.split(",").filter { it.isNotEmpty() }.forEachIndexed { index, option ->
                     setItem(index, icon {
                         type = Material.PAPER
                         name = option.text()
-                        amount =
-                            VoteHistory.count((VoteHistories.vote eq vote.id) and (VoteHistories.option eq index))
-                                .toInt()
+                        lore = listOf("§7투표 수: ${VoteHistory.count((VoteHistories.vote eq vote.id) and (VoteHistories.option eq index))}".text())
                     })
                 }
 

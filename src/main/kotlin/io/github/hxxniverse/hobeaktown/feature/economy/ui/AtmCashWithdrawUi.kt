@@ -43,7 +43,7 @@ class AtmCashWithdrawUi {
                 }
 
                 if (player.cash < money) {
-                    player.sendMessage("돈이 부족합니다.")
+                    player.sendMessage("캐시가 부족합니다.")
                     return@AnvilInventory listOf(AnvilGUI.ResponseAction.replaceInputText("_"))
                 }
 
@@ -56,10 +56,6 @@ class AtmCashWithdrawUi {
                         paperMoney.add(m.toPaperMoney().edit { setAmount(count) })
                         withdrawMoney -= m * count
                     }
-                }
-
-                paperMoney.forEach {
-                    println(it.displayName().serialize() + "/" + it.amount)
                 }
 
                 if (!player.inventory.hasSpace(*paperMoney.toTypedArray())) {

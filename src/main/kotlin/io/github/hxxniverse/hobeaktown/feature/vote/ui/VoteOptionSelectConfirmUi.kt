@@ -14,12 +14,12 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class VoteOptionSelectConfirmUi(
     private val vote: Vote,
-    private val selected: Int
+    private val selected: Int,
 ) : CustomInventory("VoteOptionSelectConfirm", 54) {
     init {
         inventory {
             transaction {
-                background(ItemStack(Material.GRAY_STAINED_GLASS))
+                background(ItemStack(Material.GRAY_STAINED_GLASS_PANE))
 
                 button(
                     itemStack = icon { type = Material.PAPER; name = vote.question.text() },
@@ -27,20 +27,20 @@ class VoteOptionSelectConfirmUi(
                 )
 
                 button(
-                    itemStack = icon { type = Material.PAPER; name = vote.options.split(",")[selected].text() },
+                    itemStack = icon { type = Material.PAPER; name = vote.options.split(",").filter { it.isNotEmpty() }[selected].text() },
                     from = 4 to 3, to = 6 to 3
                 )
 
                 button(
                     itemStack = icon { type = Material.RED_STAINED_GLASS_PANE; name = "취소".text() },
-                    from = 5 to 1, to = 6 to 2
+                    from = 1 to 5, to = 2 to 6
                 ) {
                     VoteOptionSelectUi(vote).open(it.whoClicked as Player)
 
                 }
 
                 button(
-                    itemStack = icon { type = Material.RED_STAINED_GLASS_PANE; name = "취소".text() },
+                    itemStack = icon { type = Material.GREEN_STAINED_GLASS_PANE; name = "투표 완료".text() },
                     from = 8 to 5, to = 9 to 6
                 ) {
                     val player = it.whoClicked as Player
@@ -49,6 +49,7 @@ class VoteOptionSelectConfirmUi(
                         setDisplayName("투표된 종이")
                         addUnsafeEnchantment(Enchantment.LUCK, 1)
                     }.apply { setBallot(vote.question, selected) }
+                        .also { paper -> player.equipment.setItemInMainHand(paper) }
                 }
             }
         }

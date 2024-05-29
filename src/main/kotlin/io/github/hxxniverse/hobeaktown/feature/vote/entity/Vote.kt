@@ -46,4 +46,10 @@ class Vote(id: EntityID<Int>) : IntEntity(id) {
             option = option
         )
     }
+
+    fun hasVoted(uniqueId: UUID) : Boolean {
+        return transaction {
+            VoteHistory.find { VoteHistories.voter eq uniqueId }.firstOrNull() != null
+        }
+    }
 }
