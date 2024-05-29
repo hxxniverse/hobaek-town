@@ -27,10 +27,10 @@ class VoteOptionSelectUi(
                 )
 
                 val optionSlots = listOf(
-                    4 to 2, 6 to 2,
-                    4 to 4, 6 to 4,
-                    4 to 6, 6 to 6,
-                    4 to 8, 6 to 8
+                    2 to 4, 2 to 6,
+                    4 to 4, 4 to 6,
+                    6 to 4, 6 to 6,
+                    8 to 4, 8 to 6
                 )
 
                 vote.options.split(",").forEachIndexed { index, option ->
@@ -50,14 +50,14 @@ class VoteOptionSelectUi(
 
                 button(
                     itemStack = icon { type = Material.RED_STAINED_GLASS_PANE; name = "취소".text() },
-                    from = 6 to 1, to = 6 to 3
+                    from = 1 to 6, to = 3 to 6
                 ) {
                     player.closeInventory()
                 }
 
                 button(
                     itemStack = icon { type = Material.GREEN_STAINED_GLASS_PANE; name = "확인".text() },
-                    from = 6 to 7, to = 6 to 9
+                    from = 7 to 6, to = 9 to 6
                 ) {
                     VoteOptionSelectConfirmUi(vote, selected).open(player)
                 }
