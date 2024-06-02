@@ -58,7 +58,7 @@ class VoteCommand : BaseCommand {
                                         val vote = Vote.findById(id) ?: return@transaction
                                         val options = vote.options.split(",").toMutableList()
                                         options.add(option)
-                                        vote.options = options.joinToString(",")
+                                        vote.options = options.filter { option -> option.isNotEmpty() }.joinToString(",")
                                     }
 
                                     sender.sendMessage("투표 옵션이 추가되었습니다.")

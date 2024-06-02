@@ -9,6 +9,7 @@ import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
@@ -47,9 +48,9 @@ class Vote(id: EntityID<Int>) : IntEntity(id) {
         )
     }
 
-    fun hasVoted(uniqueId: UUID) : Boolean {
+    fun hasVoted(uniqueId: UUID): Boolean {
         return transaction {
-            VoteHistory.find { VoteHistories.voter eq uniqueId }.firstOrNull() != null
+            VoteHistory.find { (VoteHistories.voter eq uniqueId) and (VoteHistories.vote eq this@Vote.id) }.firstOrNull() != null
         }
     }
 }

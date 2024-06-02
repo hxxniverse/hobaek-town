@@ -84,6 +84,11 @@ class EconomyCommand : BaseCommand {
                                 .append(text("님의 금액: "))
                                 .append(text(DecimalFormat("#,##0").format(player.money)))
                                 .also(sender::sendMessage)
+
+                            text(player.name)
+                                .append(text("님의 캐시: "))
+                                .append(text(DecimalFormat("#,##0").format(player.cash)))
+                                .also(sender::sendMessage)
                         }
                     }
                 }

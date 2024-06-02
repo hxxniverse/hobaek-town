@@ -17,7 +17,7 @@ class VoteStatusUi(
     init {
         inventory {
             transaction {
-                vote.options.split(",").filter { it.isNotEmpty() }.forEachIndexed { index, option ->
+                vote.options.split(",").forEachIndexed { index, option ->
                     setItem(index, icon {
                         type = Material.PAPER
                         name = option.text()

@@ -38,7 +38,7 @@ class VoteOptionSelectUi(
                     8 to 4
                 )
 
-                vote.options.split(",").filter { it.isNotEmpty() }.forEachIndexed { index, option ->
+                vote.options.split(",").forEachIndexed { index, option ->
                     button(
                         itemStack = ItemStackBuilder()
                             .setType(Material.PAPER)
