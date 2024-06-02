@@ -18,7 +18,7 @@ echo "New version: $NEW_VERSION"
 sed -i '' "s/^version=.*/version=$NEW_VERSION/" $PROPERTIES_FILE
 
 # 변경 사항 커밋
-git add $PROPERTIES_FILE
+git add --all
 git commit -m "Bump version to $NEW_VERSION"
 
 # 새로운 태그 생성
