@@ -25,7 +25,7 @@ git commit -m "Bump version to $NEW_VERSION"
 git tag -a "v$NEW_VERSION" -m "Version $NEW_VERSION"
 
 # 변경 사항 및 태그 푸시
-git push origin main
+git push origin
 git push origin "v$NEW_VERSION"
 
 echo "Version updated to $NEW_VERSION and changes pushed to remote repository."
