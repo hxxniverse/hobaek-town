@@ -13,12 +13,6 @@ class StockFeature : BaseFeature {
     override fun enable(plugin: JavaPlugin) {
         transaction {
             SchemaUtils.create(Stocks, UserStocks, StockHistories)
-
-            Stock.new("후스텔", 100, 5000000, 10)
-            Stock.new("후뱅크", 100, 5000000, 10)
-            Stock.new("후페이", 100, 5000000, 10)
-            Stock.new("후스토", 100, 5000000, 10)
-            Stock.new("후삼성", 100, 5000000, 10)
         }
         StockConfig.load()
         StockCommand().register(plugin)

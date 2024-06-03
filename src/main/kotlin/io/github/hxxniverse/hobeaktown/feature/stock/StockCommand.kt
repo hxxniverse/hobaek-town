@@ -4,7 +4,9 @@ import io.github.hxxniverse.hobeaktown.feature.stock.entity.Stock
 import io.github.hxxniverse.hobeaktown.feature.stock.entity.Stocks
 import io.github.hxxniverse.hobeaktown.feature.stock.ui.StockStatusUi
 import io.github.hxxniverse.hobeaktown.util.base.BaseCommand
+import io.github.hxxniverse.hobeaktown.util.extension.text
 import io.github.monun.kommand.KommandArgument.Companion.dynamic
+import io.github.monun.kommand.StringType
 import io.github.monun.kommand.getValue
 import io.github.monun.kommand.kommand
 import org.bukkit.entity.Player
@@ -146,14 +148,17 @@ class StockCommand : BaseCommand {
     }
 }
 
-fun stock() = dynamic { ctx, input ->
+fun stock() = dynamic(type = StringType.GREEDY_PHRASE) { _, input ->
     transaction {
         Stock.find { Stocks.name eq input }.firstOrNull()
     }
 }.apply {
     suggests {
         transaction {
-            Stock.find { Stocks.name like "$it%" }.map { it.name }
+            suggest(
+                candidates = Stock.find { Stocks.name like "$it%" }.map { it.name },
+                tooltip = { it.text() },
+            )
         }
     }
 }
