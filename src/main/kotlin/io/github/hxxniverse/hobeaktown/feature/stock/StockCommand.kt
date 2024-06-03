@@ -56,7 +56,7 @@ class StockCommand : BaseCommand {
                         }
                     }
                     then("create") {
-                        then("stockName" to string()) {
+                        then("stockName" to string(type = StringType.QUOTABLE_PHRASE)) {
                             then("amount" to int()) {
                                 then("price" to int()) {
                                     then("fluctuation" to int()) {
@@ -148,7 +148,7 @@ class StockCommand : BaseCommand {
     }
 }
 
-fun stock() = dynamic(type = StringType.GREEDY_PHRASE) { _, input ->
+fun stock() = dynamic(type = StringType.QUOTABLE_PHRASE) { _, input ->
     transaction {
         Stock.find { Stocks.name eq input }.firstOrNull()
     }
