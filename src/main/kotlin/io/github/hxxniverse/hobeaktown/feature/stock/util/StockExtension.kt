@@ -11,8 +11,6 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.text.DecimalFormat
-import java.text.SimpleDateFormat
-import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 
 fun Stock.toItemStack(player: Player): ItemStack = transaction {
@@ -25,20 +23,28 @@ fun Stock.toItemStack(player: Player): ItemStack = transaction {
     return@transaction ItemStackBuilder(material = Material.PAPER)
         .setDisplayName(name.text())
         .addLore("")
-        .addLore(text("가격: ").append(currentPriceStr.text(NamedTextColor.GOLD)).append(" $arrow $beforePriceStr".text(if (isUp) NamedTextColor.RED else NamedTextColor.BLUE)))
+        .addLore(
+            text("가격: ").append(currentPriceStr.text(NamedTextColor.GOLD))
+                .append(" $arrow $beforePriceStr".text(if (isUp) NamedTextColor.RED else NamedTextColor.BLUE))
+        )
         .addLore(text("남은갯수: ").append(remainingAmount.toString().text()))
         .addLore(text("보유갯수: ").append((player.getStock(this@toItemStack)?.amount ?: 0).toString().text()))
         .build()
 }
 
 fun Stock.toGraphItemStack(): ItemStack = transaction {
-    val histories = StockHistory.find { StockHistories.stockId eq this@toGraphItemStack.id }.toList().chunked(5).first().reversed()
+    val histories = StockHistory.find { StockHistories.stockId eq this@toGraphItemStack.id }.toList()
+    if (histories.isEmpty()) return@transaction ItemStackBuilder(material = Material.RED_STAINED_GLASS_PANE)
+        .setDisplayName("최근 5회 변동추이")
+        .addLore("데이터가 없습니다.")
+        .build()
+    val historyChunk = histories.chunked(5).first().reversed()
     val isCurrentUp = beforePrice - currentPrice < 0
     return@transaction ItemStackBuilder(material = if (isCurrentUp) Material.RED_STAINED_GLASS_PANE else Material.BLUE_STAINED_GLASS_PANE)
         .setDisplayName("최근 5회 변동추이")
         .addLore("")
         .apply {
-            histories.forEachIndexed { index, stockHistory ->
+            historyChunk.forEachIndexed { index, stockHistory ->
                 val isHistoryUp = stockHistory.fluctuation > 0
                 val color = if (isHistoryUp) NamedTextColor.RED else NamedTextColor.BLUE
                 val decimalFormat = DecimalFormat("#,###")
