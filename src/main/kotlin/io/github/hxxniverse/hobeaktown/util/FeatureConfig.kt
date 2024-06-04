@@ -1,9 +1,12 @@
 package io.github.hxxniverse.hobeaktown.util
 
 import io.github.hxxniverse.hobeaktown.HobeakTownPlugin.Companion.plugin
+import io.github.hxxniverse.hobeaktown.util.serializer.LocationSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.contextual
 import java.io.File
 import java.io.IOException
 
@@ -41,6 +44,9 @@ abstract class FeatureConfig<T>(
     private val json = Json {
         encodeDefaults = true
         prettyPrint = true
+        serializersModule = SerializersModule {
+            contextual(LocationSerializer)
+        }
     }
 
     fun save(): Boolean {

@@ -1,8 +1,11 @@
 package io.github.hxxniverse.hobeaktown.util.extension
 
+import io.github.hxxniverse.hobeaktown.util.serializer.LocationSerializer
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.encodeToByteArray
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.contextual
 import kotlinx.serialization.protobuf.ProtoBuf
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -57,11 +60,19 @@ abstract class PersistentDataKeychain {
             }
 
             override fun toPrimitive(complex: Z & Any, context: PersistentDataAdapterContext): ByteArray {
-                return ProtoBuf.encodeToByteArray(complex)
+                return ProtoBuf {
+                    serializersModule = SerializersModule {
+                        contextual(LocationSerializer)
+                    }
+                }.encodeToByteArray(complex)
             }
 
             override fun fromPrimitive(primitive: ByteArray, context: PersistentDataAdapterContext): Z & Any {
-                return ProtoBuf.decodeFromByteArray(primitive)
+                return ProtoBuf {
+                    serializersModule = SerializersModule {
+                        contextual(LocationSerializer)
+                    }
+                }.decodeFromByteArray(primitive)
             }
         })
     }

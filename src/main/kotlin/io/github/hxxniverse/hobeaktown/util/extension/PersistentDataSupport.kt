@@ -1,8 +1,11 @@
 package io.github.hxxniverse.hobeaktown.util.extension
 
+import io.github.hxxniverse.hobeaktown.util.serializer.LocationSerializer
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.encodeToByteArray
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.contextual
 import kotlinx.serialization.protobuf.ProtoBuf
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
@@ -120,7 +123,11 @@ value class PersistentDataSupport(val container: PersistentDataContainer) {
         if (dataType != null) return get(name, dataType)
 
         val bytes = get(name, PersistentDataType.BYTE_ARRAY) ?: return null
-        return ProtoBuf.decodeFromByteArray<Z>(bytes)
+        return ProtoBuf {
+            serializersModule = SerializersModule {
+                contextual(LocationSerializer)
+            }
+        }.decodeFromByteArray<Z>(bytes)
     }
 
     operator fun <T, Z> set(name: String, type: PersistentDataType<T, Z>, value: Z & Any) {
@@ -141,7 +148,11 @@ value class PersistentDataSupport(val container: PersistentDataContainer) {
             return
         }
 
-        val bytes = ProtoBuf.encodeToByteArray(value)
+        val bytes = ProtoBuf {
+            serializersModule = SerializersModule {
+                contextual(LocationSerializer)
+            }
+        }.encodeToByteArray(value)
         set(name, PersistentDataType.BYTE_ARRAY, bytes)
     }
 
