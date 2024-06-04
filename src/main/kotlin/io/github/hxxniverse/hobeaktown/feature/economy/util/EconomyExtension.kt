@@ -23,6 +23,10 @@ var Player.money: Int
         }
     }
 
+fun Player.hasMoney(money: Int): Boolean {
+    return this.money >= money
+}
+
 var Player.cash: Int
     set(value) {
         transaction {

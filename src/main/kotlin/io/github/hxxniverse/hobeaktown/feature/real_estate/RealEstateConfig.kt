@@ -12,5 +12,5 @@ object RealEstateConfig : FeatureConfig<RealEstateConfigData>(
 
 @Serializable
 data class RealEstateConfigData(
-    val a: String = ""
+    val realEstateWorld: List<String> = listOf("world"),
 )
