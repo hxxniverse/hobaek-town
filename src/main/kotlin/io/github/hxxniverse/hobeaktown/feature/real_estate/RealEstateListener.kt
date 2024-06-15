@@ -2,6 +2,7 @@ package io.github.hxxniverse.hobeaktown.feature.real_estate
 
 import io.github.hxxniverse.hobeaktown.feature.real_estate.ui.RealEstateBuyUi
 import io.github.hxxniverse.hobeaktown.util.coroutine.Hobeak
+import io.github.hxxniverse.hobeaktown.util.extension.setPersistentData
 import io.github.hxxniverse.hobeaktown.util.extension.text
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -15,27 +16,65 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.event.block.SignChangeEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Duration
 
 class RealEstateListener : Listener {
     @EventHandler
-    fun onBlockPlaceEvent(event: BlockPlaceEvent) {
+    fun onRealEstateTerritorialEstablishment(event: PlayerInteractEvent) {
         val player = event.player
-        val itemStack = event.itemInHand
-        val block = event.block
+        val itemStack = event.item ?: return
+
+        val realEstateSelection = itemStack.getItemStackRealEstateSelection() ?: return
+        val location = event.clickedBlock?.location ?: return
+
+        // 좌클릭
+        if (event.action.isLeftClick) {
+            event.isCancelled = true
+            if (!event.player.isSneaking) {
+                realEstateSelection.copy(pos1 = location).toItemStack()
+                    .also { player.inventory.setItemInMainHand(it) }
+                player.sendMessage("부동산 선택지의 첫번째 지점을 설정하셨습니다.")
+            } else {
+                realEstateSelection.copy(pos2 = location).toItemStack()
+                    .also { player.inventory.setItemInMainHand(it) }
+                player.sendMessage("부동산 선택지의 두번째 지점을 설정하셨습니다.")
+            }
+            return
+        }
+    }
+
+    @EventHandler
+    fun onRealEstateSelectionRightClick(event: PlayerInteractEvent) = transaction {
+        val player = event.player
+        val block = event.clickedBlock ?: return@transaction
+
+        val realEstate = RealEstate.find { RealEstates.signLocation eq block.location }.firstOrNull() ?: return@transaction
+
+        event.isCancelled = true
+
+        println(realEstate)
+
+        if (player.uniqueId != realEstate.owner) {
+            realEstate.showInfo(player)
+            return@transaction
+        }
+    }
+
+    @EventHandler
+    fun onRealEstateSelectionCreate(event: SignChangeEvent) {
+        val player = event.player
+        val itemStack = player.inventory.itemInMainHand
 
         if (itemStack.getItemStackRealEstateSelection() != null) {
-            event.isCancelled = true
             val realEstateSelection = itemStack.getItemStackRealEstateSelection()!!
-            val sign = block.world.getBlockAt(block.location.add(0.0, 1.0, 0.0)) as Sign
 
-            sign.line(0, text(realEstateSelection.name))
-            sign.line(1, text("금액 : ${realEstateSelection.price}원"))
-            sign.line(2, text("기간 : ${realEstateSelection.due}일"))
-            sign.line(3, text("판매중"))
-            sign.update()
+//            event.line(0, text(realEstateSelection.name))
+//            event.line(1, text("금액 : ${realEstateSelection.price}원"))
+//            event.line(2, text("기간 : ${realEstateSelection.due}일"))
+//            event.line(3, text("판매중"))
 
             transaction {
                 RealEstate.create(
@@ -43,11 +82,11 @@ class RealEstateListener : Listener {
                     realEstateSelection.price,
                     realEstateSelection.due,
                     realEstateSelection.type,
-                    player.uniqueId,
                     realEstateSelection.pos1,
                     realEstateSelection.pos2,
-                ).also {
-                    it.signLocation = sign.location
+                    event.block.location
+                ).also { realEstate ->
+                    realEstate.updateSign()
                 }
             }
 

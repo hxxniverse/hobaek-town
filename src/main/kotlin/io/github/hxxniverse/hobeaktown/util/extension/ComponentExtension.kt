@@ -14,10 +14,6 @@ fun text(str: Any, color: NamedTextColor = NamedTextColor.WHITE): TextComponent 
         .decoration(TextDecoration.ITALIC, false)
 }
 
-fun Component.text(str: Any, color: NamedTextColor = NamedTextColor.WHITE): Component {
-    return this.append(text(str, color))
-}
-
 fun Component.serialize(): String {
     return PlainTextComponentSerializer.plainText().serialize(this)
 }

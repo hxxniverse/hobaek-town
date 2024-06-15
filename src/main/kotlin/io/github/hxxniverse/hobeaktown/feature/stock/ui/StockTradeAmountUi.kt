@@ -31,15 +31,16 @@ class StockTradeAmountUi(
             itemOutput = ItemStack(Material.PAPER).edit {
                 addLore("클릭 시 거래가 완료됩니다.")
             },
-            onClickRight = {
+            onClickResult = {
                 transaction {
-                    val amount = it.text.toIntOrNull() ?: return@transaction listOf(AnvilGUI.ResponseAction.close())
+                    val amount = it.text.replace("_", "").toIntOrNull() ?: return@transaction listOf(AnvilGUI.ResponseAction.close())
+                    println("amount: $amount")
                     try {
                         tradeStock(player, stock, amount)
                         if (tradeType == TradeType.BUY) {
-                            text(stock.name).text("을(를) $amount 주 구매하였습니다.").send(player)
+                            text(stock.name).append(text("을(를) $amount 주 구매하였습니다.")).send(player)
                         } else {
-                            text(stock.name).text("을(를) $amount 주 판매하였습니다.").send(player)
+                            text(stock.name).append(text("을(를) $amount 주 판매하였습니다.")).send(player)
                         }
                         return@transaction listOf(AnvilGUI.ResponseAction.close())
                     } catch (e: IllegalArgumentException) {
