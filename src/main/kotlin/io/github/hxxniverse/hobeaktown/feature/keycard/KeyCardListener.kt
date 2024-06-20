@@ -5,12 +5,14 @@ import io.github.hxxniverse.hobeaktown.feature.keycard.entity.*
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.block.data.Openable
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.meta.ItemMeta
@@ -98,6 +100,39 @@ class KeyCardListener: Listener {
                         event.player.sendMessage("문을 여는 중 오류가 발생했습니다.")
                         e.printStackTrace()
                     }
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    fun onPlayerInteract(event: PlayerInteractEntityEvent) {
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastEventTime < EVENT_COOLDOWN) {
+            return
+        }
+        lastEventTime = currentTime
+
+        val itemMeta: ItemMeta? = event.player.inventory.itemInMainHand.itemMeta;
+        if(event.player.inventory.itemInMainHand.type == Material.NETHER_STAR && itemMeta != null) {
+            if(event.rightClicked.type == EntityType.PLAYER) {
+                val role = itemMeta.persistentDataContainer.get(
+                    NamespacedKey(plugin, "Role"),
+                    PersistentDataType.STRING
+                ).toString()
+                if(Role.isExistsRole(role)){
+                    UserKeyCard.updateMemberRole(event.rightClicked.uniqueId, role)
+                }
+            }
+        }
+        if(event.player.inventory.itemInMainHand.type == Material.BLAZE_ROD && itemMeta != null) {
+            if(event.rightClicked.type == EntityType.PLAYER) {
+                val role = itemMeta.persistentDataContainer.get(
+                    NamespacedKey(plugin, "Role"),
+                    PersistentDataType.STRING
+                ).toString()
+                if(Role.isExistsRole(role)){
+                    UserKeyCard.updateMemberRole(event.rightClicked.uniqueId, "시민")
                 }
             }
         }
