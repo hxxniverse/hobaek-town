@@ -24,10 +24,14 @@ class KeyCard(id: EntityID<Int>): IntEntity(id) {
     companion object : IntEntityClass<KeyCard>(KeyCards) {
         fun isExistsKeyCard(name: String, roleName: String): Boolean = transaction {
             // 직업 아이디 가져오기
-            val role = Role.find { Roles.name eq roleName }.firstOrNull() ?: return@transaction false
+            val role = Role.find { Roles.role eq roleName }.firstOrNull() ?: return@transaction false
             // 키카드 존재 여부 확인
             val isExists = KeyCard.find { (KeyCards.name eq name) and (KeyCards.role eq role.id) }.firstOrNull() != null
 
+            return@transaction isExists
+        }
+        fun isExistsKeyName(name: String): Boolean = transaction {
+            val isExists = KeyCard.find { (KeyCards.name eq name) }.firstOrNull() != null
             return@transaction isExists
         }
     }

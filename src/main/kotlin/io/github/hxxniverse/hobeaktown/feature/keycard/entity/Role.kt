@@ -4,6 +4,8 @@ import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.transactions.transaction
 
 /**
  * Role 테이블
@@ -12,16 +14,25 @@ import org.jetbrains.exposed.dao.id.IntIdTable
  * name	TEXT
  */
 object Roles : IntIdTable() {
-    val name = varchar("name", 50)
+    val role = varchar("role", 50).uniqueIndex()
 }
 
 class Role(id: EntityID<Int>): IntEntity(id) {
     companion object : IntEntityClass<Role>(Roles) {
-        // is exists role
-        fun isExistsRole(role: String): Boolean {
-            return Role.find { Roles.name eq role }.firstOrNull() != null
+        fun isExistsRole(role: String): Boolean = transaction {
+            return@transaction Role.find { Roles.role eq role }.firstOrNull() != null
+        }
+        fun initialize() = transaction {
+            val defaultRoles: Array<String> = arrayOf("시민", "경찰", "회사원", "은행원", "국회의원", "군인", "훈련병", "사업가", "VIP")
+//            val defaultRoles: Array<String> = arrayOf("citizen", "police", "employee", "banker", "national", "soldier", "trainee", "seller", "vip")
+            defaultRoles.forEach { role ->
+                if (!isExistsRole(role)) {
+                    Role.new {
+                        this.role = role
+                    }
+                }
+            }
         }
     }
-
-    var name by Roles.name
+    var role by Roles.role
 }
