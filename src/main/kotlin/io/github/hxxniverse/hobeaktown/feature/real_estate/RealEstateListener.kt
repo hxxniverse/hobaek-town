@@ -166,6 +166,7 @@ class RealEstateListener : Listener {
                     )
                 )
                 realEstate.saveScheme()
+                realEstate.updateSign()
                 println("saveScheme ${realEstate.pos1.pretty()} ~ ${realEstate.pos2.pretty()}")
             }
         }

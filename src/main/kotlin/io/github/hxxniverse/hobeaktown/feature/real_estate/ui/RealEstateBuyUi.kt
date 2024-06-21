@@ -17,6 +17,7 @@ class RealEstateBuyUi(
                         .setDisplayName("구매").build(), 2 to 2
                 ) {
                     realEstate.buy(player)
+                    realEstate.updateSign()
                     player.closeInventory()
                 }
 
@@ -27,9 +28,7 @@ class RealEstateBuyUi(
                             "기간 : ${realEstate.due}일",
                             "금액 : ${realEstate.price}원"
                         ).build(), 5 to 2
-                ) {
-                    realEstate.buy(player)
-                }
+                )
 
                 button(
                     ItemStackBuilder(Material.RED_WOOL)
