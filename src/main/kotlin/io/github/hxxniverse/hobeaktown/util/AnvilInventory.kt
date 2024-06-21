@@ -9,9 +9,9 @@ import org.bukkit.inventory.ItemStack
 class AnvilInventory(
     title: String,
     text: String,
-    itemInputLeft: ItemStack = ItemStack(Material.AIR),
+    itemInputLeft: ItemStack = ItemStack(Material.PAPER),
     itemInputRight: ItemStack = ItemStack(Material.AIR),
-    itemOutput: ItemStack = ItemStack(Material.AIR),
+    itemOutput: ItemStack = ItemStack(Material.PAPER),
     onClose: (AnvilGUI.StateSnapshot) -> Unit = {},
     private val onClickLeft: (AnvilGUI.StateSnapshot) -> List<AnvilGUI.ResponseAction> = { emptyList() },
     private val onClickRight: (AnvilGUI.StateSnapshot) -> List<AnvilGUI.ResponseAction> = { emptyList() },
