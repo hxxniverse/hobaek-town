@@ -7,7 +7,7 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class StockFeature : BaseFeature {
-    override fun enable(plugin: JavaPlugin) {
+    override fun onEnable(plugin: JavaPlugin) {
         transaction {
             SchemaUtils.create(Stocks, UserStocks, StockHistories, StockTradeHistories)
         }
@@ -16,6 +16,6 @@ class StockFeature : BaseFeature {
         PriceChangeTask.start()
     }
 
-    override fun disable(plugin: JavaPlugin) {
+    override fun onDisable(plugin: JavaPlugin) {
     }
 }

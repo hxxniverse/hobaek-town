@@ -3,8 +3,8 @@ package io.github.hxxniverse.hobeaktown.util.base
 import org.bukkit.plugin.java.JavaPlugin
 
 interface BaseFeature {
-    fun enable(plugin: JavaPlugin)
-    fun disable(plugin: JavaPlugin)
+    fun onEnable(plugin: JavaPlugin)
+    fun onDisable(plugin: JavaPlugin)
 }
 
 interface BaseCommand {

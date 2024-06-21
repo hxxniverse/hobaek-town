@@ -38,7 +38,6 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class RealEstateFeature : BaseFeature {
     override fun enable(plugin: JavaPlugin) {
         transaction {
-//            SchemaUtils.drop(RealEstates)
             SchemaUtils.create(RealEstates)
             RealEstate.all().forEach {
                 it.updateSign()

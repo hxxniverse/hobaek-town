@@ -8,7 +8,7 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class EconomyFeature : BaseFeature {
-    override fun enable(plugin: JavaPlugin) {
+    override fun onEnable(plugin: JavaPlugin) {
         transaction {
             SchemaUtils.create(UserMoneys, Atms)
         }
@@ -17,7 +17,7 @@ class EconomyFeature : BaseFeature {
         EconomyCommand().register(plugin)
     }
 
-    override fun disable(plugin: JavaPlugin) {
+    override fun onDisable(plugin: JavaPlugin) {
 
     }
 }
