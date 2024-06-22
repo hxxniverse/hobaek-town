@@ -47,12 +47,12 @@ class AtmDepositUi : CustomInventory("Atm Deposit", 54) {
                     player.sendMessage("입금 완료: ${DecimalFormat("#,###").format(money)}원")
                 }
                 if (cashCoin > 0) {
-                    player.sendMessage("입금 완료: ${DecimalFormat("#,###").format(cashCoin)}캐시")
+                    player.sendMessage("입금 완료: ${DecimalFormat("#,###").format(cashCoin)}코인")
                 }
             }
         }
         onPlayerInventoryClick {
-            it.isCancelled = it.currentItem?.isPaperMoney() == false
+            it.isCancelled = it.currentItem?.isPaperMoney() == false && it.currentItem?.isCashCoin() == false
         }
     }
 }

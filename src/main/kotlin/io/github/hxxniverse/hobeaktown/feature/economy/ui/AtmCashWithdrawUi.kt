@@ -20,13 +20,13 @@ class AtmCashWithdrawUi {
 
     fun open(player: Player) {
         AnvilInventory(
-            title = "캐시 출금",
-            text = "캐시 출금 금액을 입력해주세요",
+            title = "코인 출금",
+            text = "금액을 입력해주세요",
             itemInputLeft = ItemStack(Material.PAPER).edit {
-                addLore("출금 금액을 입력해주세요.")
+                addLore("금액을 입력해주세요.")
             },
             itemOutput = ItemStack(Material.PAPER).edit {
-                addLore("클릭 시 캐시 출금이 완료됩니다.")
+                addLore("클릭 시 코인 출금이 완료됩니다.")
             },
             onClose = {
             },
@@ -43,7 +43,7 @@ class AtmCashWithdrawUi {
                 }
 
                 if (player.cash < cash) {
-                    player.sendMessage("캐시가 부족합니다.")
+                    player.sendMessage("코인가 부족합니다.")
                     return@AnvilInventory listOf(AnvilGUI.ResponseAction.replaceInputText("_"))
                 }
 
@@ -66,9 +66,9 @@ class AtmCashWithdrawUi {
                 player.cash -= cash
                 player.cash += withdrawMoney
                 player.inventory.addItem(*paperMoney.toTypedArray())
-                player.sendMessage("${DecimalFormat("#,###").format(cash)} 캐시를 출금하였습니다.")
+                player.sendMessage("${DecimalFormat("#,###").format(cash)} 코인을 출금하였습니다.")
                 if (withdrawMoney > 0) {
-                    player.sendMessage("${DecimalFormat("#,###").format(withdrawMoney)} 캐시는 다시 입금되었습니다.")
+                    player.sendMessage("${DecimalFormat("#,###").format(withdrawMoney)} 코인는 다시 입금되었습니다.")
                 }
 
                 return@AnvilInventory listOf(AnvilGUI.ResponseAction.close())

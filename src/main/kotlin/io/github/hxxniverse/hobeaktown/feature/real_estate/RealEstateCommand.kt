@@ -232,7 +232,7 @@ class RealEstateCommand : BaseCommand {
                     }
                 }
                 then("invite") {
-                    then("player" to player()) {
+                    then("target" to player()) {
                         executes {
                             transaction {
                                 val target: Player by it
@@ -250,19 +250,19 @@ class RealEstateCommand : BaseCommand {
                     }
                 }
                 then("kick") {
-                    then("player" to player()) {
+                    then("target" to player()) {
                         executes {
                             transaction {
-                                val player: Player by it
-                                val realEstate = RealEstate.all().find { it.isInside(player.location) }
+                                val target: Player by it
+                                val realEstate = RealEstate.all().find { it.isInside(target.location) }
 
                                 if (realEstate == null) {
-                                    text("해당 부지에 부동산이 존재하지 않습니다.").send(player)
+                                    text("해당 부지에 부동산이 존재하지 않습니다.").send(target)
                                     return@transaction
                                 }
 
-                                realEstate.kick(player, player)
-                                text("부동산을 성공적으로 추방하였습니다.").send(player)
+                                realEstate.kick(player, target)
+                                text("부동산을 성공적으로 추방하였습니다.").send(target)
                             }
                         }
                     }

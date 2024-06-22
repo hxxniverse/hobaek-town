@@ -16,6 +16,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.block.SignChangeEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
@@ -192,11 +193,13 @@ class RealEstateListener : Listener {
         val player = event.player
 
         if (!isAvailable(player, event.clickedBlock?.location ?: player.location)) {
+            println("권한이 없음")
             event.isCancelled = true
             return
         }
 
         // 권한이 없다면 이벤트 취소
+        println("권한이 있음")
     }
 
     @EventHandler
@@ -204,40 +207,52 @@ class RealEstateListener : Listener {
         val player = event.player
 
         if (!isAvailable(player, event.block.location)) {
+            println("권한이 없음")
             event.isCancelled = true
             return
         }
 
         // 권한이 없다면 이벤트 취소
+        println("권한이 있음")
     }
 
     @EventHandler
-    fun onBlockPlaceOnRealEstateWorldEvent(event: BlockBreakEvent) {
+    fun onBlockPlaceOnRealEstateWorldEvent(event: BlockPlaceEvent) {
         val player = event.player
 
         if (!isAvailable(player, event.block.location)) {
+            println("권한이 없음")
             event.isCancelled = true
             return
         }
 
         // 권한이 없다면 이벤트 취소
+        println("권한이 있음")
     }
 
     private fun isAvailable(player: Player, target: Location): Boolean {
         // 오피면 허용
         if (player.isOp) return true
+        println("오피는 아님")
 
         // 월드가 부동산 월드가 아니라면 허용
         if (!RealEstateConfig.configData.realEstateWorld.contains(player.world.name)) return true
+        println("부동산 월드임")
 
         // 내가 있는 영역이 부동산 영역이고 소유주가 나라면 허용
-        transaction {
-            RealEstate.find { RealEstates.owner eq player.uniqueId }.forEach {
-                if (it.isInside(target)) return@transaction true
-            }
-        }
+        return transaction {
+            // 보유중인 부동산 목록
+            val realEstates = RealEstate.find { RealEstates.owner eq player.uniqueId }.toList()
+            val belongsRealEstate =
+                RealEstateMember.find { RealEstateMembers.member eq player.uniqueId }.map { it.realEstate }.toList()
 
-        // 그 외에는 허용하지 않음
-        return false
+            listOf(realEstates, belongsRealEstate).flatten().forEach {
+                if (it.isInside(target)) {
+                    return@transaction true
+                }
+            }
+
+            return@transaction false
+        }
     }
 }

@@ -23,7 +23,7 @@ class AtmWithdrawUi {
             title = "출금",
             text = "출금 금액을 입력해주세요",
             itemInputLeft = ItemStack(Material.PAPER).edit {
-                addLore("출금 금액을 입력해주세요.")
+                addLore("금액을 입력해주세요.")
             },
             itemOutput = ItemStack(Material.PAPER).edit {
                 addLore("클릭 시 출금이 완료됩니다.")

@@ -5,6 +5,7 @@ import io.github.hxxniverse.hobeaktown.feature.economy.util.money
 import io.github.hxxniverse.hobeaktown.feature.real_estate.RealEstateMembers.expirationDate
 import io.github.hxxniverse.hobeaktown.util.database.location
 import io.github.hxxniverse.hobeaktown.util.extension.getBlockList
+import io.github.hxxniverse.hobeaktown.util.extension.pretty
 import io.github.hxxniverse.hobeaktown.util.extension.text
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -89,6 +90,8 @@ class RealEstate(id: EntityID<Int>) : IntEntity(id) {
     var rentEndDate by RealEstates.rentEndDate
     var signLocation by RealEstates.signLocation
 
+    val members by RealEstateMember referrersOn RealEstateMembers.realEstate
+
     val centerLocation: Location
         get() = Location(pos1.world, (pos1.x + pos2.x) / 2, (pos1.y + pos2.y) / 2, (pos1.z + pos2.z) / 2)
 
@@ -119,17 +122,17 @@ class RealEstate(id: EntityID<Int>) : IntEntity(id) {
         }
 
         armorStands.filter {
-            it.x == signLocation.clone().add(0.5, 0.0, 0.5).x && it.z == signLocation.clone().add(0.5, 0.0, 0.5).z
+            it.x == signLocation.clone().add(0.5, -0.5, 0.5).x && it.z == signLocation.clone().add(0.5, -0.5, 0.5).z
         }.forEach {
             it.passengers.forEach { passenger -> it.removePassenger(passenger) }
             it.remove()
         }.also {
             armorStands.removeAll {
-                it.x == signLocation.clone().add(0.5, 0.0, 0.5).x && it.z == signLocation.clone().add(0.5, 0.0, 0.5).z
+                it.x == signLocation.clone().add(0.5, -0.5, 0.5).x && it.z == signLocation.clone().add(0.5, -0.5, 0.5).z
             }
         }
 
-        signLocation.world.spawn(signLocation.clone().add(0.5, 0.0, 0.5), ArmorStand::class.java).apply {
+        signLocation.world.spawn(signLocation.clone().add(0.5, -0.5, 0.5), ArmorStand::class.java).apply {
             isVisible = false
             isCustomNameVisible = true
             customName = if (owner == null) "판매중" else "소유자: ${Bukkit.getOfflinePlayer(owner!!).name}"
@@ -137,7 +140,7 @@ class RealEstate(id: EntityID<Int>) : IntEntity(id) {
         }.also { armorStands.add(it) }
 
         if (type == RealEstateType.LAND) {
-            signLocation.world.spawn(signLocation.clone().add(0.5, -0.3, 0.5), ArmorStand::class.java).apply {
+            signLocation.world.spawn(signLocation.clone().add(0.5, -0.8, 0.5), ArmorStand::class.java).apply {
                 isVisible = false
                 isCustomNameVisible = true
                 customName = "토지등급: $grade"
@@ -148,7 +151,7 @@ class RealEstate(id: EntityID<Int>) : IntEntity(id) {
         // 여기서 만약 owner 가 null이 아니라면 Item 엔티티, PLAYER_SKULL 이고 owner 값은 owner 소환하고 armorStands 에 추가
         if (owner != null) {
             val headStand =
-                signLocation.world.spawn(signLocation.clone().add(0.5, 1.0, 0.5), ArmorStand::class.java).apply {
+                signLocation.world.spawn(signLocation.clone().add(0.5, 0.5, 0.5), ArmorStand::class.java).apply {
                     isVisible = false
                     isCustomNameVisible = false
                     setGravity(false)
@@ -172,10 +175,12 @@ class RealEstate(id: EntityID<Int>) : IntEntity(id) {
     // 해당 영토에 있는지 체크
     fun isInside(location: Location): Boolean = transaction {
         if (type == RealEstateType.LAND) {
-            return@transaction location.x in pos1.x..pos2.x && location.z in pos1.z..pos2.z
+            if (pos1.y == pos2.y) {
+                return@transaction location.x.toInt() in pos1.x.toInt()..pos2.x.toInt() && location.z.toInt() in pos1.z.toInt()..pos2.z.toInt()
+            }
         }
 
-        return@transaction location.x in pos1.x..pos2.x && location.y in pos1.y..pos2.y && location.z in pos1.z..pos2.z
+        return@transaction location.x.toInt() in pos1.x.toInt()..pos2.x.toInt() && location.y.toInt() in pos1.y.toInt()..pos2.y.toInt() && location.z.toInt() in pos1.z.toInt()..pos2.z.toInt()
     }
 
     fun isOwner(player: OfflinePlayer): Boolean = transaction {
@@ -213,6 +218,13 @@ class RealEstate(id: EntityID<Int>) : IntEntity(id) {
             player.sendMessage("소유하고 있지 않은 토지입니다.")
             return@transaction
         }
+
+        owner = null
+        rentStartDate = null
+        rentEndDate = null
+        grade = null
+
+        updateSign()
 
         player.money += price
         player.sendMessage("토지를 판매하였습니다.")

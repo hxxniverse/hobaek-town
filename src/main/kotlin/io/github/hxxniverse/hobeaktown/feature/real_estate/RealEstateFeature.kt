@@ -36,9 +36,9 @@ import org.jetbrains.exposed.sql.transactions.transaction
  *
  */
 class RealEstateFeature : BaseFeature {
-    override fun enable(plugin: JavaPlugin) {
+    override fun onEnable(plugin: JavaPlugin) {
         transaction {
-            SchemaUtils.create(RealEstates)
+            SchemaUtils.create(RealEstates, RealEstateMembers)
             RealEstate.all().forEach {
                 it.updateSign()
             }
@@ -48,7 +48,7 @@ class RealEstateFeature : BaseFeature {
         Bukkit.getPluginManager().registerEvents(RealEstateListener(), plugin)
     }
 
-    override fun disable(plugin: JavaPlugin) {
+    override fun onDisable(plugin: JavaPlugin) {
         armorStands.forEach {
             it.remove()
         }
