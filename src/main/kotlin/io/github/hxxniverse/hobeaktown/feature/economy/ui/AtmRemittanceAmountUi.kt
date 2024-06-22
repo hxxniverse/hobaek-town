@@ -13,8 +13,8 @@ class AtmRemittanceAmountUi(
 ) {
     fun open(player: Player) {
         AnvilInventory(
-            title = "보낼 금액을 입력해주세요",
-            text = "_",
+            title = "송금 금액 입력",
+            text = "송금하실 금액을 입력해주세요",
             itemInputLeft = ItemStack(Material.PAPER).edit {
                 addLore("보낼 금액을 입력해주세요.")
             },

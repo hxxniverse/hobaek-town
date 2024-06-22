@@ -20,8 +20,8 @@ class AtmWithdrawUi {
 
     fun open(player: Player) {
         AnvilInventory(
-            title = "출금 금액을 입력해주세요",
-            text = "_",
+            title = "출금",
+            text = "출금 금액을 입력해주세요",
             itemInputLeft = ItemStack(Material.PAPER).edit {
                 addLore("출금 금액을 입력해주세요.")
             },

@@ -12,8 +12,8 @@ class AtmRemittanceRecipientUi {
     fun open(player: Player) {
 
         AnvilInventory(
-            title = "보낼 사람을 입력해주세요",
-            text = "_",
+            title = "송금자 입력",
+            text = "보낼 사람을 입력해주세요",
             itemInputLeft = ItemStack(Material.PAPER).edit {
                 addLore("보낼 사람을 입력해주세요")
             },
