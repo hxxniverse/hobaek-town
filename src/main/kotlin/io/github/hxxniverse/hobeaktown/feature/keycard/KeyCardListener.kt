@@ -40,8 +40,9 @@ class KeyCardListener: Listener {
     @EventHandler
     fun onBlockPlace(event: BlockPlaceEvent) {
         if (event.block.type == Material.IRON_DOOR) {
-            val itemMeta: ItemMeta? = event.itemInHand.itemMeta;
-            if (itemMeta != null && itemMeta.persistentDataContainer.has(
+            val itemMeta: ItemMeta
+            = event.itemInHand.itemMeta ?: return;
+            if (itemMeta.persistentDataContainer.has(
                     NamespacedKey(plugin, "Name"),
                     PersistentDataType.STRING
                 )
@@ -74,10 +75,11 @@ class KeyCardListener: Listener {
 
         if (event.action == Action.RIGHT_CLICK_BLOCK) {
             val block = event.clickedBlock
+            val itemInHand = event.player.inventory.itemInMainHand
+
             if (block != null && block.type == Material.IRON_DOOR) {
-                val itemInHand = event.player.inventory.itemInMainHand
-                val itemMeta = itemInHand.itemMeta
-                if (itemInHand.type != Material.IRON_DOOR) {
+                if (itemInHand.type == Material.NETHER_STAR) {
+                    val itemMeta: ItemMeta = itemInHand.itemMeta ?: return
                     val name: String =
                         itemMeta.persistentDataContainer.get(
                             NamespacedKey(plugin, "Name"),
@@ -91,13 +93,13 @@ class KeyCardListener: Listener {
                                 openable.isOpen = !openable.isOpen
                                 state.blockData = openable
                                 state.update()
-                                event.player.sendMessage("문이 열렸습니다!")
+                                plugin.logger.info("문이 열렸습니다!")
                             }
                         } else {
-                            event.player.sendMessage("키카드가 맞지 않습니다.")
+                            plugin.logger.info("키카드가 맞지 않습니다.")
                         }
                     } catch (e: SQLException) {
-                        event.player.sendMessage("문을 여는 중 오류가 발생했습니다.")
+                        plugin.logger.info("문을 여는 중 오류가 발생했습니다.")
                         e.printStackTrace()
                     }
                 }
@@ -113,8 +115,8 @@ class KeyCardListener: Listener {
         }
         lastEventTime = currentTime
 
-        val itemMeta: ItemMeta? = event.player.inventory.itemInMainHand.itemMeta;
-        if(event.player.inventory.itemInMainHand.type == Material.NETHER_STAR && itemMeta != null) {
+        val itemMeta: ItemMeta = event.player.inventory.itemInMainHand.itemMeta ?: return;
+        if(event.player.inventory.itemInMainHand.type == Material.NETHER_STAR) {
             if(event.rightClicked.type == EntityType.PLAYER) {
                 val role = itemMeta.persistentDataContainer.get(
                     NamespacedKey(plugin, "Role"),
@@ -125,7 +127,7 @@ class KeyCardListener: Listener {
                 }
             }
         }
-        if(event.player.inventory.itemInMainHand.type == Material.BLAZE_ROD && itemMeta != null) {
+        if(event.player.inventory.itemInMainHand.type == Material.BLAZE_ROD) {
             if(event.rightClicked.type == EntityType.PLAYER) {
                 val role = itemMeta.persistentDataContainer.get(
                     NamespacedKey(plugin, "Role"),
