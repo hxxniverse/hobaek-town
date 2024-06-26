@@ -38,8 +38,10 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class RealEstateFeature : BaseFeature {
     override fun onEnable(plugin: JavaPlugin) {
         transaction {
-            SchemaUtils.drop(RealEstates)
-            SchemaUtils.create(RealEstates)
+            SchemaUtils.create(RealEstates, RealEstateMembers)
+            RealEstate.all().forEach {
+                it.updateSign()
+            }
         }
         RealEstateCommand().register(plugin)
         RealEstateConfig.load()
@@ -47,6 +49,9 @@ class RealEstateFeature : BaseFeature {
     }
 
     override fun onDisable(plugin: JavaPlugin) {
+        armorStands.forEach {
+            it.remove()
+        }
     }
 }
 

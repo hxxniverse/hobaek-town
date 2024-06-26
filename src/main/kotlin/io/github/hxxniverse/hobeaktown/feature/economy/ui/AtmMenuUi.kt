@@ -36,7 +36,7 @@ class AtmMenuUi : CustomInventory("Atm Menu", 54) {
             }
 
             button(
-                itemStack = icon { type = Material.YELLOW_STAINED_GLASS_PANE; name = text("캐시 출금") },
+                itemStack = icon { type = Material.YELLOW_STAINED_GLASS_PANE; name = text("코인 출금") },
                 from = 7 to 5,
                 to = 9 to 5,
             ) {

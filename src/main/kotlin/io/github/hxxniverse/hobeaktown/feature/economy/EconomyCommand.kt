@@ -5,10 +5,7 @@ import io.github.hxxniverse.hobeaktown.feature.economy.ui.AtmDepositUi
 import io.github.hxxniverse.hobeaktown.feature.economy.ui.AtmMenuUi
 import io.github.hxxniverse.hobeaktown.feature.economy.ui.AtmRemittanceRecipientUi
 import io.github.hxxniverse.hobeaktown.feature.economy.ui.AtmWithdrawUi
-import io.github.hxxniverse.hobeaktown.feature.economy.util.cash
-import io.github.hxxniverse.hobeaktown.feature.economy.util.money
-import io.github.hxxniverse.hobeaktown.feature.economy.util.setCashCoin
-import io.github.hxxniverse.hobeaktown.feature.economy.util.setPaperMoney
+import io.github.hxxniverse.hobeaktown.feature.economy.util.*
 import io.github.hxxniverse.hobeaktown.util.base.BaseCommand
 import io.github.hxxniverse.hobeaktown.util.extension.text
 import io.github.monun.kommand.getValue
@@ -86,7 +83,7 @@ class EconomyCommand : BaseCommand {
                                 .also(sender::sendMessage)
 
                             text(player.name)
-                                .append(text("님의 캐시: "))
+                                .append(text("님의 코인: "))
                                 .append(text(DecimalFormat("#,##0").format(player.cash)))
                                 .also(sender::sendMessage)
                         }
@@ -193,29 +190,19 @@ class EconomyCommand : BaseCommand {
                 }
                 then("set-item") {
                     then("currency" to dynamicByEnum(EnumSet.allOf(Currency::class.java))) {
-                        then("money" to int()) {
+                        then("money" to dynamicByEnum(EnumSet.allOf(AmountUnit::class.java))) {
                             executes {
                                 val currency: Currency by it
-                                val money: Int by it
+                                val money: AmountUnit by it
 
                                 if (currency == Currency.MONEY) {
-                                    if (money !in listOf(500, 1000, 10000, 100000, 1000000, 10000000, 100000000)) {
-                                        text("500, 1000, 10000, 100000, 1000000, 10000000, 100000000 중 하나를 입력해주세요.")
-                                            .also(sender::sendMessage)
-                                        return@executes
-                                    }
+                                    player.inventory.setItemInMainHand(
+                                        money.value.toPaperMoney(player.inventory.itemInMainHand.type)
+                                    )
                                 } else {
-                                    if (money !in listOf(500, 1000, 10000, 100000, 1000000)) {
-                                        text("500, 1000, 10000, 100000, 1000000 중 하나를 입력해주세요.")
-                                            .also(sender::sendMessage)
-                                        return@executes
-                                    }
-                                }
-
-                                if (currency == Currency.MONEY) {
-                                    player.inventory.itemInMainHand.setPaperMoney(money)
-                                } else {
-                                    player.inventory.itemInMainHand.setCashCoin(money)
+                                    player.inventory.setItemInMainHand(
+                                        money.value.toCashCoin(player.inventory.itemInMainHand.type)
+                                    )
                                 }
 
                                 text("아이템을 설정하였습니다.")
@@ -239,5 +226,11 @@ class EconomyCommand : BaseCommand {
 enum class Currency(
     val symbol: String,
 ) {
-    MONEY("돈"), CASH("캐시")
+    MONEY("돈"), CASH("코인")
+}
+
+enum class AmountUnit(
+    val value: Int
+) {
+    _500(500), _1000(1000), _10000(10000), _100000(100000), _1000000(1000000), _10000000(10000000), _100000000(100000000)
 }
