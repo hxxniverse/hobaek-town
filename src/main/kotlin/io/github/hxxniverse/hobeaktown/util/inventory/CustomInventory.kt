@@ -87,6 +87,10 @@ abstract class CustomInventory private constructor(
         type: InventoryType,
     ) : this(Bukkit.getServer().createInventory(null, type, Component.text(title)))
 
+    fun viewer(): List<Player> {
+        return inventory.viewers.filterIsInstance<Player>()
+    }
+
     fun inventory(block: () -> Unit) {
         content = block
     }
@@ -126,10 +130,10 @@ abstract class CustomInventory private constructor(
         setItem((index.second - 1) + (index.first - 1) * 9, itemStack)
     }
 
-    fun display(from: Pair<Int, Int>, to: Pair<Int, Int>, icon: Icon) {
+    fun display(from: Pair<Int, Int>, to: Pair<Int, Int>, icon: ItemStack) {
         for (i in from.first..to.first) {
             for (j in from.second..to.second) {
-                display(i to j, icon.build())
+                display(i to j, icon)
             }
         }
     }

@@ -9,6 +9,7 @@ import io.github.hxxniverse.hobeaktown.feature.randombox.RandomBoxFeature
 import io.github.hxxniverse.hobeaktown.feature.real_estate.RealEstateFeature
 import io.github.hxxniverse.hobeaktown.feature.stock.StockFeature
 import io.github.hxxniverse.hobeaktown.feature.user.UserFeature
+import io.github.hxxniverse.hobeaktown.feature.user_trade.UserTradeFeature
 import io.github.hxxniverse.hobeaktown.feature.vote.VoteFeature
 import io.github.hxxniverse.hobeaktown.sub_feature.PosSelectorFeature
 import io.github.hxxniverse.hobeaktown.util.extension.component
@@ -38,7 +39,8 @@ class HobeakTownPlugin : JavaPlugin() {
         DeliveryServiceFeature(),
         CouponFeature(),
         PosSelectorFeature(),
-        QuarryFeature()
+        QuarryFeature(),
+        UserTradeFeature()
     )
 
     override fun onEnable() {
