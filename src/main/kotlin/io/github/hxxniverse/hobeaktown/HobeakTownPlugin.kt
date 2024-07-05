@@ -4,11 +4,13 @@ import io.github.hxxniverse.hobeaktown.feature.coupon.CouponFeature
 import io.github.hxxniverse.hobeaktown.feature.delivery_service.DeliveryServiceFeature
 import io.github.hxxniverse.hobeaktown.feature.economy.EconomyFeature
 import io.github.hxxniverse.hobeaktown.feature.keycard.KeyCardFeature
+import io.github.hxxniverse.hobeaktown.feature.quarry.QuarryFeature
 import io.github.hxxniverse.hobeaktown.feature.randombox.RandomBoxFeature
 import io.github.hxxniverse.hobeaktown.feature.real_estate.RealEstateFeature
 import io.github.hxxniverse.hobeaktown.feature.stock.StockFeature
 import io.github.hxxniverse.hobeaktown.feature.user.UserFeature
 import io.github.hxxniverse.hobeaktown.feature.vote.VoteFeature
+import io.github.hxxniverse.hobeaktown.sub_feature.PosSelectorFeature
 import io.github.hxxniverse.hobeaktown.util.extension.component
 import io.github.monun.kommand.StringType
 import io.github.monun.kommand.getValue
@@ -34,7 +36,9 @@ class HobeakTownPlugin : JavaPlugin() {
         KeyCardFeature(),
         RandomBoxFeature(),
         DeliveryServiceFeature(),
-        CouponFeature()
+        CouponFeature(),
+        PosSelectorFeature(),
+        QuarryFeature()
     )
 
     override fun onEnable() {
