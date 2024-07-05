@@ -5,7 +5,7 @@ import io.github.hxxniverse.hobeaktown.feature.real_estate.ui.RealEstateCertific
 import io.github.hxxniverse.hobeaktown.util.coroutine.Hobeak
 import io.github.hxxniverse.hobeaktown.util.extension.getPersistentData
 import io.github.hxxniverse.hobeaktown.util.extension.pretty
-import io.github.hxxniverse.hobeaktown.util.extension.text
+import io.github.hxxniverse.hobeaktown.util.extension.component
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,7 +22,6 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Duration
-import kotlin.math.min
 
 class RealEstateListener : Listener {
     @EventHandler
@@ -152,8 +151,8 @@ class RealEstateListener : Listener {
                     }
                     player.showTitle(
                         Title.title(
-                            text(realEstate.grade?.name ?: ""),
-                            text("토지 등급을 결정중입니다."),
+                            component(realEstate.grade?.name ?: ""),
+                            component("토지 등급을 결정중입니다."),
                             Title.Times.times(Duration.ZERO, Duration.ofMillis(200), Duration.ZERO)
                         )
                     )
@@ -161,14 +160,13 @@ class RealEstateListener : Listener {
                 }
                 player.showTitle(
                     Title.title(
-                        text(realEstate.grade?.name ?: ""),
-                        text("토지 등급이 결정되었습니다."),
+                        component(realEstate.grade?.name ?: ""),
+                        component("토지 등급이 결정되었습니다."),
                         Title.Times.times(Duration.ZERO, Duration.ofMillis(2000), Duration.ZERO)
                     )
                 )
                 realEstate.saveScheme()
                 realEstate.updateSign()
-                println("saveScheme ${realEstate.pos1.pretty()} ~ ${realEstate.pos2.pretty()}")
             }
         }
     }
@@ -193,13 +191,9 @@ class RealEstateListener : Listener {
         val player = event.player
 
         if (!isAvailable(player, event.clickedBlock?.location ?: player.location)) {
-            println("권한이 없음")
             event.isCancelled = true
             return
         }
-
-        // 권한이 없다면 이벤트 취소
-        println("권한이 있음")
     }
 
     @EventHandler
@@ -207,13 +201,9 @@ class RealEstateListener : Listener {
         val player = event.player
 
         if (!isAvailable(player, event.block.location)) {
-            println("권한이 없음")
             event.isCancelled = true
             return
         }
-
-        // 권한이 없다면 이벤트 취소
-        println("권한이 있음")
     }
 
     @EventHandler
@@ -221,23 +211,17 @@ class RealEstateListener : Listener {
         val player = event.player
 
         if (!isAvailable(player, event.block.location)) {
-            println("권한이 없음")
             event.isCancelled = true
             return
         }
-
-        // 권한이 없다면 이벤트 취소
-        println("권한이 있음")
     }
 
     private fun isAvailable(player: Player, target: Location): Boolean {
         // 오피면 허용
         if (player.isOp) return true
-        println("오피는 아님")
 
         // 월드가 부동산 월드가 아니라면 허용
         if (!RealEstateConfig.configData.realEstateWorld.contains(player.world.name)) return true
-        println("부동산 월드임")
 
         // 내가 있는 영역이 부동산 영역이고 소유주가 나라면 허용
         return transaction {

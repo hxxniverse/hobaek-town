@@ -5,8 +5,7 @@ import io.github.hxxniverse.hobeaktown.feature.economy.util.money
 import io.github.hxxniverse.hobeaktown.feature.real_estate.RealEstateMembers.expirationDate
 import io.github.hxxniverse.hobeaktown.util.database.location
 import io.github.hxxniverse.hobeaktown.util.extension.getBlockList
-import io.github.hxxniverse.hobeaktown.util.extension.pretty
-import io.github.hxxniverse.hobeaktown.util.extension.text
+import io.github.hxxniverse.hobeaktown.util.extension.component
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -155,7 +154,7 @@ class RealEstate(id: EntityID<Int>) : IntEntity(id) {
                     isVisible = false
                     isCustomNameVisible = false
                     setGravity(false)
-                    customName(text(""))
+                    customName(component(""))
                 }.also { armorStands.add(it) }
 
             signLocation.world.spawn(signLocation, Item::class.java).apply {

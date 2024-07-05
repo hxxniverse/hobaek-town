@@ -4,7 +4,7 @@ import io.github.hxxniverse.hobeaktown.feature.stock.entity.Stock
 import io.github.hxxniverse.hobeaktown.feature.stock.entity.StockHistories
 import io.github.hxxniverse.hobeaktown.feature.stock.entity.StockHistory
 import io.github.hxxniverse.hobeaktown.util.ItemStackBuilder
-import io.github.hxxniverse.hobeaktown.util.extension.text
+import io.github.hxxniverse.hobeaktown.util.extension.component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -21,14 +21,14 @@ fun Stock.toItemStack(player: Player): ItemStack = transaction {
     // 상승 또는 하락 표시
     val arrow = if (isUp) "▲" else "▼"
     return@transaction ItemStackBuilder(material = Material.PAPER)
-        .setDisplayName(name.text())
+        .setDisplayName(name.component())
         .addLore("")
         .addLore(
-            text("가격: ").append(currentPriceStr.text(NamedTextColor.GOLD))
-                .append(" $arrow $beforePriceStr".text(if (isUp) NamedTextColor.RED else NamedTextColor.BLUE))
+            component("가격: ").append(currentPriceStr.component(NamedTextColor.GOLD))
+                .append(" $arrow $beforePriceStr".component(if (isUp) NamedTextColor.RED else NamedTextColor.BLUE))
         )
-        .addLore(text("남은갯수: ").append(remainingAmount.toString().text()))
-        .addLore(text("보유갯수: ").append((player.getStock(this@toItemStack)?.amount ?: 0).toString().text()))
+        .addLore(component("남은갯수: ").append(remainingAmount.toString().component()))
+        .addLore(component("보유갯수: ").append((player.getStock(this@toItemStack)?.amount ?: 0).toString().component()))
         .build()
 }
 
@@ -49,10 +49,10 @@ fun Stock.toGraphItemStack(): ItemStack = transaction {
                 val color = if (isHistoryUp) NamedTextColor.RED else NamedTextColor.BLUE
                 val decimalFormat = DecimalFormat("#,###")
 
-                (if (index == 0) "현재 " else "$index 시간 전 ").text(NamedTextColor.GRAY)
-                    .append(decimalFormat.format(stockHistory.price).text(NamedTextColor.GOLD))
-                    .append(" ${if (isHistoryUp) "▲" else "▼"} ".text(color))
-                    .append(decimalFormat.format(stockHistory.fluctuation).text(color))
+                (if (index == 0) "현재 " else "$index 시간 전 ").component(NamedTextColor.GRAY)
+                    .append(decimalFormat.format(stockHistory.price).component(NamedTextColor.GOLD))
+                    .append(" ${if (isHistoryUp) "▲" else "▼"} ".component(color))
+                    .append(decimalFormat.format(stockHistory.fluctuation).component(color))
                     .let { lore -> addLore(lore) }
             }
         }

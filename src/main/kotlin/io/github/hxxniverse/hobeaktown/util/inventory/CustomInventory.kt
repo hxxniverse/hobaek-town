@@ -12,17 +12,9 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.event.inventory.InventoryType
-import org.bukkit.inventory.AnvilInventory
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-
-fun icon(block: Icon.() -> Unit): ItemStack {
-    return Icon().apply(block).build()
-}
-
-fun icon(itemStack: ItemStack, block: Icon.() -> Unit): ItemStack {
-    return Icon().apply(block).build(itemStack)
-}
+import org.jetbrains.exposed.sql.transactions.transaction
 
 data class Icon(
     var type: Material = Material.BOOK,
@@ -48,6 +40,24 @@ data class Icon(
     }
 }
 
+data class Button private constructor(
+    var index: Int,
+    var itemStack: ItemStack,
+    var action: (InventoryClickEvent) -> Unit,
+) {
+    constructor(index: Pair<Int, Int>, itemStack: ItemStack, action: (InventoryClickEvent) -> Unit) : this(
+        (index.second - 1) + (index.first - 1) * 9,
+        itemStack,
+        action,
+    )
+
+    constructor(index: Pair<Int, Int>, itemStack: ItemStack) : this(
+        (index.second - 1) + (index.first - 1) * 9,
+        itemStack,
+        {},
+    )
+}
+
 abstract class CustomInventory private constructor(
     private val inventory: Inventory,
 ) : Listener {
@@ -56,6 +66,7 @@ abstract class CustomInventory private constructor(
     private val clickEvents: MutableMap<Int, (InventoryClickEvent) -> Unit> = mutableMapOf()
 
     companion object {
+        val BACKGROUND = ItemStackBuilder(Material.GRAY_STAINED_GLASS_PANE).setDisplayName("BACKGROUND").build()
         val PREVIOUS_PAGE = ItemStackBuilder(Material.OAK_SIGN).setDisplayName("PREVIOUS_PAGE").build()
         val NEXT_PAGE = ItemStackBuilder(Material.OAK_SIGN).setDisplayName("NEXT_PAGE").build()
         val CLOSE = ItemStackBuilder(Material.RED_WOOL).setDisplayName("CLOSE").build()
@@ -86,29 +97,60 @@ abstract class CustomInventory private constructor(
         }
     }
 
-    fun button(itemStack: ItemStack, index: Int, block: (InventoryClickEvent) -> Unit = {}) =
-        setItem(index, itemStack, block)
+    fun icon(block: Icon.() -> Unit = {}): ItemStack {
+        return Icon().apply(block).build()
+    }
 
-    fun button(itemStack: ItemStack, index: Pair<Int, Int>, block: (InventoryClickEvent) -> Unit = {}) =
-        setItem((index.first - 1) + (index.second - 1) * 9, itemStack, block)
+    fun icon(itemStack: ItemStack, block: Icon.() -> Unit = {}): ItemStack {
+        return Icon().apply(block).build(itemStack)
+    }
 
-    fun button(
+    fun item(
+        index: Pair<Int, Int>,
         itemStack: ItemStack,
-        from: Pair<Int, Int>,
-        to: Pair<Int, Int>,
         block: (InventoryClickEvent) -> Unit = {},
     ) {
+        setItem((index.second - 1) + (index.first - 1) * 9, itemStack, block)
+    }
+
+    fun button(index: Pair<Int, Int>, itemStack: ItemStack, block: (InventoryClickEvent) -> Unit = {}) =
+        setItem((index.second - 1) + (index.first - 1) * 9, itemStack, block)
+
+    fun empty(index: Pair<Int, Int>) {
+        setItem((index.second - 1) + (index.first - 1) * 9, null) {
+            it.isCancelled = false
+        }
+    }
+
+    fun display(index: Pair<Int, Int>, itemStack: ItemStack) {
+        setItem((index.second - 1) + (index.first - 1) * 9, itemStack)
+    }
+
+    fun display(from: Pair<Int, Int>, to: Pair<Int, Int>, icon: Icon) {
         for (i in from.first..to.first) {
             for (j in from.second..to.second) {
-                setItem((i - 1) + (j - 1) * 9, itemStack, block)
+                display(i to j, icon.build())
             }
         }
     }
 
-    fun emptySlot(itemStack: ItemStack, block: (InventoryClickEvent) -> Unit = {}) {
-        for (i in 0 until inventory.size) {
-            if (inventory.getItem(i) == null) {
-                setItem(i, itemStack, block)
+    fun empty(from: Pair<Int, Int>, to: Pair<Int, Int>) {
+        for (i in from.first..to.first) {
+            for (j in from.second..to.second) {
+                empty(i to j)
+            }
+        }
+    }
+
+    fun button(
+        from: Pair<Int, Int>,
+        to: Pair<Int, Int>,
+        itemStack: ItemStack,
+        block: (InventoryClickEvent) -> Unit = {},
+    ) {
+        for (i in from.first..to.first) {
+            for (j in from.second..to.second) {
+                button(i to j, itemStack, block)
             }
         }
     }
@@ -167,7 +209,7 @@ abstract class CustomInventory private constructor(
         InventoryOpenEvent.getHandlerList().unregister(this)
     }
 
-    open fun refreshContent() {
+    open fun update() {
         inventory.clear()
         clickEvents.clear()
         InventoryClickEvent.getHandlerList().unregister(this@CustomInventory)
@@ -187,20 +229,26 @@ abstract class CustomInventory private constructor(
         Bukkit.getScheduler().runTaskLater(plugin, Runnable { open(player) }, 1L)
     }
 
-    fun setItem(index: Int, itemStack: ItemStack?, onClick: (InventoryClickEvent) -> Unit = {}) {
+    private fun setItem(index: Int, itemStack: ItemStack?, onClick: (InventoryClickEvent) -> Unit = {}) {
         inventory.setItem(index, itemStack)
-        clickEvents[index] = onClick
+        clickEvents[index] = transaction { onClick }
     }
 
-    fun slot(index: Int, toItemStack: ItemStack, onClick: (InventoryClickEvent) -> Unit = {}) {
-        setItem(index, toItemStack, onClick)
+    fun getItem(index: Pair<Int, Int>): ItemStack? {
+        return inventory.getItem((index.second - 1) + (index.first - 1) * 9)
     }
 
-    fun slot(index: Pair<Int, Int>, toItemStack: ItemStack, onClick: (InventoryClickEvent) -> Unit = {}) {
-        setItem((index.first - 1) + (index.second - 1) * 9, toItemStack, onClick)
+    fun getItems(from: Pair<Int, Int>, to: Pair<Int, Int>): List<ItemStack?> {
+        val items = mutableListOf<ItemStack?>()
+        for (i in from.first..to.first) {
+            for (j in from.second..to.second) {
+                items.add(getItem(i to j))
+            }
+        }
+        return items
     }
 
     fun updateInventory() {
-        refreshContent()
+        update()
     }
 }

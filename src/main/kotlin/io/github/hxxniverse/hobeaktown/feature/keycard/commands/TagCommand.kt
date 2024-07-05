@@ -4,21 +4,16 @@ import io.github.hxxniverse.hobeaktown.feature.keycard.entity.Role
 import io.github.hxxniverse.hobeaktown.feature.keycard.entity.UserKeyCard
 import io.github.hxxniverse.hobeaktown.util.ItemStackBuilder
 import io.github.hxxniverse.hobeaktown.util.base.BaseCommand
-import io.github.hxxniverse.hobeaktown.util.edit
-import io.github.hxxniverse.hobeaktown.util.extension.text
+import io.github.hxxniverse.hobeaktown.util.extension.component
 import io.github.monun.kommand.StringType
 import io.github.monun.kommand.getValue
 import io.github.monun.kommand.kommand
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
-import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemFlag
-import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.SQLException
-import java.util.*
 
 class TagCommand() : BaseCommand {
     override fun register(plugin: JavaPlugin) {
@@ -67,13 +62,17 @@ class TagCommand() : BaseCommand {
                             if(Role.isExistsRole(role)){
                                 val netherStar = ItemStackBuilder()
                                     .setType(Material.NETHER_STAR)
-                                    .setDisplayName(text(role, NamedTextColor.BLUE).append(text(" 역할 등록", NamedTextColor.WHITE)))
+                                    .setDisplayName(
+                                        component(role, NamedTextColor.BLUE)
+                                            .append(component(" 역할 등록", NamedTextColor.WHITE)))
                                     .addPersistentData("RoleRegister", "true")
                                     .addPersistentData("Role", role)
                                     .build()
                                 player.inventory.setItemInMainHand(netherStar)
                                 player.sendMessage("'$role' 역할 등록 아이템이 지급되었습니다.")
-                            } else player.sendMessage(text(role, NamedTextColor.RED).append(text(" 역할이 등록되어 있지 않습니다.")))
+                            } else player.sendMessage(
+                                component(role, NamedTextColor.RED)
+                                    .append(component(" 역할이 등록되어 있지 않습니다.")))
                         }
                     }
                 }
@@ -85,13 +84,17 @@ class TagCommand() : BaseCommand {
                             if(Role.isExistsRole(role)){
                                 val blazeRod = ItemStackBuilder()
                                     .setType(Material.BLAZE_ROD)
-                                    .setDisplayName(text(role, NamedTextColor.RED).append(text(" 역할 취소", NamedTextColor.WHITE)))
+                                    .setDisplayName(
+                                        component(role, NamedTextColor.RED)
+                                            .append(component(" 역할 취소", NamedTextColor.WHITE)))
                                     .addPersistentData("RoleRegister", "true")
                                     .addPersistentData("Role", role)
                                     .build()
                                 player.inventory.setItemInMainHand(blazeRod)
                                 player.sendMessage("'$role' 역할 취소 아이템이 지급되었습니다.")
-                            } else player.sendMessage(text(role, NamedTextColor.RED).append(text(" 역할이 등록되어 있지 않습니다.")))
+                            } else player.sendMessage(
+                                component(role, NamedTextColor.RED)
+                                    .append(component(" 역할이 등록되어 있지 않습니다.")))
                         }
                     }
                 }

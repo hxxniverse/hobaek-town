@@ -10,13 +10,16 @@ class RealEstateCleanUi(
     init {
         inventory {
             // 5,2 - 정보
-            button(realEstate.toItemStack(), 5 to 2)
+            button(
+                2 to 5,
+                realEstate.toItemStack()
+            )
             // 2,3 ~ 3,3 - 취소
-            button(CANCEL, 2 to 3, 3 to 3) {
+            button(3 to 2, 3 to 3, CANCEL) {
                 player.closeInventory()
             }
             // 7,3 ~ 8,3 - 확인
-            button(CONFIRM, 7 to 3, 8 to 3) {
+            button(3 to 7, 3 to 8, CONFIRM) {
                 realEstate.clean()
             }
         }

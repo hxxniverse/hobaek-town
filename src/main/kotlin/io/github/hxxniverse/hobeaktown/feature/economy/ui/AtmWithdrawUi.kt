@@ -5,7 +5,6 @@ import io.github.hxxniverse.hobeaktown.feature.economy.util.toPaperMoney
 import io.github.hxxniverse.hobeaktown.util.AnvilInventory
 import io.github.hxxniverse.hobeaktown.util.edit
 import io.github.hxxniverse.hobeaktown.util.extension.hasSpace
-import io.github.hxxniverse.hobeaktown.util.extension.serialize
 import net.wesjd.anvilgui.AnvilGUI
 import org.bukkit.Material
 import org.bukkit.entity.Player

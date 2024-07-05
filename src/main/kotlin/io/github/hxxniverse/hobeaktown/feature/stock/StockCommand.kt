@@ -4,7 +4,7 @@ import io.github.hxxniverse.hobeaktown.feature.stock.entity.Stock
 import io.github.hxxniverse.hobeaktown.feature.stock.entity.Stocks
 import io.github.hxxniverse.hobeaktown.feature.stock.ui.StockStatusUi
 import io.github.hxxniverse.hobeaktown.util.base.BaseCommand
-import io.github.hxxniverse.hobeaktown.util.extension.text
+import io.github.hxxniverse.hobeaktown.util.extension.component
 import io.github.monun.kommand.KommandArgument.Companion.dynamic
 import io.github.monun.kommand.StringType
 import io.github.monun.kommand.getValue
@@ -157,7 +157,7 @@ fun stock() = dynamic(type = StringType.QUOTABLE_PHRASE) { _, input ->
         transaction {
             suggest(
                 candidates = Stock.find { Stocks.name like "$it%" }.map { it.name },
-                tooltip = { it.text() },
+                tooltip = { it.component() },
             )
         }
     }
