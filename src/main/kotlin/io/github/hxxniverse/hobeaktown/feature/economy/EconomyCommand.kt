@@ -7,7 +7,7 @@ import io.github.hxxniverse.hobeaktown.feature.economy.ui.AtmRemittanceRecipient
 import io.github.hxxniverse.hobeaktown.feature.economy.ui.AtmWithdrawUi
 import io.github.hxxniverse.hobeaktown.feature.economy.util.*
 import io.github.hxxniverse.hobeaktown.util.base.BaseCommand
-import io.github.hxxniverse.hobeaktown.util.extension.text
+import io.github.hxxniverse.hobeaktown.util.extension.component
 import io.github.monun.kommand.getValue
 import io.github.monun.kommand.kommand
 import io.github.monun.kommand.node.KommandNode
@@ -26,25 +26,25 @@ class EconomyCommand : BaseCommand {
                 requires { sender.isOp }
                 then("help") {
                     executes {
-                        text("ATM")
+                        component("ATM")
                             .also(sender::sendMessage)
-                        text("* /atm open - ATM을 엽니다.")
+                        component("* /atm open - ATM을 엽니다.")
                             .also(sender::sendMessage)
-                        text("* /atm remittance - 송금을 합니다.")
+                        component("* /atm remittance - 송금을 합니다.")
                             .also(sender::sendMessage)
-                        text("* /atm deposit - 입금을 합니다.")
+                        component("* /atm deposit - 입금을 합니다.")
                             .also(sender::sendMessage)
-                        text("* /atm withdraw - 출금을 합니다.")
+                        component("* /atm withdraw - 출금을 합니다.")
                             .also(sender::sendMessage)
-                        text("* /atm check [player] - 플레이어의 금액을 확인합니다.")
+                        component("* /atm check [player] - 플레이어의 금액을 확인합니다.")
                             .also(sender::sendMessage)
-                        text("* /atm block - ATM 블록을 설정합니다.")
+                        component("* /atm block - ATM 블록을 설정합니다.")
                             .also(sender::sendMessage)
-                        text("* /atm set [player] [money] - 플레이어의 금액을 설정합니다.")
+                        component("* /atm set [player] [money] - 플레이어의 금액을 설정합니다.")
                             .also(sender::sendMessage)
-                        text("* /atm give [player] [money] - 플레이어에게 금액을 지급합니다.")
+                        component("* /atm give [player] [money] - 플레이어에게 금액을 지급합니다.")
                             .also(sender::sendMessage)
-                        text("* /atm take [player] [money] - 플레이어의 금액을 차감합니다.")
+                        component("* /atm take [player] [money] - 플레이어의 금액을 차감합니다.")
                             .also(sender::sendMessage)
                     }
                 }
@@ -77,14 +77,14 @@ class EconomyCommand : BaseCommand {
                         executes {
                             val player: Player by it
 
-                            text(player.name)
-                                .append(text("님의 금액: "))
-                                .append(text(DecimalFormat("#,##0").format(player.money)))
+                            component(player.name)
+                                .append(component("님의 금액: "))
+                                .append(component(DecimalFormat("#,##0").format(player.money)))
                                 .also(sender::sendMessage)
 
-                            text(player.name)
-                                .append(text("님의 코인: "))
-                                .append(text(DecimalFormat("#,##0").format(player.cash)))
+                            component(player.name)
+                                .append(component("님의 코인: "))
+                                .append(component(DecimalFormat("#,##0").format(player.cash)))
                                 .also(sender::sendMessage)
                         }
                     }
@@ -95,7 +95,7 @@ class EconomyCommand : BaseCommand {
                         val block = player.getTargetBlock(null, 5)
 
                         if (block.type == Material.AIR) {
-                            text("블록을 찾을 수 없습니다.")
+                            component("블록을 찾을 수 없습니다.")
                                 .also(sender::sendMessage)
                             return@executes
                         }
@@ -105,12 +105,12 @@ class EconomyCommand : BaseCommand {
 
                             if (atm != null) {
                                 atm.delete()
-                                text("ATM 블록에서 제거되었습니다.")
+                                component("ATM 블록에서 제거되었습니다.")
                                     .also(sender::sendMessage)
                                 return@transaction
                             } else {
                                 Atm.create(block.location)
-                                text("ATM 블록으로 설정되었습니다.")
+                                component("ATM 블록으로 설정되었습니다.")
                                     .also(sender::sendMessage)
                             }
                         }
@@ -130,10 +130,10 @@ class EconomyCommand : BaseCommand {
                                         Currency.CASH -> player.cash = money
                                     }
 
-                                    text(player.name)
-                                        .append(text("님의 ${currency.symbol}을(를) "))
-                                        .append(text(DecimalFormat("#,##0").format(money)))
-                                        .append(text("로 변경되었습니다."))
+                                    component(player.name)
+                                        .append(component("님의 ${currency.symbol}을(를) "))
+                                        .append(component(DecimalFormat("#,##0").format(money)))
+                                        .append(component("로 변경되었습니다."))
                                         .also(sender::sendMessage)
                                 }
                             }
@@ -154,10 +154,10 @@ class EconomyCommand : BaseCommand {
                                         Currency.CASH -> player.cash += money
                                     }
 
-                                    text(player.name)
-                                        .append(text("님의 ${currency.symbol}을(를) "))
-                                        .append(text(DecimalFormat("#,##0").format(money)))
-                                        .append(text("만큼 지급시켰습니다."))
+                                    component(player.name)
+                                        .append(component("님의 ${currency.symbol}을(를) "))
+                                        .append(component(DecimalFormat("#,##0").format(money)))
+                                        .append(component("만큼 지급시켰습니다."))
                                         .also(sender::sendMessage)
                                 }
                             }
@@ -178,10 +178,10 @@ class EconomyCommand : BaseCommand {
                                         Currency.CASH -> player.cash -= money
                                     }
 
-                                    text(player.name)
-                                        .append(text("님의 ${currency.symbol}을(를) "))
-                                        .append(text(DecimalFormat("#,##0").format(money)))
-                                        .append(text("만큼 차감시켰습니다."))
+                                    component(player.name)
+                                        .append(component("님의 ${currency.symbol}을(를) "))
+                                        .append(component(DecimalFormat("#,##0").format(money)))
+                                        .append(component("만큼 차감시켰습니다."))
                                         .also(sender::sendMessage)
                                 }
                             }
@@ -205,7 +205,7 @@ class EconomyCommand : BaseCommand {
                                     )
                                 }
 
-                                text("아이템을 설정하였습니다.")
+                                component("아이템을 설정하였습니다.")
                                     .also(sender::sendMessage)
                             }
                         }
@@ -218,7 +218,7 @@ class EconomyCommand : BaseCommand {
     private fun KommandNode.currency() = dynamicByEnum(
         EnumSet.allOf(Currency::class.java),
         tooltip = {
-            it.name.text()
+            it.name.component()
         },
     )
 }

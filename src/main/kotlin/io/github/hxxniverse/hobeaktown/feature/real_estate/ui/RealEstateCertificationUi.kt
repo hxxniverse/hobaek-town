@@ -3,7 +3,7 @@ package io.github.hxxniverse.hobeaktown.feature.real_estate.ui
 import io.github.hxxniverse.hobeaktown.feature.real_estate.RealEstate
 import io.github.hxxniverse.hobeaktown.feature.real_estate.toItemStack
 import io.github.hxxniverse.hobeaktown.util.AnvilInventory
-import io.github.hxxniverse.hobeaktown.util.ItemStackBuilder
+import io.github.hxxniverse.hobeaktown.util.extension.component
 import io.github.hxxniverse.hobeaktown.util.inventory.CustomInventory
 import net.wesjd.anvilgui.AnvilGUI
 import org.bukkit.Bukkit
@@ -15,13 +15,28 @@ class RealEstateCertificationUi(
     init {
         inventory {
             // 5,2 - 정보
-            button(realEstate.toItemStack(), 5 to 2)
+            button(
+                2 to 5,
+                realEstate.toItemStack()
+            )
             // 2,3 - 판매
-            button(ItemStackBuilder(Material.RED_STAINED_GLASS_PANE).setDisplayName("판매").build(), 2 to 3) {
+            button(
+                3 to 2,
+                icon {
+                    type = Material.RED_STAINED_GLASS_PANE
+                    name = "판매".component()
+                }
+            ) {
                 RealEstateSellUi(realEstate).open(player)
             }
             // 5,3 - 양도
-            button(ItemStackBuilder(Material.GREEN_STAINED_GLASS_PANE).setDisplayName("양도").build(), 5 to 3) {
+            button(
+                3 to 5,
+                icon {
+                    type = Material.GREEN_STAINED_GLASS_PANE
+                    name = "양도".component()
+                }
+            ) {
                 AnvilInventory(
                     "양도하기",
                     "닉네임을 입력해주세요.",
@@ -50,7 +65,13 @@ class RealEstateCertificationUi(
                 ).open(player)
             }
             // 8,3 - 청소
-            button(ItemStackBuilder(Material.BLUE_STAINED_GLASS_PANE).setDisplayName("청소").build(), 8 to 3) {
+            button(
+                3 to 8,
+                icon {
+                    type = Material.BLUE_STAINED_GLASS_PANE
+                    name = "청소".component()
+                }
+            ) {
                 RealEstateCleanUi(realEstate).open(player)
             }
         }

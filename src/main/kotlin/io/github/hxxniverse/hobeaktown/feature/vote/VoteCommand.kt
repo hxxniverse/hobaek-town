@@ -5,7 +5,7 @@ import io.github.hxxniverse.hobeaktown.feature.vote.entity.VoteHistories
 import io.github.hxxniverse.hobeaktown.feature.vote.entity.VoteHistory
 import io.github.hxxniverse.hobeaktown.feature.vote.ui.VoteStatusUi
 import io.github.hxxniverse.hobeaktown.util.base.BaseCommand
-import io.github.hxxniverse.hobeaktown.util.extension.text
+import io.github.hxxniverse.hobeaktown.util.extension.component
 import io.github.monun.kommand.StringType
 import io.github.monun.kommand.getValue
 import io.github.monun.kommand.kommand
@@ -182,10 +182,10 @@ class VoteCommand : BaseCommand {
 
                                 vote.isVoting = false
 
-                                Bukkit.broadcast("${vote.question} 투표 결과".text())
+                                Bukkit.broadcast("${vote.question} 투표 결과".component())
                                 optionByCount.entries.sortedBy { (_, count) -> count }
                                     .forEach { (option, count) ->
-                                        Bukkit.broadcast("[${voteOptions[option]}] $count 득표".text())
+                                        Bukkit.broadcast("[${voteOptions[option]}] $count 득표".component())
                                     }
                             }
                         }
@@ -206,8 +206,8 @@ class VoteCommand : BaseCommand {
                             Bukkit.getOnlinePlayers().forEach { player ->
                                 player.showTitle(
                                     Title.title(
-                                        vote.question.text(),
-                                        "투표가 진행중입니다. 투표 해주세요".text(),
+                                        vote.question.component(),
+                                        "투표가 진행중입니다. 투표 해주세요".component(),
                                     )
                                 )
                             }

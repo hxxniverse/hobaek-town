@@ -5,7 +5,6 @@ import io.github.hxxniverse.hobeaktown.feature.fatigue.entity.Beds
 import io.github.hxxniverse.hobeaktown.util.ItemStackBuilder
 import io.github.hxxniverse.hobeaktown.util.base.BaseCommand
 import io.github.hxxniverse.hobeaktown.util.extension.send
-import io.github.hxxniverse.hobeaktown.util.extension.text
 import io.github.monun.kommand.getValue
 import io.github.monun.kommand.kommand
 import net.kyori.adventure.text.format.NamedTextColor
@@ -14,6 +13,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.transactions.transaction
+import io.github.hxxniverse.hobeaktown.util.extension.component
 
 class BedCommand : BaseCommand {
     override fun register(plugin: JavaPlugin) {
@@ -28,7 +28,7 @@ class BedCommand : BaseCommand {
                         |  /침대 생성 [침대 레벨] : Lv x 침대를 생성합니다.
                         |  /침대 설정 [침대 레벨] [주기(초)] [증가 피로도] : 특정 레벨의 침대의 피로도 증가/감소 수치를 변경합니다.
                         """.trimIndent().also {
-                            text(it).send(player)
+                            component(it).send(player)
                         }
                     }
                 }
@@ -41,7 +41,9 @@ class BedCommand : BaseCommand {
                                 val bedInfo = Bed.find { Beds.id eq level }.firstOrNull() ?: return@transaction
                                 val itemStack: ItemStack = ItemStackBuilder()
                                     .setType(Material.valueOf(bedInfo.color))
-                                    .setDisplayName(text("Lv ", getNamedTextColor(bedInfo.color)).append(text(level.toString(), getNamedTextColor(bedInfo.color)).append(text(" 침대"))))
+                                    .setDisplayName(component("Lv ", getNamedTextColor(bedInfo.color)).append(component(level.toString(), getNamedTextColor(bedInfo.color)).append(
+                                        component(" 침대")
+                                    )))
                                     .addPersistentData("cycle", bedInfo.cycle)
                                     .addPersistentData("fatigue", bedInfo.fatigue)
                                     .build()

@@ -3,9 +3,8 @@ package io.github.hxxniverse.hobeaktown.feature.vote.ui
 import io.github.hxxniverse.hobeaktown.feature.vote.entity.Vote
 import io.github.hxxniverse.hobeaktown.feature.vote.util.setBallot
 import io.github.hxxniverse.hobeaktown.util.edit
-import io.github.hxxniverse.hobeaktown.util.extension.text
+import io.github.hxxniverse.hobeaktown.util.extension.component
 import io.github.hxxniverse.hobeaktown.util.inventory.CustomInventory
-import io.github.hxxniverse.hobeaktown.util.inventory.icon
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
@@ -22,26 +21,26 @@ class VoteOptionSelectConfirmUi(
                 background(ItemStack(Material.GRAY_STAINED_GLASS_PANE))
 
                 button(
-                    itemStack = icon { type = Material.PAPER; name = vote.question.text() },
-                    from = 4 to 1, to = 6 to 1
+                    itemStack = icon { type = Material.PAPER; name = vote.question.component() },
+                    from = 1 to 4, to = 1 to 6
                 )
 
                 button(
-                    itemStack = icon { type = Material.PAPER; name = vote.options.split(",").filter { it.isNotEmpty() }[selected].text() },
-                    from = 4 to 3, to = 6 to 3
+                    itemStack = icon { type = Material.PAPER; name = vote.options.split(",").filter { it.isNotEmpty() }[selected].component() },
+                    from = 3 to 4, to = 3 to 6
                 )
 
                 button(
-                    itemStack = icon { type = Material.RED_STAINED_GLASS_PANE; name = "취소".text() },
-                    from = 1 to 5, to = 2 to 6
+                    itemStack = icon { type = Material.RED_STAINED_GLASS_PANE; name = "취소".component() },
+                    from = 5 to 1, to = 6 to 2
                 ) {
                     VoteOptionSelectUi(vote).open(it.whoClicked as Player)
 
                 }
 
                 button(
-                    itemStack = icon { type = Material.GREEN_STAINED_GLASS_PANE; name = "투표 완료".text() },
-                    from = 8 to 5, to = 9 to 6
+                    itemStack = icon { type = Material.GREEN_STAINED_GLASS_PANE; name = "투표 완료".component() },
+                    from = 5 to 8, to = 6 to 9
                 ) {
                     val player = it.whoClicked as Player
                     player.closeInventory()

@@ -9,7 +9,7 @@ import io.github.hxxniverse.hobeaktown.feature.stock.util.removeStock
 import io.github.hxxniverse.hobeaktown.util.AnvilInventory
 import io.github.hxxniverse.hobeaktown.util.edit
 import io.github.hxxniverse.hobeaktown.util.extension.send
-import io.github.hxxniverse.hobeaktown.util.extension.text
+import io.github.hxxniverse.hobeaktown.util.extension.component
 import net.wesjd.anvilgui.AnvilGUI
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -38,13 +38,13 @@ class StockTradeAmountUi(
                     try {
                         tradeStock(player, stock, amount)
                         if (tradeType == TradeType.BUY) {
-                            text(stock.name).append(text("을(를) $amount 주 구매하였습니다.")).send(player)
+                            component(stock.name).append(component("을(를) $amount 주 구매하였습니다.")).send(player)
                         } else {
-                            text(stock.name).append(text("을(를) $amount 주 판매하였습니다.")).send(player)
+                            component(stock.name).append(component("을(를) $amount 주 판매하였습니다.")).send(player)
                         }
                         return@transaction listOf(AnvilGUI.ResponseAction.close())
                     } catch (e: IllegalArgumentException) {
-                        text(e.message ?: "알 수 없는 오류가 발생하였습니다.").send(player)
+                        component(e.message ?: "알 수 없는 오류가 발생하였습니다.").send(player)
                         return@transaction listOf(AnvilGUI.ResponseAction.replaceInputText("_"))
                     }
                 }

@@ -6,14 +6,12 @@ import io.github.hxxniverse.hobeaktown.feature.keycard.entity.Role
 import io.github.hxxniverse.hobeaktown.feature.keycard.entity.Roles
 import io.github.hxxniverse.hobeaktown.util.ItemStackBuilder
 import io.github.hxxniverse.hobeaktown.util.base.BaseCommand
-import io.github.hxxniverse.hobeaktown.util.extension.text
+import io.github.hxxniverse.hobeaktown.util.extension.component
 import io.github.monun.kommand.getValue
 import io.github.monun.kommand.kommand
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
-import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemFlag
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.SQLException
@@ -81,7 +79,8 @@ class KeyCardCommand : BaseCommand {
                                 if(KeyCard.isExistsKeyName(name)) {
                                     val keyCardDoorItem = ItemStackBuilder()
                                         .setType(itemInHand.type)
-                                        .setDisplayName(text(name, NamedTextColor.BLUE).append(text(" 철문", NamedTextColor.WHITE)))
+                                        .setDisplayName(component(name, NamedTextColor.BLUE)
+                                            .append(component(" 철문", NamedTextColor.WHITE)))
                                         .addPersistentData("NameRegister", "true")
                                         .addPersistentData("Name", name)
                                         .build()
@@ -112,7 +111,8 @@ class KeyCardCommand : BaseCommand {
                                 if(KeyCard.isExistsKeyName(name)) {
                                     itemInHand = ItemStackBuilder()
                                         .setType(itemInHand.type)
-                                        .setDisplayName(text(name, NamedTextColor.BLUE).append(text(" 키카드", NamedTextColor.WHITE)))
+                                        .setDisplayName(component(name, NamedTextColor.BLUE)
+                                            .append(component(" 키카드", NamedTextColor.WHITE)))
                                         .addPersistentData("NameRegister", "true")
                                         .addPersistentData("Name", name)
                                         .build()

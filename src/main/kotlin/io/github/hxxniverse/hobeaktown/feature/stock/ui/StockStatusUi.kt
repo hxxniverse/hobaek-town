@@ -37,19 +37,19 @@ class StockStatusUi : CustomInventory("주식 상태", 54) {
             }
             val interval = PriceChangeTask.getLeftInterval() / 1000
             button(
+                3 to 5,
                 itemStack = ItemStackBuilder(Material.CLOCK)
                     .setDisplayName("다음 주가 업데이트 시간")
                     .addLore("다음 주가 업데이트까지 남은 시간: ${interval / 60}분 ${interval % 60}초")
                     .addLore("클릭 시 새로고침")
                     .build(),
-                index = 5 to 3,
             ) {
                 updateInventory()
             }
             if (stock.hasPreviousPage()) {
                 button(
+                    6 to 1,
                     itemStack = PREVIOUS_PAGE,
-                    index = 1 to 6,
                 ) {
                     stock.previousPage()
                     updateInventory()
@@ -57,8 +57,8 @@ class StockStatusUi : CustomInventory("주식 상태", 54) {
             }
             if (stock.hasNextPage()) {
                 button(
+                    6 to 9,
                     itemStack = NEXT_PAGE,
-                    index = 9 to 6,
                 ) {
                     stock.nextPage()
                     updateInventory()

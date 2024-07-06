@@ -4,7 +4,7 @@ import io.github.hxxniverse.hobeaktown.feature.real_estate.ui.RealEstateUi
 import io.github.hxxniverse.hobeaktown.util.base.BaseCommand
 import io.github.hxxniverse.hobeaktown.util.emptyLocation
 import io.github.hxxniverse.hobeaktown.util.extension.send
-import io.github.hxxniverse.hobeaktown.util.extension.text
+import io.github.hxxniverse.hobeaktown.util.extension.component
 import io.github.monun.kommand.StringType
 import io.github.monun.kommand.getValue
 import io.github.monun.kommand.kommand
@@ -41,7 +41,7 @@ class RealEstateCommand : BaseCommand {
                         |  /real-estate scheme : 부동산 스키마를 생성합니다.
                         |  /real-estate grade <grade> : 부동산 등급을 변경합니다.
                         """.trimIndent().also {
-                            text(it).send(player)
+                            component(it).send(player)
                         }
                     }
                 }
@@ -53,12 +53,12 @@ class RealEstateCommand : BaseCommand {
                                 RealEstate.find { RealEstates.signLocation eq targetBlockLocation }.firstOrNull()
 
                             if (realEstate == null) {
-                                text("해당 부지에 부동산이 존재하지 않습니다.").send(player)
+                                component("해당 부지에 부동산이 존재하지 않습니다.").send(player)
                                 return@transaction
                             }
 
                             realEstate.updateSign()
-                            text("부동산을 성공적으로 갱신하였습니다.").send(player)
+                            component("부동산을 성공적으로 갱신하였습니다.").send(player)
                         }
                     }
                 }
@@ -103,7 +103,7 @@ class RealEstateCommand : BaseCommand {
                         transaction {
                             val realEstate = RealEstate.all().find { it.isInside(player.location) }
                             if (realEstate == null) {
-                                text("해당 부지에 부동산이 존재하지 않습니다.").send(player)
+                                component("해당 부지에 부동산이 존재하지 않습니다.").send(player)
                                 return@transaction
                             }
                             val certificate = RealEstatesItem.REAL_ESTATE_CERTIFICATE(realEstate)
@@ -119,16 +119,16 @@ class RealEstateCommand : BaseCommand {
                                 val realEstate = RealEstate.all().find { it.isInside(player.location) }
 
                                 if (realEstate == null) {
-                                    text("해당 부지에 부동산이 존재하지 않습니다.").send(player)
+                                    component("해당 부지에 부동산이 존재하지 않습니다.").send(player)
                                     return@transaction
                                 }
 
                                 if (type == "save") {
                                     realEstate.saveScheme()
-                                    text("부동산 스키마를 성공적으로 생성하였습니다.").send(player)
+                                    component("부동산 스키마를 성공적으로 생성하였습니다.").send(player)
                                 } else if (type == "load") {
                                     realEstate.loadScheme()
-                                    text("부동산 스키마를 성공적으로 불러왔습니다.").send(player)
+                                    component("부동산 스키마를 성공적으로 불러왔습니다.").send(player)
                                 }
                             }
                         }
@@ -140,12 +140,12 @@ class RealEstateCommand : BaseCommand {
                             val realEstate = RealEstate.all().find { it.isInside(player.location) }
 
                             if (realEstate == null) {
-                                text("해당 부지에 부동산이 존재하지 않습니다.").send(player)
+                                component("해당 부지에 부동산이 존재하지 않습니다.").send(player)
                                 return@transaction
                             }
 
                             realEstate.sell(player)
-                            text("부동산을 성공적으로 판매하였습니다.").send(player)
+                            component("부동산을 성공적으로 판매하였습니다.").send(player)
                         }
                     }
                 }
@@ -157,12 +157,12 @@ class RealEstateCommand : BaseCommand {
                                 val realEstate = RealEstate.all().find { it.isInside(player.location) }
 
                                 if (realEstate == null) {
-                                    text("해당 부지에 부동산이 존재하지 않습니다.").send(player)
+                                    component("해당 부지에 부동산이 존재하지 않습니다.").send(player)
                                     return@transaction
                                 }
 
                                 realEstate.owner = target.uniqueId
-                                text("부동산을 성공적으로 양도하였습니다.").send(player)
+                                component("부동산을 성공적으로 양도하였습니다.").send(player)
                             }
                         }
                     }
@@ -175,13 +175,13 @@ class RealEstateCommand : BaseCommand {
                                 val realEstate = RealEstate.all().find { it.isInside(player.location) }
 
                                 if (realEstate == null) {
-                                    text("해당 부지에 부동산이 존재하지 않습니다.").send(player)
+                                    component("해당 부지에 부동산이 존재하지 않습니다.").send(player)
                                     return@transaction
                                 }
 
                                 realEstate.grade = grade
                                 realEstate.updateSign()
-                                text("부동산을 성공적으로 등급을 변경하였습니다.").send(player)
+                                component("부동산을 성공적으로 등급을 변경하였습니다.").send(player)
                             }
                         }
                     }
@@ -192,12 +192,12 @@ class RealEstateCommand : BaseCommand {
                             val realEstate = RealEstate.all().find { it.isInside(player.location) }
 
                             if (realEstate == null) {
-                                text("해당 부지에 부동산이 존재하지 않습니다.").send(player)
+                                component("해당 부지에 부동산이 존재하지 않습니다.").send(player)
                                 return@transaction
                             }
 
                             realEstate.clean()
-                            text("부동산을 성공적으로 청소하였습니다.").send(player)
+                            component("부동산을 성공적으로 청소하였습니다.").send(player)
                         }
                     }
                 }
@@ -207,7 +207,7 @@ class RealEstateCommand : BaseCommand {
                             val realEstate = RealEstate.all().find { it.isInside(player.location) }
 
                             if (realEstate == null) {
-                                text("해당 부지에 부동산이 존재하지 않습니다.").send(player)
+                                component("해당 부지에 부동산이 존재하지 않습니다.").send(player)
                                 return@transaction
                             }
 
@@ -221,13 +221,13 @@ class RealEstateCommand : BaseCommand {
                             val realEstate = RealEstate.all().find { it.isInside(player.location) }
 
                             if (realEstate == null) {
-                                text("해당 부지에 부동산이 존재하지 않습니다.").send(player)
+                                component("해당 부지에 부동산이 존재하지 않습니다.").send(player)
                                 return@transaction
                             }
 
-                            text("부동산 경계").send(player)
-                            text("pos1: ${realEstate.pos1}").send(player)
-                            text("pos2: ${realEstate.pos2}").send(player)
+                            component("부동산 경계").send(player)
+                            component("pos1: ${realEstate.pos1}").send(player)
+                            component("pos2: ${realEstate.pos2}").send(player)
                         }
                     }
                 }
@@ -239,12 +239,12 @@ class RealEstateCommand : BaseCommand {
                                 val realEstate = RealEstate.all().find { it.isInside(player.location) }
 
                                 if (realEstate == null) {
-                                    text("해당 부지에 부동산이 존재하지 않습니다.").send(player)
+                                    component("해당 부지에 부동산이 존재하지 않습니다.").send(player)
                                     return@transaction
                                 }
 
                                 realEstate.invite(player, target)
-                                text("부동산을 성공적으로 초대하였습니다.").send(player)
+                                component("부동산을 성공적으로 초대하였습니다.").send(player)
                             }
                         }
                     }
@@ -257,12 +257,12 @@ class RealEstateCommand : BaseCommand {
                                 val realEstate = RealEstate.all().find { it.isInside(target.location) }
 
                                 if (realEstate == null) {
-                                    text("해당 부지에 부동산이 존재하지 않습니다.").send(target)
+                                    component("해당 부지에 부동산이 존재하지 않습니다.").send(target)
                                     return@transaction
                                 }
 
                                 realEstate.kick(player, target)
-                                text("부동산을 성공적으로 추방하였습니다.").send(target)
+                                component("부동산을 성공적으로 추방하였습니다.").send(target)
                             }
                         }
                     }
@@ -274,17 +274,18 @@ class RealEstateCommand : BaseCommand {
                                 val realEstate = RealEstate.all().find { it.isInside(player.location) }
 
                                 if (realEstate == null) {
-                                    text("해당 부지에 부동산이 존재하지 않습니다.").send(player)
+                                    component("해당 부지에 부동산이 존재하지 않습니다.").send(player)
                                     return@transaction
                                 }
 
                                 if (realEstate.owner != player.uniqueId) {
-                                    text("부동산의 소유자만 부동산을 연장할 수 있습니다.").send(player)
+                                    component("부동산의 소유자만 부동산을 연장할 수 있습니다.")
+                                        .send(player)
                                     return@transaction
                                 }
 
                                 realEstate.extend(player)
-                                text("부동산을 성공적으로 연장하였습니다.").send(player)
+                                component("부동산을 성공적으로 연장하였습니다.").send(player)
                             }
                         }
                     }
@@ -299,12 +300,13 @@ class RealEstateCommand : BaseCommand {
                                     val realEstate = RealEstate.all().find { it.isInside(player.location) }
 
                                     if (realEstate == null) {
-                                        text("해당 부지에 부동산이 존재하지 않습니다.").send(player)
+                                        component("해당 부지에 부동산이 존재하지 않습니다.")
+                                            .send(player)
                                         return@transaction
                                     }
 
                                     realEstate.rent(player, player, price)
-                                    text("부동산을 성공적으로 대여하였습니다.").send(player)
+                                    component("부동산을 성공적으로 대여하였습니다.").send(player)
                                 }
                             }
                         }

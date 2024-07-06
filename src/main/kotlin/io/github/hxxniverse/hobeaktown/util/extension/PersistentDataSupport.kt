@@ -1,5 +1,6 @@
 package io.github.hxxniverse.hobeaktown.util.extension
 
+import io.github.hxxniverse.hobeaktown.HobeakTownPlugin.Companion.plugin
 import io.github.hxxniverse.hobeaktown.util.serializer.LocationSerializer
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromByteArray
@@ -16,53 +17,9 @@ import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.PluginClassLoader
 import kotlin.reflect.KProperty
 
-/**
- * [PersistentDataContainer] 을 확장하여 플러그인에 종속적인 영구 데이터를 사용할 수 있게 해줍니다.
- *
- * ```
- * fun ItemStack.addCustomData() {
- *   editMeta { meta ->
- *     meta.persistentDataSupport[CustomKeychain.customOption] = 10
- *     meta.persistentDataSupport["info"] = "Hello world!"
- *   }
- *
- * object CustomKeychain : PersistentDataKeychain() {
- *    val customOption = castPrimitive<Int>("custom_option")
- * }
- *
- * ```
- *
- * @see PersistentDataKey
- * @see PersistentDataKeychain
- *
- * @author Monun
- */
 @JvmInline
 value class PersistentDataSupport(val container: PersistentDataContainer) {
     companion object {
-
-        internal val plugin: Plugin
-
-        init {
-            val classLoader = PersistentDataSupport::class.java.classLoader
-
-            val plugin = if (classLoader is PluginClassLoader) { // shadowed
-                classLoader.plugin
-            } else { // library
-                val field = PluginClassLoader::class.java.declaredFields.find {
-                    ClassLoader::class.java.isAssignableFrom(it.type)
-                }!!.apply { isAccessible = true }
-
-                Bukkit.getPluginManager().plugins.find { plugin ->
-                    val pluginClassLoader = plugin.javaClass.classLoader
-                    val libraryLoader = field.get(pluginClassLoader)
-
-                    libraryLoader === classLoader
-                }
-            }
-
-            this.plugin = plugin ?: throw IllegalStateException("Cannot find plugin instance")
-        }
 
         /**
          * 자바 타입을 [PersistentDataType] 으로 변환합니다.

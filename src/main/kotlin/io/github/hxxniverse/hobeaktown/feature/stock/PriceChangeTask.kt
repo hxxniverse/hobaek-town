@@ -3,7 +3,7 @@ package io.github.hxxniverse.hobeaktown.feature.stock
 import io.github.hxxniverse.hobeaktown.feature.stock.entity.Stock
 import io.github.hxxniverse.hobeaktown.feature.stock.entity.StockHistory
 import io.github.hxxniverse.hobeaktown.util.BaseScheduler
-import io.github.hxxniverse.hobeaktown.util.extension.text
+import io.github.hxxniverse.hobeaktown.util.extension.component
 import org.bukkit.Bukkit
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -29,7 +29,7 @@ object PriceChangeTask : BaseScheduler(
                 if (it.currentPrice <= 0) {
                     it.currentPrice = -1
                     it.beforePrice = -1
-                    Bukkit.broadcast("${it.name}이 상장폐지 되었습니다.".text())
+                    Bukkit.broadcast("${it.name}이 상장폐지 되었습니다.".component())
                 }
                 transaction {
                     StockHistory.new(
@@ -40,7 +40,7 @@ object PriceChangeTask : BaseScheduler(
                 }
             }
         }
-        Bukkit.broadcast("주식 시장 가격이 변동되었습니다.".text())
+        Bukkit.broadcast("주식 시장 가격이 변동되었습니다.".component())
     }
 
     override fun onStop() {

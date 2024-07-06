@@ -5,7 +5,7 @@ import io.github.hxxniverse.hobeaktown.HobeakTownPlugin.Companion.plugin
 import io.github.hxxniverse.hobeaktown.feature.fatigue.entity.FatigueArea
 import io.github.hxxniverse.hobeaktown.feature.fatigue.scheduler.AreaFatigueScheduler
 import io.github.hxxniverse.hobeaktown.util.emptyLocation
-import io.github.hxxniverse.hobeaktown.util.extension.text
+import io.github.hxxniverse.hobeaktown.util.extension.component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Location
 import org.bukkit.NamespacedKey
@@ -18,7 +18,6 @@ import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.persistence.PersistentDataType
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class FatigueListener(
@@ -61,7 +60,7 @@ class FatigueListener(
                 )
             }
             player.inventory.setItemInMainHand(null)
-            player.sendMessage(text("구역이 정상적으로 지정되었습니다.", NamedTextColor.WHITE))
+            player.sendMessage(component("구역이 정상적으로 지정되었습니다.", NamedTextColor.WHITE))
         }
         return
     }
@@ -109,13 +108,13 @@ class FatigueListener(
             }
             newZone?.let {
                 val fatigueChange = if (it.isMinus) "감소" else "증가"
-                player.sendMessage(text("${it.name} 구역에 입장했습니다. 피로도가 ", NamedTextColor.WHITE)
-                    .append(text("${it.cycle}", NamedTextColor.BLUE))
-                    .append(text("분에 ", NamedTextColor.WHITE))
-                    .append(text("${it.fatigue}", NamedTextColor.RED))
-                    .append(text("만큼 ", NamedTextColor.WHITE))
-                    .append(text(fatigueChange, NamedTextColor.GOLD))
-                    .append(text("합니다", NamedTextColor.WHITE)))
+                player.sendMessage(component("${it.name} 구역에 입장했습니다. 피로도가 ", NamedTextColor.WHITE)
+                    .append(component("${it.cycle}", NamedTextColor.BLUE))
+                    .append(component("분에 ", NamedTextColor.WHITE))
+                    .append(component("${it.fatigue}", NamedTextColor.RED))
+                    .append(component("만큼 ", NamedTextColor.WHITE))
+                    .append(component(fatigueChange, NamedTextColor.GOLD))
+                    .append(component("합니다", NamedTextColor.WHITE)))
             }
             feature.playerZones[player] = newZone
             feature.lastChangeAreaTimes[player] = currentTime;

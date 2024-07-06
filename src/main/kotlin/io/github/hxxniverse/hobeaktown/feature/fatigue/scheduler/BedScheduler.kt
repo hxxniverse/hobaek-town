@@ -6,7 +6,7 @@ import io.github.hxxniverse.hobeaktown.feature.fatigue.entity.Beds
 import io.github.hxxniverse.hobeaktown.feature.fatigue.util.curFatigue
 import io.github.hxxniverse.hobeaktown.feature.fatigue.util.maxFatigue
 import io.github.hxxniverse.hobeaktown.util.BaseScheduler
-import io.github.hxxniverse.hobeaktown.util.extension.text
+import io.github.hxxniverse.hobeaktown.util.extension.component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.block.BlockFace
@@ -53,6 +53,6 @@ class BedScheduler(
         val newFatigue = (player.curFatigue + amount).coerceAtMost(player.maxFatigue)
         player.curFatigue = newFatigue
         player.sendMessage("침대에 머물러 피로도가 증가했습니다.")
-        player.sendMessage(text("현재 피로도: ", NamedTextColor.BLUE).append(text("${player.curFatigue}", NamedTextColor.WHITE)))
+        player.sendMessage(component("현재 피로도: ", NamedTextColor.BLUE).append(component("${player.curFatigue}", NamedTextColor.WHITE)))
     }
 }

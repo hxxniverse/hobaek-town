@@ -3,7 +3,7 @@ package io.github.hxxniverse.hobeaktown.feature.fatigue.scheduler
 import io.github.hxxniverse.hobeaktown.feature.fatigue.FatigueFeature
 import io.github.hxxniverse.hobeaktown.feature.fatigue.util.curFatigue
 import io.github.hxxniverse.hobeaktown.util.BaseScheduler
-import io.github.hxxniverse.hobeaktown.util.extension.text
+import io.github.hxxniverse.hobeaktown.util.extension.component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -41,6 +41,6 @@ class WalkFatigueScheduler(
     private fun decreaseFatigue(player: Player) {
         val newFatigue = (player.curFatigue - 1).coerceAtLeast(0)
         player.curFatigue = newFatigue
-        player.sendMessage(text("현재 피로도: ", NamedTextColor.BLUE).append(text("${player.curFatigue}", NamedTextColor.WHITE)))
+        player.sendMessage(component("현재 피로도: ", NamedTextColor.BLUE).append(component("${player.curFatigue}", NamedTextColor.WHITE)))
     }
 }

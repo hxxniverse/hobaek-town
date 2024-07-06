@@ -8,7 +8,7 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
-fun text(str: Any, color: NamedTextColor = NamedTextColor.WHITE): TextComponent {
+fun component(str: Any, color: NamedTextColor = NamedTextColor.WHITE): TextComponent {
     return Component.text(str.toString())
         .color(color)
         .decoration(TextDecoration.ITALIC, false)
@@ -18,12 +18,12 @@ fun Component.serialize(): String {
     return PlainTextComponentSerializer.plainText().serialize(this)
 }
 
-fun String.text(): Component {
-    return text(this)
+fun String.component(): Component {
+    return component(this)
 }
 
-fun String.text(color: NamedTextColor): Component {
-    return text(this).color(color)
+fun String.component(color: NamedTextColor): Component {
+    return component(this).color(color)
 }
 
 fun Component.appends(vararg components: Component): Component {

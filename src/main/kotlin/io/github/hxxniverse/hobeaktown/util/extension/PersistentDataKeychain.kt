@@ -1,5 +1,6 @@
 package io.github.hxxniverse.hobeaktown.util.extension
 
+import io.github.hxxniverse.hobeaktown.HobeakTownPlugin.Companion.plugin
 import io.github.hxxniverse.hobeaktown.util.serializer.LocationSerializer
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromByteArray
@@ -23,7 +24,7 @@ abstract class PersistentDataKeychain {
      * 지정된 이름과 타입으로 된 [PersistentDataKey] 를 생성합니다
      */
     protected fun <T, Z> cast(name: String, type: PersistentDataType<T, Z>): PersistentDataKey<T, Z> {
-        return PersistentDataKey(NamespacedKey(PersistentDataSupport.plugin, name), type)
+        return PersistentDataKey(NamespacedKey(plugin, name), type)
     }
 
     /**

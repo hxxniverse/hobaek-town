@@ -9,7 +9,7 @@ import io.github.hxxniverse.hobeaktown.util.ItemStackBuilder
 import io.github.hxxniverse.hobeaktown.util.base.BaseCommand
 import io.github.hxxniverse.hobeaktown.util.emptyLocation
 import io.github.hxxniverse.hobeaktown.util.extension.send
-import io.github.hxxniverse.hobeaktown.util.extension.text
+import io.github.hxxniverse.hobeaktown.util.extension.component
 import io.github.monun.kommand.StringType
 import io.github.monun.kommand.getValue
 import io.github.monun.kommand.kommand
@@ -40,7 +40,7 @@ class FatigueCommand : BaseCommand {
                         |  /피로도 아이템감소설정 [분] [피로도 수치]: 들고 있는 아이템이 [분]마다 [피로도 수치]만큼 피로도가 깎이도록 설정합니다.
                         |  /피로도 최대치추가 [추가량]: 명령어를 치는 유저의 피로도 최대치를 [추가량]만큼 증가시킵니다.
                         """.trimIndent().also {
-                            text(it).send(player)
+                            component(it).send(player)
                         }
                     }
                 }
@@ -134,10 +134,10 @@ class FatigueCommand : BaseCommand {
                                 val itemId = itemIdCounter++;
                                 val itemStack: ItemStack = ItemStackBuilder()
                                     .setType(itemInHand.type)
-                                    .setDisplayName(text(minute, NamedTextColor.BLUE)
-                                        .append(text("분마다 ", NamedTextColor.WHITE))
-                                        .append(text(fatigue, NamedTextColor.RED))
-                                        .append(text("씩 감소", NamedTextColor.WHITE)))
+                                    .setDisplayName(component(minute, NamedTextColor.BLUE)
+                                        .append(component("분마다 ", NamedTextColor.WHITE))
+                                        .append(component(fatigue, NamedTextColor.RED))
+                                        .append(component("씩 감소", NamedTextColor.WHITE)))
                                     .addPersistentData("id", itemId)
                                     .addPersistentData("cycle", minute)
                                     .addPersistentData("fatigue", fatigue)

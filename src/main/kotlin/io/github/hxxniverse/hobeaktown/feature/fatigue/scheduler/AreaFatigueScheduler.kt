@@ -4,7 +4,7 @@ import io.github.hxxniverse.hobeaktown.feature.fatigue.FatigueFeature
 import io.github.hxxniverse.hobeaktown.feature.fatigue.util.curFatigue
 import io.github.hxxniverse.hobeaktown.feature.fatigue.util.maxFatigue
 import io.github.hxxniverse.hobeaktown.util.BaseScheduler
-import io.github.hxxniverse.hobeaktown.util.extension.text
+import io.github.hxxniverse.hobeaktown.util.extension.component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -57,7 +57,7 @@ class AreaFatigueScheduler(
 
             val fatigueChange = if (isMinus) "감소" else "증가"
             player.sendMessage("해당 지역의 효과로 인해 피로도가 ${fatigueChange}했습니다.")
-            player.sendMessage(text("현재 피로도: ", NamedTextColor.BLUE).append(text("${player.curFatigue}", NamedTextColor.WHITE)))
+            player.sendMessage(component("현재 피로도: ", NamedTextColor.BLUE).append(component("${player.curFatigue}", NamedTextColor.WHITE)))
             feature.lastChangeAreaTimes[player] = System.currentTimeMillis()
         }
     }

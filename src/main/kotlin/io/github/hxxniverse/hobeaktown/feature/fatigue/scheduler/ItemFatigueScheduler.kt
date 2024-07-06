@@ -5,7 +5,7 @@ import io.github.hxxniverse.hobeaktown.feature.fatigue.FatigueFeature
 import io.github.hxxniverse.hobeaktown.feature.fatigue.config.UserItemFatigueData
 import io.github.hxxniverse.hobeaktown.feature.fatigue.util.curFatigue
 import io.github.hxxniverse.hobeaktown.util.BaseScheduler
-import io.github.hxxniverse.hobeaktown.util.extension.text
+import io.github.hxxniverse.hobeaktown.util.extension.component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
@@ -79,7 +79,7 @@ class ItemFatigueScheduler(
             val newFatigue = (player.curFatigue - fatigue).coerceAtLeast(0)
             player.curFatigue = newFatigue
             player.sendMessage("인벤토리의 아이템 효과로 인해 피로도가 감소했습니다.")
-            player.sendMessage(text("현재 피로도: ", NamedTextColor.BLUE).append(text("${player.curFatigue}", NamedTextColor.WHITE)))
+            player.sendMessage(component("현재 피로도: ", NamedTextColor.BLUE).append(component("${player.curFatigue}", NamedTextColor.WHITE)))
         }
     }
 
