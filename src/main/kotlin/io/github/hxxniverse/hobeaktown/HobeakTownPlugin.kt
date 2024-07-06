@@ -1,6 +1,7 @@
 package io.github.hxxniverse.hobeaktown
 
 import io.github.hxxniverse.hobeaktown.feature.economy.EconomyFeature
+import io.github.hxxniverse.hobeaktown.feature.fatigue.FatigueFeature
 import io.github.hxxniverse.hobeaktown.feature.keycard.KeyCardFeature
 import io.github.hxxniverse.hobeaktown.feature.real_estate.RealEstateFeature
 import io.github.hxxniverse.hobeaktown.feature.stock.StockFeature
@@ -23,7 +24,8 @@ class HobeakTownPlugin : JavaPlugin() {
         VoteFeature(),
         EconomyFeature(),
         RealEstateFeature(),
-        KeyCardFeature()
+        KeyCardFeature(),
+        FatigueFeature()
     )
 
     override fun onEnable() {
