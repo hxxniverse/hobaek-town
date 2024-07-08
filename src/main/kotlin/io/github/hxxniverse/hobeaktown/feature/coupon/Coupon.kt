@@ -1,6 +1,7 @@
 package io.github.hxxniverse.hobeaktown.feature.coupon
 
 import io.github.hxxniverse.hobeaktown.feature.user.User
+import io.github.hxxniverse.hobeaktown.feature.user.User.Companion.referrersOn
 import io.github.hxxniverse.hobeaktown.feature.user.Users
 import io.github.hxxniverse.hobeaktown.util.database.itemStack
 import org.jetbrains.exposed.dao.IntEntity

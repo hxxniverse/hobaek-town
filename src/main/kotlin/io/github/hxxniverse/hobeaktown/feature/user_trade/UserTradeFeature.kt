@@ -43,8 +43,9 @@ class UserTradeCommand : BaseCommand {
                         val target = UserTradeManager.getTrade(player)
                         if (target != null) {
                             UserTradeManager.accept(player)
-                            UserTradeUi(player, target).open(player)
-                            UserTradeUi(player, target).open(target)
+                            val tradeUi = UserTradeUi(player, target)
+                            tradeUi.open(player)
+                            tradeUi.open(target)
                         }
                     }
                 }
@@ -105,7 +106,7 @@ class UserTradeUi(
                 type = Material.PLAYER_HEAD
                 displayName = "거래 요청자".component()
                 skullMeta = skullMeta {
-                    playerProfile = player.playerProfile
+                    playerProfile = player1.playerProfile
                 }
             })
 
@@ -132,8 +133,9 @@ class UserTradeUi(
 
             // player1 거래 공간
             button(4 to 1, 5 to 4, ItemStack(Material.AIR)) {
+                it.isCancelled = true
+
                 if (player1.uniqueId == player.uniqueId) {
-                    it.isCancelled = true
                     return@button
                 }
 
@@ -145,14 +147,15 @@ class UserTradeUi(
                     // 아이템이 있으면 교환
                     val temp = it.currentItem
                     it.currentItem = it.cursor
-                    it.setCursor(ItemStack(Material.AIR))
+                    it.setCursor(temp)
                 }
             }
 
             // player2 거래 공간
             button(4 to 6, 5 to 9, ItemStack(Material.AIR)) {
+                it.isCancelled = true
+
                 if (player2.uniqueId == player.uniqueId) {
-                    it.isCancelled = true
                     return@button
                 }
 
@@ -162,9 +165,9 @@ class UserTradeUi(
                     it.setCursor(ItemStack(Material.AIR))
                 } else {
                     // 아이템이 있으면 교환
-                    val temp = it.currentItem
+                    val temp = it.currentItem?.clone()
                     it.currentItem = it.cursor
-                    it.setCursor(ItemStack(Material.AIR))
+                    it.setCursor(temp)
                 }
             }
 
@@ -181,6 +184,16 @@ class UserTradeUi(
                 type = Material.GREEN_STAINED_GLASS_PANE
                 displayName = "수락".component()
             }) {
+                if (player2TradeReady) {
+                    player1.sendMessage("거래가 성공적으로 완료되었습니다.")
+                    player2.sendMessage("거래가 성공적으로 완료되었습니다.")
+                    player1.closeInventory()
+                    player2.closeInventory()
+                    player2.inventory.addItem(*getItems(4 to 1, 5 to 4).filterNotNull().toTypedArray())
+                    player1.inventory.addItem(*getItems(4 to 6, 5 to 9).filterNotNull().toTypedArray())
+                    return@button
+                }
+
                 player1TradeReady = true
 
                 display(3 to 1, 3 to 4, icon = itemStack {
@@ -202,6 +215,16 @@ class UserTradeUi(
                 type = Material.GREEN_STAINED_GLASS_PANE
                 displayName = "수락".component()
             }) {
+                if (player1TradeReady) {
+                    player1.sendMessage("거래가 성공적으로 완료되었습니다.")
+                    player2.sendMessage("거래가 성공적으로 완료되었습니다.")
+                    player1.closeInventory()
+                    player2.closeInventory()
+                    player2.inventory.addItem(*getItems(4 to 1, 5 to 4).filterNotNull().toTypedArray())
+                    player1.inventory.addItem(*getItems(4 to 6, 5 to 9).filterNotNull().toTypedArray())
+                    return@button
+                }
+
                 player2TradeReady = true
 
                 display(3 to 6, 3 to 9, icon = itemStack {

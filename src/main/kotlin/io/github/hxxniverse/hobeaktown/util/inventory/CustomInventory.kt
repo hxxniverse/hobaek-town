@@ -66,7 +66,7 @@ abstract class CustomInventory private constructor(
     private val clickEvents: MutableMap<Int, (InventoryClickEvent) -> Unit> = mutableMapOf()
 
     companion object {
-        val BACKGROUND = ItemStackBuilder(Material.GRAY_STAINED_GLASS_PANE).setDisplayName("BACKGROUND").build()
+        val BACKGROUND = ItemStackBuilder(Material.BLACK_STAINED_GLASS_PANE).setDisplayName("").build()
         val PREVIOUS_PAGE = ItemStackBuilder(Material.OAK_SIGN).setDisplayName("PREVIOUS_PAGE").build()
         val NEXT_PAGE = ItemStackBuilder(Material.OAK_SIGN).setDisplayName("NEXT_PAGE").build()
         val CLOSE = ItemStackBuilder(Material.RED_WOOL).setDisplayName("CLOSE").build()

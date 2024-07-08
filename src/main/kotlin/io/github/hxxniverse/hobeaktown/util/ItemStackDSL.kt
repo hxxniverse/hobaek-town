@@ -49,7 +49,7 @@ class ItemStackDSL(
 
     fun build(): ItemStack {
         type?.let { itemStack.type = it }
-        skullMeta?.let { changedItemMeta = it.build(changedItemMeta) }
+        skullMeta?.let { changedItemMeta = it.build() }
         displayName?.let { changedItemMeta.displayName(it) }
         customModelData?.let { changedItemMeta.setCustomModelData(it) }
         amount?.let { itemStack.amount = it }
@@ -80,8 +80,8 @@ class SkullMetaDSL {
     var ownerProfile: OfflinePlayer? = null
     var noteBlockSound: NamespacedKey? = null
 
-    fun build(changedItemMeta: ItemMeta): SkullMeta {
-        changedItemMeta as SkullMeta
+    fun build(): SkullMeta {
+        val changedItemMeta = Bukkit.getItemFactory().getItemMeta(Material.PLAYER_HEAD) as SkullMeta
         playerProfile?.let { changedItemMeta.playerProfile = it }
         ownerProfile?.let { changedItemMeta.owningPlayer = it }
         noteBlockSound?.let { changedItemMeta.noteBlockSound = it }

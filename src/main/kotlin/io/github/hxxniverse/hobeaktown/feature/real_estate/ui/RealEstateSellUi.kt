@@ -18,6 +18,8 @@ class RealEstateSellUi(
             // 7,3 ~ 8,3 - 확인
             button(3 to 7, 3 to 8, CONFIRM) {
                 realEstate.sell(player)
+                player.closeInventory()
+                player.inventory.itemInMainHand.amount = 0
             }
         }
     }

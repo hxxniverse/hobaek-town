@@ -1,8 +1,10 @@
 package io.github.hxxniverse.hobeaktown.sub_feature
 
 import io.github.hxxniverse.hobeaktown.util.base.BaseFeature
+import io.github.hxxniverse.hobeaktown.util.extension.component
 import io.github.hxxniverse.hobeaktown.util.extension.pretty
 import io.github.hxxniverse.hobeaktown.util.itemStack
+import io.github.monun.kommand.kommand
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -17,6 +19,20 @@ import java.util.*
 class PosSelectorFeature : BaseFeature {
     override fun onEnable(plugin: JavaPlugin) {
         plugin.server.pluginManager.registerEvents(PosSelectorListener(), plugin)
+        plugin.kommand {
+            register("pos") {
+                then("selector") {
+                    executes {
+                        player.inventory.addItem(itemStack {
+                            type = Material.NETHER_STAR
+                            displayName = "위치 선택기".component()
+                            addPersistentData("posSelectItem", "posSelectItem")
+                        })
+                        player.sendMessage("§a위치 선택기를 지급하였습니다.")
+                    }
+                }
+            }
+        }
     }
 
     override fun onDisable(plugin: JavaPlugin) {
@@ -27,8 +43,8 @@ class PosSelectorFeature : BaseFeature {
 class PosSelectorListener : Listener {
 
     private val posSelectItem = itemStack {
-        setType(Material.NETHER_STAR)
-        setDisplayName("§e위치 선택기")
+        type = Material.NETHER_STAR
+        displayName = "위치 선택기".component()
         addPersistentData("posSelectItem", "posSelectItem")
     }
 
@@ -52,12 +68,13 @@ class PosSelectorListener : Listener {
                             )?.pretty() ?: "설정되지 않음"
                         }"
                     )
+                    event.isCancelled = true
                 }
 
                 Action.RIGHT_CLICK_BLOCK -> {
                     PosSelectManager.setPos2(player, event.clickedBlock!!.location)
                     player.sendMessage(
-                        "§a첫번째 위치를 설정하였습니다. pos1: ${
+                        "§a두번째 위치를 설정하였습니다. pos1: ${
                             PosSelectManager.getPos1(
                                 player
                             )?.pretty() ?: "설정되지 않음"
@@ -67,6 +84,7 @@ class PosSelectorListener : Listener {
                             )?.pretty() ?: "설정되지 않음"
                         }"
                     )
+                    event.isCancelled = true
                 }
 
                 else -> {

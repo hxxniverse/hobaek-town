@@ -4,6 +4,7 @@ import io.github.hxxniverse.hobeaktown.feature.randombox.entity.RandomBox
 import io.github.hxxniverse.hobeaktown.feature.randombox.entity.RandomBoxes
 import io.github.hxxniverse.hobeaktown.util.ItemStackBuilder
 import io.github.hxxniverse.hobeaktown.util.base.BaseCommand
+import io.github.hxxniverse.hobeaktown.util.edit
 import io.github.monun.kommand.getValue
 import io.github.monun.kommand.kommand
 import org.bukkit.Material
@@ -44,6 +45,8 @@ class RandomBoxCommand : BaseCommand {
                                         .addLore("§7좌클릭 하여 확률을 확인할 수 있습니다.")
                                         .build()
                                 }
+
+                                randomBox.itemStack = randomBox.itemStack.setRandomBox(randomBox)
 
                                 RandomBoxSetItemUi(randomBox).open(player)
                                 player.sendMessage("$randomBox 랜덤박스가 생성되었습니다.")

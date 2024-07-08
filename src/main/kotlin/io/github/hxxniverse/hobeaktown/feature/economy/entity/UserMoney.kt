@@ -1,6 +1,8 @@
 package io.github.hxxniverse.hobeaktown.feature.economy.entity
 
 import io.github.hxxniverse.hobeaktown.feature.economy.EconomyConfig
+import io.github.hxxniverse.hobeaktown.feature.user.User
+import io.github.hxxniverse.hobeaktown.feature.user.Users
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID

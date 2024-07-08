@@ -71,7 +71,7 @@ class RandomBoxItemListUi(
                     for (j in 2..5) {
                         if (items.size >= j - 1) {
                             button(j to i, items[j - 2].itemStack) {
-                                it.isCancelled = false
+                                it.isCancelled = true
                             }
                         } else {
                             empty(j to i)
@@ -79,6 +79,9 @@ class RandomBoxItemListUi(
                     }
                 }
             }
+        }
+        onPlayerInventoryClick {
+            it.isCancelled = true
         }
     }
 }

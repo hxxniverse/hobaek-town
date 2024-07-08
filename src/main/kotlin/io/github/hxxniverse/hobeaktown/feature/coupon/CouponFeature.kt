@@ -3,6 +3,8 @@ package io.github.hxxniverse.hobeaktown.feature.coupon
 import io.github.hxxniverse.hobeaktown.util.base.BaseFeature
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.transactions.transaction
 
 /**
  * 명령어 리스트 ( Command list )
@@ -15,6 +17,9 @@ import org.bukkit.plugin.java.JavaPlugin
  */
 class CouponFeature : BaseFeature {
     override fun onEnable(plugin: JavaPlugin) {
+        transaction {
+            SchemaUtils.create(Coupons, CouponItems, CouponUsages)
+        }
         CouponCommand().register(plugin)
     }
 
