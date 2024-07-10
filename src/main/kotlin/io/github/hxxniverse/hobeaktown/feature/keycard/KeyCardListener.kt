@@ -1,6 +1,7 @@
 package io.github.hxxniverse.hobeaktown.feature.keycard
 
 import io.github.hxxniverse.hobeaktown.HobeakTownPlugin.Companion.plugin
+import io.github.hxxniverse.hobeaktown.feature.fatigue.entity.UserFatigue
 import io.github.hxxniverse.hobeaktown.feature.keycard.entity.*
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
@@ -24,6 +25,11 @@ import java.util.*
 class KeyCardListener: Listener {
     private var lastEventTime: Long = 0
     private val EVENT_COOLDOWN: Long = 500
+
+    @EventHandler
+    fun playerJoin(event: PlayerJoinEvent) = transaction {
+        UserKeyCard.findOrCreate(event.player.uniqueId)
+    }
 
     @EventHandler
     fun onBlockPlace(event: BlockPlaceEvent) {

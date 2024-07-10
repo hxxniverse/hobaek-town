@@ -6,6 +6,8 @@ import io.github.hxxniverse.hobeaktown.feature.fatigue.entity.UserFatigue
 import io.github.hxxniverse.hobeaktown.feature.fatigue.entity.UserFatigues
 import io.github.hxxniverse.hobeaktown.feature.keycard.entity.Role
 import io.github.hxxniverse.hobeaktown.feature.keycard.entity.Roles
+import io.github.hxxniverse.hobeaktown.feature.keycard.entity.UserKeyCard
+import io.github.hxxniverse.hobeaktown.feature.keycard.entity.UserKeyCards
 import io.github.hxxniverse.hobeaktown.feature.stock.entity.UserStock
 import io.github.hxxniverse.hobeaktown.feature.stock.entity.UserStocks
 import org.bukkit.Bukkit
@@ -18,8 +20,8 @@ import java.util.*
 object Users : UUIDTable() {
     val name = varchar("name", 255)
     val money = reference("money", UserMoneys)
-    val fatigue = reference("fatigue", UserFatigues)
-    val role = reference("role", Roles)
+//    val fatigue = reference("fatigue", UserFatigues)
+//    val role = reference("role", UserKeyCards)
 }
 
 class User(id: EntityID<UUID>) : UUIDEntity(id) {
@@ -27,8 +29,8 @@ class User(id: EntityID<UUID>) : UUIDEntity(id) {
 
     var name by Users.name
     var money by UserMoney referencedOn Users.money
-    var fatigue by UserFatigue referencedOn  UserFatigues.curFatigue
-    var role by Role referencedOn  Roles.role
+//    var fatigue by UserFatigue referencedOn  UserFatigues.curFatigue
+//    var role by UserKeyCard referencedOn UserKeyCards.role
 
     val stock by UserStock referrersOn UserStocks.user
 

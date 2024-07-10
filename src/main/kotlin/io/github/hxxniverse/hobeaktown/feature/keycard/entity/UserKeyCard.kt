@@ -1,5 +1,7 @@
 package io.github.hxxniverse.hobeaktown.feature.keycard.entity
 
+import io.github.hxxniverse.hobeaktown.feature.fatigue.config.UserFatigueConfig
+import io.github.hxxniverse.hobeaktown.feature.fatigue.entity.UserFatigue
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -23,9 +25,12 @@ object UserKeyCards : UUIDTable() {
 
 class UserKeyCard(id: EntityID<UUID>) : UUIDEntity(id) {
     companion object : UUIDEntityClass<UserKeyCard>(UserKeyCards) {
-        @Throws(SQLException::class)
-        fun isExists(player: UUID): Boolean = transaction {
-            return@transaction UserKeyCard.find { UserKeyCards.id eq player }.firstOrNull() != null;
+        fun findOrCreate(id: UUID): UserKeyCard {
+            val role = Role.find { Roles.role eq "시민" }.firstOrNull()
+                ?: throw IllegalArgumentException("시민 역할이 등록되어있지 않습니다.")
+            return UserKeyCard.findById(id) ?: UserKeyCard.new(id) {
+                this.role = role.id
+            }
         }
         @Throws(SQLException::class)
         fun updateMemberRole(player: UUID, roleName: String) = transaction {
