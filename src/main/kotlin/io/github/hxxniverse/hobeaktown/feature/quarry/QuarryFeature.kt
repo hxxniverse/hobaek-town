@@ -4,6 +4,7 @@ import io.github.hxxniverse.hobeaktown.util.FeatureConfig
 import io.github.hxxniverse.hobeaktown.util.base.BaseFeature
 import io.github.hxxniverse.hobeaktown.util.database.location
 import io.github.hxxniverse.hobeaktown.util.edit
+import io.github.hxxniverse.hobeaktown.util.extension.component
 import io.github.hxxniverse.hobeaktown.util.extension.getPersistentData
 import io.github.hxxniverse.hobeaktown.util.itemStack
 import kotlinx.serialization.Contextual
@@ -18,6 +19,10 @@ import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.transactions.transaction
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * ### 기획
@@ -41,6 +46,9 @@ import org.jetbrains.exposed.dao.id.IntIdTable
  */
 class QuarryFeature : BaseFeature {
     override fun onEnable(plugin: JavaPlugin) {
+        transaction {
+            SchemaUtils.create(Quarries)
+        }
         QuarryCommand().register(plugin)
         Bukkit.getPluginManager().registerEvents(QuarryListener(), plugin)
     }
@@ -63,17 +71,17 @@ class Quarry(id: EntityID<Int>) : IntEntity(id) {
     var pos1 by Quarries.pos1
     var pos2 by Quarries.pos2
 
-    fun inQuarry(block: Block): Boolean {
-        return block.location in pos1 to pos2
+    fun inQuarry(block: Block): Boolean = transaction {
+        return@transaction block.location in pos1 to pos2
     }
 }
 
 private operator fun Pair<Location, Location>.contains(location: Location): Boolean {
     val (pos1, pos2) = this
     return location.world == pos1.world &&
-            location.blockX in pos1.blockX..pos2.blockX &&
-            location.blockY in pos1.blockY..pos2.blockY &&
-            location.blockZ in pos1.blockZ..pos2.blockZ
+            location.blockX in min(pos1.blockX, pos2.blockX)..max(pos1.blockX, pos2.blockX) &&
+            location.blockY in min(pos1.blockY, pos2.blockY)..max(pos1.blockY, pos2.blockY) &&
+            location.blockZ in min(pos1.blockZ, pos2.blockZ)..max(pos1.blockZ, pos2.blockZ)
 }
 
 object QuarryConfig : FeatureConfig<QuarryConfigData>(
@@ -104,14 +112,14 @@ data class QuarryMineralProbability(
 @Serializable
 data class QuarryUpgradeStone(
     val itemStack: @Contextual ItemStack = itemStack {
-        setType(Material.NETHER_STAR)
-        setDisplayName("강화석")
+        type = Material.NETHER_STAR
+        displayName = "강화석".component()
     },
     val chance: Double = 0.03
 )
 
-fun ItemStack.setPickForMining() {
-    edit { addPersistentData("isPickForMining", true) }
+fun ItemStack.setPickForMining(): ItemStack {
+    return edit { addPersistentData("isPickForMining", true) }
 }
 
 fun ItemStack.isPickForMining(): Boolean {

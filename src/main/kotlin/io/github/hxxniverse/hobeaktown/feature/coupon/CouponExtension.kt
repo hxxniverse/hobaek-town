@@ -1,6 +1,7 @@
 package io.github.hxxniverse.hobeaktown.feature.coupon
 
 import io.github.hxxniverse.hobeaktown.feature.user.User
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 
 fun User.useCoupon(coupon: Coupon) = transaction {
@@ -17,5 +18,5 @@ fun User.useCoupon(coupon: Coupon) = transaction {
 }
 
 fun User.canUseCoupon(coupon: Coupon): Boolean = transaction {
-    return@transaction CouponUsage.findById(coupon.id) == null
+    return@transaction CouponUsage.find { CouponUsages.user eq this@canUseCoupon.id and (CouponUsages.coupon eq coupon.id) }.empty()
 }

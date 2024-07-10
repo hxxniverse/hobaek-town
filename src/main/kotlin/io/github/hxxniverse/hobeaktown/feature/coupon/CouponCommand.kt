@@ -21,7 +21,7 @@ class CouponCommand : BaseCommand {
                     AnvilInventory(
                         title = "쿠폰 사용",
                         text = "쿠폰 이름을 입력하세요.",
-                        onClickRight = { state ->
+                        onClickResult = { state ->
                             transaction {
                                 val coupon = Coupon.find { Coupons.name eq state.text }.firstOrNull()
 
@@ -29,7 +29,7 @@ class CouponCommand : BaseCommand {
                                     return@transaction listOf(AnvilGUI.ResponseAction.replaceInputText("쿠폰이 존재하지 않습니다."))
                                 }
 
-                                if (player.user.canUseCoupon(coupon)) {
+                                if (!player.user.canUseCoupon(coupon)) {
                                     return@transaction listOf(AnvilGUI.ResponseAction.replaceInputText("이미 수령하셨습니다."))
                                 }
 
@@ -43,8 +43,8 @@ class CouponCommand : BaseCommand {
                     ).open(player)
                 }
                 then("create") {
-                    then("name" to string()) {
-                        then("expire_hour" to int()) {
+                    then("name" to string(StringType.QUOTABLE_PHRASE)) {
+                        then("expireHour" to int()) {
                             executes {
                                 transaction {
                                     val name: String by it

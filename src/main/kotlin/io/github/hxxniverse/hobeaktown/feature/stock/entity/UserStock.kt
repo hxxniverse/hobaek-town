@@ -1,13 +1,14 @@
 package io.github.hxxniverse.hobeaktown.feature.stock.entity
 
+import io.github.hxxniverse.hobeaktown.feature.user.User
+import io.github.hxxniverse.hobeaktown.feature.user.Users
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
-import java.util.*
 
 object UserStocks : IntIdTable() {
-    val uuid = uuid("uuid")
+    val user = reference("user", Users)
     val stockId = reference("stock_id", Stocks)
     val amount = integer("amount")
 }
@@ -15,17 +16,17 @@ object UserStocks : IntIdTable() {
 class UserStock(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<UserStock>(UserStocks) {
         fun new(
-            uuid: UUID,
+            user: User,
             stock: Stock,
             amount: Int,
         ) = UserStock.new {
-            this.uuid = uuid
+            this.user = user.id
             this.stock = stock
             this.amount = amount
         }
     }
 
-    var uuid by UserStocks.uuid
+    var user by UserStocks.user
     var stock by Stock referencedOn UserStocks.stockId
     var amount by UserStocks.amount
 }

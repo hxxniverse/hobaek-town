@@ -48,7 +48,7 @@ class QuarryCommand : BaseCommand {
                             }
 
                             if (!item.isPickForMining()) {
-                                item.setPickForMining()
+                                player.inventory.setItemInMainHand(item.setPickForMining())
                                 player.sendMessage("곡갱이가 등록되었습니다.")
                             } else {
                                 player.sendMessage("이미 등록된 곡갱이 입니다.")

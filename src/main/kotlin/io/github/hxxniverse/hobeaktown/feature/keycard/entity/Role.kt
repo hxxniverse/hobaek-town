@@ -33,6 +33,9 @@ class Role(id: EntityID<Int>): IntEntity(id) {
                 }
             }
         }
+        fun getId(role: String): EntityID<Int> = transaction {
+            return@transaction Role.find { Roles.role eq role }.first().id
+        }
     }
     var role by Roles.role
 }

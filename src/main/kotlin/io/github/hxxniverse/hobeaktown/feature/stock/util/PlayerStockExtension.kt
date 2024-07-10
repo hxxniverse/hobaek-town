@@ -1,19 +1,20 @@
 package io.github.hxxniverse.hobeaktown.feature.stock.util
 
 import io.github.hxxniverse.hobeaktown.feature.stock.entity.*
+import io.github.hxxniverse.hobeaktown.feature.user.user
 import org.bukkit.entity.Player
 import org.jetbrains.exposed.sql.and
 
-fun Player.getStocks() = UserStock.find { UserStocks.uuid eq uniqueId }.toList()
+fun Player.getStocks() = UserStock.find { UserStocks.user eq user.id }.toList()
 
 fun Player.getStock(stock: Stock) =
-    UserStock.find { (UserStocks.uuid eq uniqueId) and (UserStocks.stockId eq stock.id) }.firstOrNull()
+    UserStock.find { (UserStocks.user eq user.id) and (UserStocks.stockId eq stock.id) }.firstOrNull()
 
 fun Player.addStock(stock: Stock, amount: Int) {
     val playerStock = getStock(stock)
     if (playerStock == null) {
         UserStock.new(
-            uuid = uniqueId,
+            user = user,
             stock = stock,
             amount = amount,
         )

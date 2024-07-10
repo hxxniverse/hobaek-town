@@ -14,7 +14,7 @@ class AnvilInventory(
     itemOutput: ItemStack = ItemStack(Material.PAPER),
     onClose: (AnvilGUI.StateSnapshot) -> Unit = {},
     private val onClickLeft: (AnvilGUI.StateSnapshot) -> List<AnvilGUI.ResponseAction> = { emptyList() },
-    private val onClickRight: (AnvilGUI.StateSnapshot) -> Any = { emptyList() },
+    private val onClickRight: (AnvilGUI.StateSnapshot) -> List<AnvilGUI.ResponseAction> = { emptyList() },
     private val onClickResult: (AnvilGUI.StateSnapshot) -> List<AnvilGUI.ResponseAction> = { emptyList() },
 ) {
     private val builder: AnvilGUI.Builder = AnvilGUI.Builder()
