@@ -1,6 +1,10 @@
 package io.github.hxxniverse.hobeaktown.feature.user
 
 import io.github.hxxniverse.hobeaktown.feature.economy.entity.UserMoney
+import io.github.hxxniverse.hobeaktown.feature.fatigue.Status
+import io.github.hxxniverse.hobeaktown.feature.fatigue.entity.UserFatigue
+import io.github.hxxniverse.hobeaktown.feature.keycard.entity.Role
+import io.github.hxxniverse.hobeaktown.feature.keycard.entity.Roles
 import io.github.hxxniverse.hobeaktown.feature.stock.entity.UserStock
 import org.bukkit.entity.Player
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -12,6 +16,12 @@ val Player.user: User
             money = UserMoney.new {
                 money = 0
                 cash = 0
+            }
+            role = Role.find { Roles.role eq "시민" }.first()
+            fatigue = UserFatigue.new {
+                curFatigue = 100
+                maxFatigue = 100
+                status = Status.Normal.toString()
             }
         }
     }
