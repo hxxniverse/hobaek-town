@@ -10,14 +10,15 @@ import io.github.hxxniverse.hobeaktown.util.extension.component
 import io.github.monun.kommand.StringType
 import io.github.monun.kommand.getValue
 import io.github.monun.kommand.kommand
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
-@Suppress("CAST_NEVER_SUCCEEDS")
-class GradeCommand : BaseCommand {
+class SchoolCommand : BaseCommand {
+    private val lecture = mutableMapOf<Player, SchoolData>()
     override fun register(plugin: JavaPlugin) {
         plugin.kommand {
             register("학교") {
@@ -42,6 +43,7 @@ class GradeCommand : BaseCommand {
             }
             register("강의시작") {
                 requires { sender is Player }
+                executes { player.sendMessage("명령어 도우미: /학교 help") }
                 then("args" to string(StringType.GREEDY_PHRASE)) {
                     executes {
                         val args: String by it
@@ -49,16 +51,21 @@ class GradeCommand : BaseCommand {
                         val room = args.split(" ")[0]
                         val description = args.split(" ")[1]
 
-                        val studentRoleId = Role.getId("학생")
+                        if(lecture[sender as Player] != null) {
+                            sender.sendMessage("두 개 이상의 강의를 동시에 진행할 수 없습니다.")
+                            return@executes
+                        }
 
+                        val studentRoleId = Role.getId("학생")
                         val userKeyCardsForStudentRole = transaction {
                             UserKeyCard.find { UserKeyCards.role eq studentRoleId }.toList()
                         }
 
                         userKeyCardsForStudentRole.forEach { userKeyCard ->
-                            val player = Bukkit.getPlayer(userKeyCard.id as UUID)
+                            val userId = userKeyCard.id.value
+                            val player = Bukkit.getPlayer(userId as UUID) as Player
                             plugin.logger.info("학생 리스트: $player}")
-                            player?.sendMessage(
+                            player.sendMessage(
                                 component("----------[학교]----------").appendNewline()
                                     .append(component("10분뒤 강의가 시작됩니다.")).appendNewline()
                                     .append(component("강사 : ").append(component(sender.name)).appendNewline())
@@ -67,12 +74,14 @@ class GradeCommand : BaseCommand {
                                     .append(component("------------------------"))
                             )
                         }
+                        lecture[sender as Player] = SchoolData(room, description)
                     }
                 }
             }
             register("강의종료") {
                 requires { sender is Player }
                 executes {
+                    val curLecture = lecture[sender] ?: return@executes
                     val studentRole = transaction {
                         Role.find { Roles.role eq "학생" }.firstOrNull()
                     }
@@ -84,15 +93,58 @@ class GradeCommand : BaseCommand {
                     }
 
                     userKeyCardsForStudentRole?.forEach { userKeyCard ->
-                        val player = Bukkit.getPlayer(userKeyCard.id as UUID)
-                        player?.sendMessage(
+                        val userId = userKeyCard.id.value
+                        val player = Bukkit.getPlayer(userId as UUID) as Player
+                        player.sendMessage(
                             component("----------[학교]----------").appendNewline()
                                 .append(component("강의가 종료되었습니다.")).appendNewline()
-                                .append(component("강사 : ").append(component((sender.name)).appendNewline())
-//                                .append(component("강의실 : ").append(component(room)).appendNewline())
-//                                .append(component("강의내용 : ").append(component(description)).appendNewline())
-                                .append(component("------------------------")))
+                                .append(component("강사 : ").append(component((sender.name)).appendNewline()))
+                                .append(component("강의실 : ").append(component((curLecture.room)).appendNewline()))
+                                .append(component("강의내용 : ").append(component(curLecture.description)).appendNewline())
+                                .append(component("수고하셨습니다.")).appendNewline()
+                                .append(component("------------------------"))
                         )
+                    }
+                    lecture.remove(sender);
+                }
+            }
+            register("문제출제"){
+                requires { sender is Player }
+                executes { player.sendMessage("명령어 도우미: /학교 help") }
+                then("question" to string(StringType.QUOTABLE_PHRASE)){
+                    executes { player.sendMessage("명령어 도우미: /학교 help") }
+                    then("answer" to string(StringType.QUOTABLE_PHRASE)){
+                        executes {
+
+                        }
+                    }
+                }
+            }
+            register("학점"){
+                then("추가"){
+                    requires { sender.isOp }
+                    then("player" to player()){
+                        then("credit" to int()){
+                            executes {
+
+                            }
+                        }
+                    }
+                }
+                then("확인"){
+                    executes {
+                        player.sendMessage(component("현재 학점: ", NamedTextColor.BLUE).append(component("${player.curGrade}", NamedTextColor.WHITE)))
+                    }
+                }
+            }
+            register("졸업"){
+                executes {
+
+                }
+                then("관리"){
+                    requires { sender.isOp }
+                    executes {
+
                     }
                 }
             }

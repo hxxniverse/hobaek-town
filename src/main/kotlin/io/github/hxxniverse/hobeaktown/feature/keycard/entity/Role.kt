@@ -32,8 +32,12 @@ class Role(id: EntityID<Int>): IntEntity(id) {
                 }
             }
         }
-        fun getId(role: String): EntityID<Int> = transaction {
-            return@transaction Role.find { Roles.role eq role }.first().id
+        fun getId(role: String): Int {
+            return transaction {
+                val roleEntity = Role.find { Roles.role eq role }.firstOrNull()
+                    ?: error("역할 '$role'을(를) 찾을 수 없습니다.")
+                roleEntity.id.value
+            }
         }
     }
     var role by Roles.role

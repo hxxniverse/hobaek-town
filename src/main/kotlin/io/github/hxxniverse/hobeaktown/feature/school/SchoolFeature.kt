@@ -5,7 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin
 
 class SchoolFeature : BaseFeature {
     override fun onEnable(plugin: JavaPlugin) {
-        GradeCommand().register(plugin)
+        SchoolCommand().register(plugin)
     }
 
     override fun onDisable(plugin: JavaPlugin) {

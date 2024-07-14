@@ -4,6 +4,7 @@ import io.github.hxxniverse.hobeaktown.feature.fatigue.FatigueAreaSelection
 import io.github.hxxniverse.hobeaktown.feature.fatigue.config.AreaFatigueConfig
 import io.github.hxxniverse.hobeaktown.feature.fatigue.entity.FatigueArea
 import io.github.hxxniverse.hobeaktown.feature.fatigue.toItemStack
+import io.github.hxxniverse.hobeaktown.feature.fatigue.util.curFatigue
 import io.github.hxxniverse.hobeaktown.feature.fatigue.util.maxFatigue
 import io.github.hxxniverse.hobeaktown.util.ItemStackBuilder
 import io.github.hxxniverse.hobeaktown.util.base.BaseCommand
@@ -41,6 +42,13 @@ class FatigueCommand : BaseCommand {
                         |  /피로도 최대치추가 [추가량]: 명령어를 치는 유저의 피로도 최대치를 [추가량]만큼 증가시킵니다.
                         """.trimIndent().also {
                             component(it).send(player)
+                        }
+                    }
+                }
+                then("확인"){
+                    executes {
+                        transaction {
+                            player.sendMessage(component("현재 피로도: ", NamedTextColor.BLUE).append(component("${player.curFatigue}", NamedTextColor.WHITE)))
                         }
                     }
                 }
