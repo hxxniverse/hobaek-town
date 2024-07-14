@@ -2,6 +2,8 @@ package io.github.hxxniverse.hobeaktown.feature.user
 
 import io.github.hxxniverse.hobeaktown.feature.economy.entity.UserMoney
 import io.github.hxxniverse.hobeaktown.feature.economy.entity.UserMoneys
+import io.github.hxxniverse.hobeaktown.feature.keycard.entity.Role
+import io.github.hxxniverse.hobeaktown.feature.keycard.entity.Roles
 import io.github.hxxniverse.hobeaktown.feature.stock.entity.UserStock
 import io.github.hxxniverse.hobeaktown.feature.stock.entity.UserStocks
 import org.bukkit.Bukkit
@@ -14,6 +16,7 @@ import java.util.*
 object Users : UUIDTable() {
     val name = varchar("name", 255)
     val money = reference("money", UserMoneys)
+    val role = reference("role", Roles)
 }
 
 class User(id: EntityID<UUID>) : UUIDEntity(id) {
@@ -21,6 +24,7 @@ class User(id: EntityID<UUID>) : UUIDEntity(id) {
 
     var name by Users.name
     var money by UserMoney referencedOn Users.money
+    var role by Role referencedOn  Roles.role
 
     val stock by UserStock referrersOn UserStocks.user
 

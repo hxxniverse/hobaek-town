@@ -6,7 +6,6 @@ import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.block.data.Openable
 import org.bukkit.entity.EntityType
-import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
@@ -18,24 +17,13 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.persistence.PersistentDataType
 import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.SQLException
+import java.util.*
 
 class KeyCardListener: Listener {
     private var lastEventTime: Long = 0
     private val EVENT_COOLDOWN: Long = 500
-
-    @EventHandler
-    fun onPlayerJoin(event: PlayerJoinEvent) = transaction {
-        if(!UserKeyCard.isExists(event.player.uniqueId)){
-            val role = Role.find { Roles.role eq "시민" }.firstOrNull() ?: return@transaction;
-            UserKeyCard.new {
-                this.uuid = event.player.uniqueId.toString()
-                this.role = role.id;
-            }
-        }
-    }
 
     @EventHandler
     fun onBlockPlace(event: BlockPlaceEvent) {

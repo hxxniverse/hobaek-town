@@ -10,7 +10,6 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class KeyCardFeature : BaseFeature {
     override fun onEnable(plugin: JavaPlugin) {
-        plugin.logger.info("[키카드 플러그인] 키카드 역할 플러그인 시작")
         transaction {
             SchemaUtils.create(KeyCards, KeyCardDoors, Roles, UserKeyCards)
             Role.initialize()
@@ -22,7 +21,6 @@ class KeyCardFeature : BaseFeature {
     }
 
     override fun onDisable(plugin: JavaPlugin) {
-        plugin.logger.info("[키카드 플러그인] 키카드 역할 플러그인 종료")
     }
 }
 

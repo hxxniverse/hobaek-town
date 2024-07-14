@@ -24,7 +24,6 @@ class Role(id: EntityID<Int>): IntEntity(id) {
         }
         fun initialize() = transaction {
             val defaultRoles: Array<String> = arrayOf("시민", "경찰", "회사원", "은행원", "국회의원", "군인", "훈련병", "사업가", "VIP")
-//            val defaultRoles: Array<String> = arrayOf("citizen", "police", "employee", "banker", "national", "soldier", "trainee", "seller", "vip")
             defaultRoles.forEach { role ->
                 if (!isExistsRole(role)) {
                     Role.new {
@@ -32,6 +31,9 @@ class Role(id: EntityID<Int>): IntEntity(id) {
                     }
                 }
             }
+        }
+        fun getId(role: String): EntityID<Int> = transaction {
+            return@transaction Role.find { Roles.role eq role }.first().id
         }
     }
     var role by Roles.role
