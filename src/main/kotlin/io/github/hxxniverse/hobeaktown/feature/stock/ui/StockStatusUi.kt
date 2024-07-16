@@ -18,10 +18,10 @@ class StockStatusUi : CustomInventory("주식 상태", 54) {
             background(ItemStack(Material.GRAY_STAINED_GLASS_PANE))
             // 주식 상태 UI 구성
             val buttonAreas = listOf(
-                Pair(3, 1) to Pair(4, 2),
-                Pair(6, 1) to Pair(7, 2),
-                Pair(3, 4) to Pair(4, 5),
-                Pair(6, 4) to Pair(7, 5),
+                Pair(1, 3) to Pair(2, 4),
+                Pair(1, 6) to Pair(2, 7),
+                Pair(4, 3) to Pair(5, 4),
+                Pair(4, 6) to Pair(5, 7),
             )
             stock.getCurrentPage().forEachIndexed { index, stock ->
                 buttonAreas[index].let { (start, end) ->
@@ -49,7 +49,7 @@ class StockStatusUi : CustomInventory("주식 상태", 54) {
             if (stock.hasPreviousPage()) {
                 button(
                     6 to 1,
-                    itemStack = PREVIOUS_PAGE,
+                    itemStack = PREVIOUS_PAGE_ICON,
                 ) {
                     stock.previousPage()
                     updateInventory()
@@ -58,7 +58,7 @@ class StockStatusUi : CustomInventory("주식 상태", 54) {
             if (stock.hasNextPage()) {
                 button(
                     6 to 9,
-                    itemStack = NEXT_PAGE,
+                    itemStack = NEXT_PAGE_ICON,
                 ) {
                     stock.nextPage()
                     updateInventory()

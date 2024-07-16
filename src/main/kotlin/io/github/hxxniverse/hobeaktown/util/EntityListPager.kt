@@ -4,7 +4,7 @@ import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
-import org.jetbrains.exposed.sql.transactions.transaction
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 
 class EntityListPager<out T : Entity<Int>>(
     private val entityClass: EntityClass<Int, T>,
@@ -14,7 +14,7 @@ class EntityListPager<out T : Entity<Int>>(
     private var page = 0
 
     fun nextPage() {
-        if (transaction { entityClass.count() } <= limit * (page + 1)) return
+        if (loggedTransaction { entityClass.count() } <= limit * (page + 1)) return
         page++
     }
 
@@ -25,7 +25,7 @@ class EntityListPager<out T : Entity<Int>>(
     }
 
     fun get(page: Int): List<T> {
-        return transaction { entityClass.find(condition).limit(limit, page * limit.toLong()).toList() }
+        return loggedTransaction { entityClass.find(condition).limit(limit, page * limit.toLong()).toList() }
     }
 
     fun getCurrentPage(): List<T> {
@@ -37,7 +37,7 @@ class EntityListPager<out T : Entity<Int>>(
     }
 
     fun hasNextPage(): Boolean {
-        return transaction { entityClass.count() > limit * (page + 1) }
+        return loggedTransaction { entityClass.count() > limit * (page + 1) }
     }
 
     fun hasPreviousPage(): Boolean {

@@ -16,7 +16,6 @@ class RealEstateUi : CustomInventory("부동산", 27) {
         inventory {
             background(ItemStack(Material.GRAY_STAINED_GLASS_PANE))
             for (i in 0 until 7) {
-                println(realEstatePage)
                 val realEstates = realEstatePage.get(realEstatePage.getCurrentPageNumber())
                 if (i < realEstates.size) {
                     val realEstate = realEstates[i]
@@ -28,14 +27,14 @@ class RealEstateUi : CustomInventory("부동산", 27) {
 
             // 4,3 previous
             if (realEstatePage.hasPreviousPage()) {
-                button(3 to 4, PREVIOUS_PAGE) {
+                button(3 to 4, PREVIOUS_PAGE_ICON) {
                     realEstatePage.previousPage()
                 }
             }
 
             // 4,5 next
             if (realEstatePage.hasNextPage()) {
-                button(3 to 6, NEXT_PAGE) {
+                button(3 to 6, NEXT_PAGE_ICON) {
                     realEstatePage.nextPage()
                 }
             }

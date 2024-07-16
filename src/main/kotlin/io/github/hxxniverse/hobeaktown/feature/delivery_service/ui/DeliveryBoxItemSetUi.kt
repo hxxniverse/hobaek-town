@@ -2,10 +2,9 @@ package io.github.hxxniverse.hobeaktown.feature.delivery_service.ui
 
 import io.github.hxxniverse.hobeaktown.feature.delivery_service.entity.DeliveryBox
 import io.github.hxxniverse.hobeaktown.feature.delivery_service.entity.DeliveryBoxItem
-import io.github.hxxniverse.hobeaktown.feature.delivery_service.entity.DeliveryBoxes
 import io.github.hxxniverse.hobeaktown.feature.delivery_service.setDeliveryBox
 import io.github.hxxniverse.hobeaktown.util.inventory.CustomInventory
-import org.jetbrains.exposed.sql.transactions.transaction
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 
 class DeliveryBoxItemSetUi(
     deliveryBox: DeliveryBox
@@ -28,14 +27,14 @@ class DeliveryBoxItemSetUi(
             item(6 to 5, deliveryBox.boxItem)
 
             // 6,9 green stained glass pane
-            button(6 to 9, CONFIRM) {
+            button(6 to 9, CONFIRM_ICON) {
 
-                transaction {
+                loggedTransaction {
                     val newDeliveryBox = getItem(6 to 5)
 
                     if (newDeliveryBox == null) {
                         player.sendMessage("택배상자 아이템이 설정되지 않았습니다.")
-                        return@transaction
+                        return@loggedTransaction
                     }
 
                     deliveryBox.boxItem = newDeliveryBox.setDeliveryBox(deliveryBox)
@@ -48,7 +47,7 @@ class DeliveryBoxItemSetUi(
                     for (col in 2..8) {
                         val item = getItem(row to col) ?: continue
                         println("deliveryBoxItem: $item")
-                        transaction {
+                        loggedTransaction {
                             DeliveryBoxItem.new {
                                 this.box = deliveryBox
                                 this.item = item

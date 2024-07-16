@@ -2,12 +2,11 @@ package io.github.hxxniverse.hobeaktown.feature.delivery_service
 
 import io.github.hxxniverse.hobeaktown.feature.delivery_service.entity.DeliveryBoxItems
 import io.github.hxxniverse.hobeaktown.feature.delivery_service.entity.DeliveryBoxes
-import io.github.hxxniverse.hobeaktown.feature.delivery_service.entity.PlayerDeliveryBoxes
 import io.github.hxxniverse.hobeaktown.util.base.BaseFeature
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.transactions.transaction
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 
 /**
  * GUI 설명 ( GUI Explanation )
@@ -32,8 +31,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
  */
 class DeliveryServiceFeature : BaseFeature {
     override fun onEnable(plugin: JavaPlugin) {
-        transaction {
-            SchemaUtils.create(DeliveryBoxes, DeliveryBoxItems, PlayerDeliveryBoxes)
+        loggedTransaction {
+            SchemaUtils.create(DeliveryBoxes, DeliveryBoxItems)
         }
 
         DeliveryServiceCommand().register(plugin)

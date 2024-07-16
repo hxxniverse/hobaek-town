@@ -8,7 +8,9 @@ import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerInteractEvent
-import org.jetbrains.exposed.sql.transactions.transaction
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
+import io.github.hxxniverse.hobeaktown.util.extension.sendErrorMessage
+import io.github.hxxniverse.hobeaktown.util.extension.sendInfoMessage
 
 class VoteListener : Listener {
     @EventHandler
@@ -21,11 +23,11 @@ class VoteListener : Listener {
 
         if (item.type != Material.PAPER) return
 
-        val votingBooth = transaction {
+        val votingBooth = loggedTransaction {
             Vote.find { Votes.votingBoothLocation eq block.location }.firstOrNull()
         }
 
-        val voteBox = transaction {
+        val voteBox = loggedTransaction {
             Vote.find { Votes.voteBoxLocation eq block.location }.firstOrNull()
         }
 
@@ -33,8 +35,8 @@ class VoteListener : Listener {
 
         if (votingBooth != null) {
             // check already voted
-            if (transaction { vote.hasVoted(player.uniqueId) }) {
-                player.sendMessage("이미 투표하셨습니다.")
+            if (loggedTransaction { vote.hasVoted(player.uniqueId) }) {
+                player.sendErrorMessage("이미 투표하셨습니다.")
                 return
             }
             
@@ -45,20 +47,20 @@ class VoteListener : Listener {
         val ballot = item.getBallot() ?: return
 
         if (ballot.question != vote.question) {
-            player.sendMessage("해당 투표 용지는 이 투표에 사용할 수 없습니다.")
+            player.sendErrorMessage("해당 투표 용지는 이 투표에 사용할 수 없습니다.")
             return
         }
 
         // check already voted
-        if (transaction { vote.hasVoted(player.uniqueId) }) {
-            player.sendMessage("이미 투표하셨습니다.")
+        if (loggedTransaction { vote.hasVoted(player.uniqueId) }) {
+            player.sendErrorMessage("이미 투표하셨습니다.")
             return
         }
 
         item.amount = 0
-        transaction {
+        loggedTransaction {
             vote.vote(player.uniqueId, ballot.option)
         }
-        player.sendMessage("투표가 완료되었습니다.")
+        player.sendInfoMessage("투표가 완료되었습니다.")
     }
 }

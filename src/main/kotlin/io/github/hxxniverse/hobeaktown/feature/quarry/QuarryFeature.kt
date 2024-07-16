@@ -20,7 +20,7 @@ import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.transactions.transaction
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 import kotlin.math.max
 import kotlin.math.min
 
@@ -46,7 +46,7 @@ import kotlin.math.min
  */
 class QuarryFeature : BaseFeature {
     override fun onEnable(plugin: JavaPlugin) {
-        transaction {
+        loggedTransaction {
             SchemaUtils.create(Quarries)
         }
         QuarryCommand().register(plugin)
@@ -71,8 +71,8 @@ class Quarry(id: EntityID<Int>) : IntEntity(id) {
     var pos1 by Quarries.pos1
     var pos2 by Quarries.pos2
 
-    fun inQuarry(block: Block): Boolean = transaction {
-        return@transaction block.location in pos1 to pos2
+    fun inQuarry(block: Block): Boolean = loggedTransaction {
+        return@loggedTransaction block.location in pos1 to pos2
     }
 }
 
@@ -115,7 +115,7 @@ data class QuarryUpgradeStone(
         type = Material.NETHER_STAR
         displayName = "강화석".component()
     },
-    val chance: Double = 0.03
+    val chance: Double = 0.001
 )
 
 fun ItemStack.setPickForMining(): ItemStack {

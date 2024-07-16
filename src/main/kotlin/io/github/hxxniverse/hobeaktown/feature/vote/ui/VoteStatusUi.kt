@@ -8,14 +8,14 @@ import io.github.hxxniverse.hobeaktown.util.inventory.CustomInventory
 import org.bukkit.Material
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.transactions.transaction
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 
 class VoteStatusUi(
     private val vote: Vote,
 ) : CustomInventory(vote.question, 27) {
     init {
         inventory {
-            transaction {
+            loggedTransaction {
                 vote.options.split(",").forEachIndexed { index, option ->
                     display(1 to index, icon {
                         type = Material.PAPER

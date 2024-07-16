@@ -1,10 +1,10 @@
 package io.github.hxxniverse.hobeaktown.feature.keycard.entity
 
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import java.sql.SQLException
 import java.util.*
@@ -24,11 +24,12 @@ object UserKeyCards : UUIDTable() {
 class UserKeyCard(id: EntityID<UUID>) : UUIDEntity(id) {
     companion object : UUIDEntityClass<UserKeyCard>(UserKeyCards) {
         @Throws(SQLException::class)
-        fun isExists(player: UUID): Boolean = transaction {
-            return@transaction UserKeyCard.find { UserKeyCards.id eq player }.firstOrNull() != null;
+        fun isExists(player: UUID): Boolean = loggedTransaction {
+            return@loggedTransaction UserKeyCard.find { UserKeyCards.id eq player }.firstOrNull() != null;
         }
+
         @Throws(SQLException::class)
-        fun updateMemberRole(player: UUID, roleName: String) = transaction {
+        fun updateMemberRole(player: UUID, roleName: String) = loggedTransaction {
             val playerEntity = UserKeyCard.find { UserKeyCards.id eq player }.firstOrNull()
                 ?: throw SQLException("플레이어를 찾을 수 없습니다.")
 

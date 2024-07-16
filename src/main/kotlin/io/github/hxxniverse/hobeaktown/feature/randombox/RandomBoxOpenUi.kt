@@ -11,18 +11,18 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
-import org.jetbrains.exposed.sql.transactions.transaction
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 
 class RandomBoxOpenUi(
     private val randomBox: RandomBox
-) : CustomInventory("${randomBox.name} 아이템 설정", 54) {
+) : CustomInventory("", 54) {
 
     private var criteriaIndex = 0
     private var spinJob: Job? = null
 
     init {
         inventory {
-            transaction {
+            loggedTransaction {
                 background(BACKGROUND)
 
                 val randomBoxItems = RandomBoxItem.find { RandomBoxItems.randomBox eq randomBox.id }

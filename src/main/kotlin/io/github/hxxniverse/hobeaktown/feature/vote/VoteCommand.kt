@@ -5,14 +5,16 @@ import io.github.hxxniverse.hobeaktown.feature.vote.entity.VoteHistories
 import io.github.hxxniverse.hobeaktown.feature.vote.entity.VoteHistory
 import io.github.hxxniverse.hobeaktown.feature.vote.ui.VoteStatusUi
 import io.github.hxxniverse.hobeaktown.util.base.BaseCommand
+import io.github.hxxniverse.hobeaktown.util.command_help.help
 import io.github.hxxniverse.hobeaktown.util.extension.component
-import io.github.monun.kommand.StringType
-import io.github.monun.kommand.getValue
-import io.github.monun.kommand.kommand
 import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
-import org.jetbrains.exposed.sql.transactions.transaction
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
+import io.github.hxxniverse.hobeaktown.util.extension.sendErrorMessage
+import io.github.hxxniverse.hobeaktown.util.extension.sendInfoMessage
+import io.github.monun.kommand.*
+import io.github.monun.kommand.node.KommandNode
 
 class VoteCommand : BaseCommand {
     override fun register(plugin: JavaPlugin) {
@@ -21,16 +23,44 @@ class VoteCommand : BaseCommand {
                 requires { sender.isOp }
                 then("help") {
                     executes {
-                        sender.sendMessage("투표")
-                        sender.sendMessage("* /vote create [question] - \"투표 주제\" 를 생성합니다.")
-                        sender.sendMessage("* /vote option [id] add [option] - \"투표 주제\" 에 선택지를 추가합니다.")
-                        sender.sendMessage("* /vote option [id] remove [option] - \"투표 주제\" 에 선택지를 제거합니다.")
-                        sender.sendMessage("* /vote voting_booth [id] - 바라보는 블럭(100칸 이내)을 기표소로 설정합니다.")
-                        sender.sendMessage("* /vote vote_box [id] - 바라보는 블럭(100칸 이내)을 투표함으로 설정합니다.")
-                        sender.sendMessage("* /vote status [id] - 투표 상태를 확인합니다.")
-                        sender.sendMessage("* /vote result [id] - 투표 결과를 확인합니다.")
-                        sender.sendMessage("* /vote announcement [id] - 투표를 알립니다.")
-                        sender.sendMessage("* /vote reset [id] - 투표를 초기화합니다.")
+                        help("vote") {
+                            command("vote create <question>") {
+                                description = "투표 주제 생성"
+                            }
+                            command("vote option <id> add <option>") {
+                                description = "투표 주제에 선택지 추가"
+                            }
+                            command("vote option <id> remove <option>") {
+                                description = "투표 주제에 선택지 제거"
+                            }
+                            command("vote delete <id>") {
+                                description = "투표 주제 삭제"
+                            }
+                            command("vote list") {
+                                description = "투표 주제 목록"
+                            }
+                            command("vote start <id>") {
+                                description = "투표 시작"
+                            }
+                            command("vote voting_booth <id>") {
+                                description = "투표 부스 설정"
+                            }
+                            command("vote vote_box <id>") {
+                                description = "투표함 설정"
+                            }
+                            command("vote status <id>") {
+                                description = "투표 상태 확인"
+                            }
+                            command("vote result <id>") {
+                                description = "투표 결과 확인"
+                            }
+                            command("vote announcement <id>") {
+                                description = "투표 알림"
+                            }
+                            command("vote reset <id>") {
+                                description = "투표 초기화"
+                            }
+                        }
                     }
                 }
                 then("create") {
@@ -38,11 +68,11 @@ class VoteCommand : BaseCommand {
                         executes {
                             val question: String by it
 
-                            transaction {
+                            loggedTransaction {
                                 Vote.new(question, listOf())
                             }
 
-                            sender.sendMessage("투표 주제가 생성되었습니다.")
+                            sender.sendInfoMessage("투표 주제가 생성되었습니다.")
                         }
                     }
                 }
@@ -54,14 +84,7 @@ class VoteCommand : BaseCommand {
                                     val id: Int by it
                                     val option: String by it
 
-                                    transaction {
-                                        val vote = Vote.findById(id) ?: return@transaction
-                                        val options = vote.options.split(",").toMutableList()
-                                        options.add(option)
-                                        vote.options = options.filter { option -> option.isNotEmpty() }.joinToString(",")
-                                    }
-
-                                    sender.sendMessage("투표 옵션이 추가되었습니다.")
+                                    addVoteOption(id, option)
                                 }
                             }
                         }
@@ -72,14 +95,7 @@ class VoteCommand : BaseCommand {
                                     val id: Int by it
                                     val option: String by it
 
-                                    transaction {
-                                        val vote = Vote.findById(id) ?: return@transaction
-                                        val options = vote.options.split(",").toMutableList()
-                                        options.remove(option)
-                                        vote.options = options.joinToString(",")
-                                    }
-
-                                    sender.sendMessage("투표 옵션이 제거되었습니다.")
+                                    removeVoteOption(id, option)
                                 }
                             }
                         }
@@ -90,21 +106,13 @@ class VoteCommand : BaseCommand {
                         executes {
                             val id: Int by it
 
-                            transaction {
-                                Vote.findById(id)?.delete()
-                            }
-
-                            sender.sendMessage("투표 주제가 삭제되었습니다.")
+                            deleteVote(id)
                         }
                     }
                 }
                 then("list") {
                     executes {
-                        transaction {
-                            Vote.all().forEach { vote ->
-                                sender.sendMessage("${vote.id.value} : ${vote.question}")
-                            }
-                        }
+                        showVoteList()
                     }
                 }
                 then("start") {
@@ -112,13 +120,7 @@ class VoteCommand : BaseCommand {
                         executes {
                             val id: Int by it
 
-                            transaction {
-                                val vote = Vote.findById(id) ?: return@transaction
-
-                                vote.isVoting = true
-                            }
-
-                            sender.sendMessage("투표가 시작되었습니다.")
+                            startVote(id)
                         }
                     }
                 }
@@ -127,13 +129,7 @@ class VoteCommand : BaseCommand {
                         executes {
                             val id: Int by it
 
-                            transaction {
-                                val vote = Vote.findById(id) ?: return@transaction
-
-                                vote.votingBoothLocation = player.getTargetBlock(null, 100).location
-                            }
-
-                            sender.sendMessage("투표 부스가 설정되었습니다.")
+                            setVotingBooth(id)
                         }
                     }
                 }
@@ -142,13 +138,7 @@ class VoteCommand : BaseCommand {
                         executes {
                             val id: Int by it
 
-                            transaction {
-                                val vote = Vote.findById(id) ?: return@transaction
-
-                                vote.voteBoxLocation = player.getTargetBlock(null, 100).location
-                            }
-
-                            sender.sendMessage("투표함이 설정되었습니다.")
+                            setVoteBox(id)
                         }
                     }
                 }
@@ -157,14 +147,7 @@ class VoteCommand : BaseCommand {
                         executes {
                             val id: Int by it
 
-                            val vote = transaction { Vote.findById(id) }
-
-                            if (vote == null) {
-                                sender.sendMessage("투표가 존재하지 않습니다.")
-                                return@executes
-                            }
-
-                            VoteStatusUi(vote).open(player)
+                            openVoteStatusUi(id)
                         }
                     }
                 }
@@ -173,21 +156,7 @@ class VoteCommand : BaseCommand {
                         executes {
                             val id: Int by it
 
-                            transaction {
-                                val vote = Vote.findById(id) ?: return@transaction
-                                val voteOptions = vote.options.split(",")
-                                val histories = VoteHistory.find { VoteHistories.vote eq vote.id }.toList()
-                                val optionByCount = histories.groupBy { history -> history.option }
-                                    .mapValues { (_, histories) -> histories.size }
-
-                                vote.isVoting = false
-
-                                Bukkit.broadcast("${vote.question} 투표 결과".component())
-                                optionByCount.entries.sortedBy { (_, count) -> count }
-                                    .forEach { (option, count) ->
-                                        Bukkit.broadcast("[${voteOptions[option]}] $count 득표".component())
-                                    }
-                            }
+                            stopVoteResultUi(id)
                         }
                     }
                 }
@@ -196,21 +165,7 @@ class VoteCommand : BaseCommand {
                         executes {
                             val id: Int by it
 
-                            val vote = transaction { Vote.findById(id) }
-
-                            if (vote == null) {
-                                sender.sendMessage("투표가 존재하지 않습니다.")
-                                return@executes
-                            }
-
-                            Bukkit.getOnlinePlayers().forEach { player ->
-                                player.showTitle(
-                                    Title.title(
-                                        vote.question.component(),
-                                        "투표가 진행중입니다. 투표 해주세요".component(),
-                                    )
-                                )
-                            }
+                            announceVote(id)
                         }
                     }
                 }
@@ -219,19 +174,147 @@ class VoteCommand : BaseCommand {
                         executes {
                             val id: Int by it
 
-                            transaction {
-                                val vote = Vote.findById(id) ?: return@transaction
-
-                                VoteHistory.find { VoteHistories.vote eq vote.id }.forEach { history ->
-                                    history.delete()
-                                }
-                            }
-
-                            sender.sendMessage("투표가 초기화되었습니다.")
+                            resetVote(id)
                         }
                     }
                 }
             }
         }
+    }
+
+    private fun KommandNode.vote(): KommandArgument<Vote> = dynamic { context, input ->
+        val id = input.toIntOrNull() ?: return@dynamic null
+        loggedTransaction { Vote.findById(id) }
+    }.apply {
+        suggests {
+        }
+    }
+
+    private fun KommandSource.resetVote(id: Int) {
+        loggedTransaction {
+            val vote = Vote.findById(id) ?: return@loggedTransaction
+
+            VoteHistory.find { VoteHistories.vote eq vote.id }.forEach { history ->
+                history.delete()
+            }
+        }
+
+        sender.sendInfoMessage("투표가 초기화되었습니다.")
+    }
+
+    private fun KommandSource.announceVote(id: Int) {
+        val vote = loggedTransaction { Vote.findById(id) }
+
+        if (vote == null) {
+            sender.sendErrorMessage("투표가 존재하지 않습니다.")
+            return
+        }
+
+        Bukkit.getOnlinePlayers().forEach { player ->
+            player.showTitle(
+                Title.title(
+                    vote.question.component(),
+                    "투표가 진행중입니다. 투표 해주세요".component(),
+                )
+            )
+        }
+    }
+
+    private fun stopVoteResultUi(id: Int) {
+        loggedTransaction {
+            val vote = Vote.findById(id) ?: return@loggedTransaction
+            val voteOptions = vote.options.split(",")
+            val histories = VoteHistory.find { VoteHistories.vote eq vote.id }.toList()
+            val optionByCount = histories.groupBy { history -> history.option }
+                .mapValues { (_, histories) -> histories.size }
+
+            vote.isVoting = false
+
+            Bukkit.broadcast("${vote.question} 투표 결과".component())
+            optionByCount.entries.sortedBy { (_, count) -> count }
+                .forEach { (option, count) ->
+                    Bukkit.broadcast("[${voteOptions[option]}] $count 득표".component())
+                }
+        }
+    }
+
+    private fun KommandSource.openVoteStatusUi(id: Int) {
+        val vote = loggedTransaction { Vote.findById(id) }
+
+        if (vote == null) {
+            sender.sendErrorMessage("투표가 존재하지 않습니다.")
+            return
+        }
+
+        VoteStatusUi(vote).open(player)
+    }
+
+    private fun KommandSource.setVoteBox(id: Int) {
+        loggedTransaction {
+            val vote = Vote.findById(id) ?: return@loggedTransaction
+
+            vote.voteBoxLocation = player.getTargetBlock(null, 100).location
+        }
+
+        sender.sendInfoMessage("투표함이 설정되었습니다.")
+    }
+
+    private fun KommandSource.setVotingBooth(id: Int) {
+        loggedTransaction {
+            val vote = Vote.findById(id) ?: return@loggedTransaction
+
+            vote.votingBoothLocation = player.getTargetBlock(null, 100).location
+        }
+
+        sender.sendInfoMessage("투표 부스가 설정되었습니다.")
+    }
+
+    private fun KommandSource.startVote(id: Int) {
+        loggedTransaction {
+            val vote = Vote.findById(id) ?: return@loggedTransaction
+
+            vote.isVoting = true
+        }
+
+        sender.sendInfoMessage("투표가 시작되었습니다.")
+    }
+
+    private fun KommandSource.showVoteList() {
+        loggedTransaction {
+            Vote.all().forEach { vote ->
+                sender.sendInfoMessage("${vote.id.value} : ${vote.question}")
+            }
+        }
+    }
+
+    private fun KommandSource.deleteVote(id: Int) {
+        loggedTransaction {
+            Vote.findById(id)?.delete()
+        }
+
+        sender.sendInfoMessage("투표 주제가 삭제되었습니다.")
+    }
+
+    private fun KommandSource.removeVoteOption(id: Int, option: String) {
+        loggedTransaction {
+            val vote = Vote.findById(id) ?: return@loggedTransaction
+            val options = vote.options.split(",").toMutableList()
+            options.remove(option)
+            vote.options = options.joinToString(",")
+        }
+
+        sender.sendInfoMessage("투표 옵션이 제거되었습니다.")
+    }
+
+    private fun KommandSource.addVoteOption(id: Int, option: String) {
+        loggedTransaction {
+            val vote = Vote.findById(id) ?: return@loggedTransaction
+            val options = vote.options.split(",").toMutableList()
+            options.add(option)
+            vote.options =
+                options.filter { option -> option.isNotEmpty() }.joinToString(",")
+        }
+
+        sender.sendInfoMessage("투표 옵션이 추가되었습니다.")
     }
 }

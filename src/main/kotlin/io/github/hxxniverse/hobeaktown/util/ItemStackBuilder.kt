@@ -115,6 +115,20 @@ class ItemStackBuilder(
         return this
     }
 
+    fun setLore(index: Int, lore: String): ItemStackBuilder {
+        (changedItemMeta.lore() ?: mutableListOf())
+            .apply {
+                set(
+                    index,
+                    Component.text(lore)
+                        .color(NamedTextColor.WHITE)
+                        .decoration(TextDecoration.ITALIC, false),
+                )
+            }
+            .also { changedItemMeta.lore(it) }
+        return this
+    }
+
     fun setLore(vararg lore: String): ItemStackBuilder {
         changedItemMeta.lore(
             lore.map {

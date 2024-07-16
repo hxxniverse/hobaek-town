@@ -9,14 +9,14 @@ import io.github.hxxniverse.hobeaktown.util.inventory.CustomInventory
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.transactions.transaction
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 
 class RandomBoxItemListUi(
     private val randomBox: RandomBox
 ) : CustomInventory("${randomBox.name} 아이템 목록", 54) {
     init {
         inventory {
-            transaction {
+            loggedTransaction {
                 background(ItemStack(Material.GRAY_STAINED_GLASS_PANE))
 
                 button(

@@ -2,27 +2,45 @@ package io.github.hxxniverse.hobeaktown.feature.delivery_service
 
 import io.github.hxxniverse.hobeaktown.feature.delivery_service.entity.DeliveryBox
 import io.github.hxxniverse.hobeaktown.feature.delivery_service.entity.DeliveryBoxes
-import io.github.hxxniverse.hobeaktown.feature.delivery_service.entity.sendItemStack
 import io.github.hxxniverse.hobeaktown.feature.delivery_service.ui.DeliveryBoxItemSetUi
-import io.github.hxxniverse.hobeaktown.feature.delivery_service.ui.DeliveryBoxUi
 import io.github.hxxniverse.hobeaktown.util.base.BaseCommand
+import io.github.hxxniverse.hobeaktown.util.command_help.help
 import io.github.monun.kommand.getValue
 import io.github.monun.kommand.kommand
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
-import org.jetbrains.exposed.sql.transactions.transaction
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 
 class DeliveryServiceCommand : BaseCommand {
     override fun register(plugin: JavaPlugin) {
         plugin.kommand {
-            register("delivery") {
-                then("box") {
+            register("택배") {
+                then("도움말") {
                     executes {
-                        DeliveryBoxUi().open(player)
+                        help("택배") {
+                            command("택배 보내기 플레이어 <target> <name>") {
+                                description = "플레이어에게 택배를 보냅니다."
+                            }
+                            command("택배 보내기 모두 <name>") {
+                                description = "모든 플레이어에게 택배를 보냅니다."
+                            }
+                            command("택배 생성 <name>") {
+                                description = "택배 상자를 생성합니다."
+                            }
+                            command("택배 가져오기 <name>") {
+                                description = "택배 상자를 가져옵니다."
+                            }
+                            command("택배 수정 <name>") {
+                                description = "택배 상자를 수정합니다."
+                            }
+                            command("택배 삭제 <name>") {
+                                description = "택배 상자를 삭제합니다."
+                            }
+                        }
                     }
                 }
-                then("send") {
+                then("보내기") {
                     then("player") {
                         then("target" to player()) {
                             then("name" to string()) {
@@ -30,15 +48,15 @@ class DeliveryServiceCommand : BaseCommand {
                                     val target: Player by it
                                     val name: String by it
 
-                                    transaction {
+                                    loggedTransaction {
                                         val deliveryBox = DeliveryBox.find { DeliveryBoxes.name eq name }.firstOrNull()
 
                                         if (deliveryBox == null) {
                                             sender.sendMessage("존재하지 않는 택배: $name")
-                                            return@transaction
+                                            return@loggedTransaction
                                         }
 
-                                        target.sendItemStack(player, deliveryBox.boxItem)
+                                        // TODO Send
                                     }
 
                                     target.sendMessage("택배가 도착했습니다: $name")
@@ -52,16 +70,16 @@ class DeliveryServiceCommand : BaseCommand {
                             executes {
                                 val name: String by it
 
-                                transaction {
+                                loggedTransaction {
                                     val deliveryBox = DeliveryBox.find { DeliveryBoxes.name eq name }.firstOrNull()
 
                                     if (deliveryBox == null) {
                                         sender.sendMessage("존재하지 않는 택배: $name")
-                                        return@transaction
+                                        return@loggedTransaction
                                     }
 
                                     Bukkit.getOnlinePlayers().forEach { target ->
-                                        target.sendItemStack(player, deliveryBox.boxItem)
+                                        // TODO Send Mail
                                         target.sendMessage("택배가 도착했습니다: $name")
                                     }
                                 }
@@ -81,12 +99,14 @@ class DeliveryServiceCommand : BaseCommand {
                                 return@executes
                             }
 
-                            if (transaction { DeliveryBox.find { DeliveryBoxes.name eq name }.firstOrNull() != null }) {
+                            if (loggedTransaction {
+                                    DeliveryBox.find { DeliveryBoxes.name eq name }.firstOrNull() != null
+                                }) {
                                 sender.sendMessage("이미 존재하는 택배: $name")
                                 return@executes
                             }
 
-                            transaction {
+                            loggedTransaction {
                                 DeliveryBox.new {
                                     this.name = name
                                     this.boxItem = player.inventory.itemInMainHand
@@ -102,12 +122,12 @@ class DeliveryServiceCommand : BaseCommand {
                         executes {
                             val name: String by it
 
-                            transaction {
+                            loggedTransaction {
                                 val box = DeliveryBox.find { DeliveryBoxes.name eq name }.firstOrNull()
 
                                 if (box == null) {
                                     sender.sendMessage("존재하지 않는 택배: $name")
-                                    return@transaction
+                                    return@loggedTransaction
                                 }
 
                                 println(box)
@@ -123,12 +143,12 @@ class DeliveryServiceCommand : BaseCommand {
                         executes {
                             val name: String by it
 
-                            transaction {
+                            loggedTransaction {
                                 val box = DeliveryBox.find { DeliveryBoxes.name eq name }.firstOrNull()
 
                                 if (box == null) {
                                     sender.sendMessage("존재하지 않는 택배: $name")
-                                    return@transaction
+                                    return@loggedTransaction
                                 }
 
                                 DeliveryBoxItemSetUi(box).open(player)
@@ -141,11 +161,11 @@ class DeliveryServiceCommand : BaseCommand {
                         executes {
                             val name: String by it
 
-                            transaction {
+                            loggedTransaction {
                                 val box = DeliveryBox.find { DeliveryBoxes.name eq name }.firstOrNull()
                                 if (box == null) {
                                     sender.sendMessage("존재하지 않는 택배: $name")
-                                    return@transaction
+                                    return@loggedTransaction
                                 }
 
                                 box.delete()

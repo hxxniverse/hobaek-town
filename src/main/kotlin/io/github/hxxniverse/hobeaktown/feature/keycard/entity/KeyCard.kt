@@ -5,7 +5,7 @@ import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.transactions.transaction
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 
 /**
  * Keycard 테이블
@@ -22,17 +22,17 @@ object KeyCards : IntIdTable() {
 
 class KeyCard(id: EntityID<Int>): IntEntity(id) {
     companion object : IntEntityClass<KeyCard>(KeyCards) {
-        fun isExistsKeyCard(name: String, roleName: String): Boolean = transaction {
+        fun isExistsKeyCard(name: String, roleName: String): Boolean = loggedTransaction {
             // 직업 아이디 가져오기
-            val role = Role.find { Roles.role eq roleName }.firstOrNull() ?: return@transaction false
+            val role = Role.find { Roles.role eq roleName }.firstOrNull() ?: return@loggedTransaction false
             // 키카드 존재 여부 확인
             val isExists = KeyCard.find { (KeyCards.name eq name) and (KeyCards.role eq role.id) }.firstOrNull() != null
 
-            return@transaction isExists
+            return@loggedTransaction isExists
         }
-        fun isExistsKeyName(name: String): Boolean = transaction {
+        fun isExistsKeyName(name: String): Boolean = loggedTransaction {
             val isExists = KeyCard.find { (KeyCards.name eq name) }.firstOrNull() != null
-            return@transaction isExists
+            return@loggedTransaction isExists
         }
     }
 

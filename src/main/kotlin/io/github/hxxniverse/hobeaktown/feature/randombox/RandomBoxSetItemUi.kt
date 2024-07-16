@@ -9,14 +9,14 @@ import io.github.hxxniverse.hobeaktown.util.inventory.CustomInventory
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.transactions.transaction
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 
 class RandomBoxSetItemUi(
     private val randomBox: RandomBox
 ) : CustomInventory("${randomBox.name} 아이템 설정", 54) {
     init {
         inventory {
-            transaction {
+            loggedTransaction {
                 background(ItemStack(Material.GRAY_STAINED_GLASS_PANE))
 
                 // chance grade 1,1 ~ 9,1
@@ -129,12 +129,12 @@ class RandomBoxSetItemUi(
                         return@button
                     }
 
-                    transaction {
+                    loggedTransaction {
                         randomBox.itemStack = newRandomBoxItem.setRandomBox(randomBox)
                     }
 
                     // remove randombox's  items
-                    transaction {
+                    loggedTransaction {
                         RandomBoxItem.find { RandomBoxItems.randomBox eq randomBox.id }.forEach { randomBoxItem ->
                             randomBoxItem.delete()
                         }
@@ -156,7 +156,7 @@ class RandomBoxSetItemUi(
                                 9 -> RandomBoxChance.WHITE
                                 else -> continue
                             }
-                            transaction {
+                            loggedTransaction {
                                 RandomBoxItem.new {
                                     this.randomBox = this@RandomBoxSetItemUi.randomBox
                                     this.itemStack = itemStack

@@ -3,7 +3,7 @@ package io.github.hxxniverse.hobeaktown.feature.coupon
 import io.github.hxxniverse.hobeaktown.util.extension.component
 import io.github.hxxniverse.hobeaktown.util.inventory.CustomInventory
 import org.bukkit.Material
-import org.jetbrains.exposed.sql.transactions.transaction
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 
 class CouponItemSetUi(
     private val coupon: Coupon
@@ -20,12 +20,12 @@ class CouponItemSetUi(
                 type = Material.GLASS_PANE
             }) {
                 try {
-                    coupon.items.forEach { transaction { it.delete() } }
+                    coupon.items.forEach { loggedTransaction { it.delete() } }
                 } catch (e: Exception) {
                     // items is empty
                 }
                 getItems(2 to 2, 5 to 8).filterNotNull().forEach {
-                    transaction {
+                    loggedTransaction {
                         CouponItem.new {
                             this.coupon = this@CouponItemSetUi.coupon
                             this.item = it

@@ -1,7 +1,9 @@
 package io.github.hxxniverse.hobeaktown.feature.traffic
 
 import io.github.hxxniverse.hobeaktown.util.base.BaseFeature
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 import org.bukkit.plugin.java.JavaPlugin
+import org.jetbrains.exposed.sql.SchemaUtils
 
 /**
  * 	기획 ( System Planning )
@@ -40,7 +42,12 @@ import org.bukkit.plugin.java.JavaPlugin
  */
 class TrafficFeature : BaseFeature {
     override fun onEnable(plugin: JavaPlugin) {
-
+        loggedTransaction {
+             SchemaUtils.create(BusStations)
+             SchemaUtils.create(SubwayStations)
+             SchemaUtils.create(Airplanes)
+        }
+        TrafficCommand().register(plugin)
     }
 
     override fun onDisable(plugin: JavaPlugin) {

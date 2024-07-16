@@ -7,7 +7,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
-import org.jetbrains.exposed.sql.transactions.transaction
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 
 class DeliveryServiceListener : Listener {
     @EventHandler
@@ -16,7 +16,7 @@ class DeliveryServiceListener : Listener {
         val item = player.inventory.itemInMainHand
 
         val deliveryBox = item.getDeliveryBox() ?: return
-        val finalDeliveryBox = transaction { DeliveryBox.find { DeliveryBoxes.id eq deliveryBox.id }.first() }
+        val finalDeliveryBox = loggedTransaction { DeliveryBox.find { DeliveryBoxes.id eq deliveryBox.id }.first() }
 
         println("finalDeliveryBox: $finalDeliveryBox")
 

@@ -4,7 +4,7 @@ import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
-import org.jetbrains.exposed.sql.transactions.transaction
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 
 object Stocks : IntIdTable() {
     val name = varchar("name", 50)
@@ -21,7 +21,7 @@ class Stock(id: EntityID<Int>) : IntEntity(id) {
             remainingAmount: Int,
             currentPrice: Int,
             fluctuation: Int,
-        ) = transaction {
+        ) = loggedTransaction {
             Stock.new {
                 this.name = name
                 this.remainingAmount = remainingAmount

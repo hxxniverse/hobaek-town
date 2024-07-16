@@ -8,7 +8,7 @@ import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.transactions.transaction
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 
 object DeliveryBoxes : IntIdTable() {
     val name = varchar("name", 255)
@@ -27,7 +27,7 @@ class DeliveryBox(id: EntityID<Int>) : IntEntity(id) {
         items.forEach { player.inventory.addItem(it.item) }
     }
 
-    fun addItem(item: ItemStack) = transaction {
+    fun addItem(item: ItemStack) = loggedTransaction {
         DeliveryBoxItem.new {
             this.box = this@DeliveryBox
             this.item = item
@@ -35,13 +35,13 @@ class DeliveryBox(id: EntityID<Int>) : IntEntity(id) {
     }
 
     fun removeItem(item: ItemStack) {
-        transaction {
+        loggedTransaction {
             DeliveryBoxItem.find { DeliveryBoxItems.box eq this@DeliveryBox.id and (DeliveryBoxItems.item eq item) }
                 .forEach { it.delete() }
         }
     }
 
-    fun clearItems() = transaction {
+    fun clearItems() = loggedTransaction {
         DeliveryBoxItem.find { DeliveryBoxItems.box eq this@DeliveryBox.id }.forEach { it.delete() }
     }
 

@@ -2,6 +2,7 @@ package io.github.hxxniverse.hobeaktown.feature.keycard
 
 import io.github.hxxniverse.hobeaktown.HobeakTownPlugin.Companion.plugin
 import io.github.hxxniverse.hobeaktown.feature.keycard.entity.*
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.block.data.Openable
@@ -16,20 +17,28 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.persistence.PersistentDataType
-import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.SQLException
 import java.util.*
 
-class KeyCardListener: Listener {
+class KeyCardListener : Listener {
     private var lastEventTime: Long = 0
     private val EVENT_COOLDOWN: Long = 500
 
     @EventHandler
+    fun onPlayerJoin(event: PlayerJoinEvent) = loggedTransaction {
+        if (!UserKeyCard.isExists(event.player.uniqueId)) {
+            val role = Role.find { Roles.role eq "시민" }.firstOrNull() ?: return@loggedTransaction;
+            UserKeyCard.new {
+                this.uuid = event.player.uniqueId.toString()
+                this.role = role.id;
+            }
+        }
+    }
+
+    @EventHandler
     fun onBlockPlace(event: BlockPlaceEvent) {
         if (event.block.type == Material.IRON_DOOR) {
-            val itemMeta: ItemMeta
-            = event.itemInHand.itemMeta ?: return;
+            val itemMeta: ItemMeta = event.itemInHand.itemMeta ?: return;
             if (itemMeta.persistentDataContainer.has(
                     NamespacedKey(plugin, "Name"),
                     PersistentDataType.STRING
@@ -104,24 +113,24 @@ class KeyCardListener: Listener {
         lastEventTime = currentTime
 
         val itemMeta: ItemMeta = event.player.inventory.itemInMainHand.itemMeta ?: return;
-        if(event.player.inventory.itemInMainHand.type == Material.NETHER_STAR) {
-            if(event.rightClicked.type == EntityType.PLAYER) {
+        if (event.player.inventory.itemInMainHand.type == Material.NETHER_STAR) {
+            if (event.rightClicked.type == EntityType.PLAYER) {
                 val role = itemMeta.persistentDataContainer.get(
                     NamespacedKey(plugin, "Role"),
                     PersistentDataType.STRING
                 ).toString()
-                if(Role.isExistsRole(role)){
+                if (Role.isExistsRole(role)) {
                     UserKeyCard.updateMemberRole(event.rightClicked.uniqueId, role)
                 }
             }
         }
-        if(event.player.inventory.itemInMainHand.type == Material.BLAZE_ROD) {
-            if(event.rightClicked.type == EntityType.PLAYER) {
+        if (event.player.inventory.itemInMainHand.type == Material.BLAZE_ROD) {
+            if (event.rightClicked.type == EntityType.PLAYER) {
                 val role = itemMeta.persistentDataContainer.get(
                     NamespacedKey(plugin, "Role"),
                     PersistentDataType.STRING
                 ).toString()
-                if(Role.isExistsRole(role)){
+                if (Role.isExistsRole(role)) {
                     UserKeyCard.updateMemberRole(event.rightClicked.uniqueId, "시민")
                 }
             }

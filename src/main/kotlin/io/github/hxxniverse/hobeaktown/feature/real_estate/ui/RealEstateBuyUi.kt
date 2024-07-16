@@ -4,14 +4,14 @@ import io.github.hxxniverse.hobeaktown.feature.real_estate.RealEstate
 import io.github.hxxniverse.hobeaktown.util.extension.component
 import io.github.hxxniverse.hobeaktown.util.inventory.CustomInventory
 import org.bukkit.Material
-import org.jetbrains.exposed.sql.transactions.transaction
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 
 class RealEstateBuyUi(
     private val realEstate: RealEstate
 ) : CustomInventory("구매하시겠습니까?", 27) {
     init {
         inventory {
-            transaction {
+            loggedTransaction {
                 button(
                     2 to 2,
                     icon {

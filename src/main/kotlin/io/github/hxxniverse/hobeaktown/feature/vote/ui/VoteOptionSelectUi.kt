@@ -8,7 +8,7 @@ import io.github.hxxniverse.hobeaktown.util.inventory.CustomInventory
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemStack
-import org.jetbrains.exposed.sql.transactions.transaction
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 
 class VoteOptionSelectUi(
     private val vote: Vote,
@@ -18,7 +18,7 @@ class VoteOptionSelectUi(
 
     init {
         inventory {
-            transaction {
+            loggedTransaction {
                 background(ItemStack(Material.GRAY_STAINED_GLASS_PANE))
 
                 button(

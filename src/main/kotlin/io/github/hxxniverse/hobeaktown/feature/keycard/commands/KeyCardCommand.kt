@@ -1,13 +1,14 @@
 package io.github.hxxniverse.hobeaktown.feature.keycard.commands
 
-import io.github.monun.kommand.StringType.GREEDY_PHRASE;
 import io.github.hxxniverse.hobeaktown.feature.keycard.entity.KeyCard
 import io.github.hxxniverse.hobeaktown.feature.keycard.entity.Role
 import io.github.hxxniverse.hobeaktown.feature.keycard.entity.Roles
 import io.github.hxxniverse.hobeaktown.util.ItemStackBuilder
 import io.github.hxxniverse.hobeaktown.util.base.BaseCommand
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 import io.github.hxxniverse.hobeaktown.util.extension.component
 import io.github.hxxniverse.hobeaktown.util.extension.send
+import io.github.monun.kommand.StringType.GREEDY_PHRASE
 import io.github.monun.kommand.getValue
 import io.github.monun.kommand.kommand
 import net.kyori.adventure.text.format.NamedTextColor
@@ -41,7 +42,7 @@ class KeyCardCommand : BaseCommand {
                         executes {
                             val args: String by it
 
-                            if(args.split(" ").size < 2){
+                            if (args.split(" ").size < 2) {
                                 player.sendMessage("불완전한 명령어입니다: /키카드 help")
                                 return@executes
                             }
@@ -54,7 +55,7 @@ class KeyCardCommand : BaseCommand {
                                     if (KeyCard.isExistsKeyCard(name, tag)) {
                                         player.sendMessage("이미 등록되어있는 키카드입니다.")
                                     } else {
-                                        if(Role.isExistsRole(tag)){
+                                        if (Role.isExistsRole(tag)) {
                                             KeyCard.new {
                                                 this.name = name
                                                 this.role = Role.find { Roles.role eq tag }.first().id
@@ -75,18 +76,20 @@ class KeyCardCommand : BaseCommand {
                         executes {
                             val name: String by it
 
-                            transaction {
+                            loggedTransaction {
                                 val itemInHand = player.inventory.itemInMainHand
                                 if (itemInHand.type != Material.IRON_DOOR) {
                                     player.sendMessage("철문을 손에 들고 명령어를 입력해 주세요.")
-                                    return@transaction
+                                    return@loggedTransaction
                                 }
 
-                                if(KeyCard.isExistsKeyName(name)) {
+                                if (KeyCard.isExistsKeyName(name)) {
                                     val keyCardDoorItem = ItemStackBuilder()
                                         .setType(itemInHand.type)
-                                        .setDisplayName(component(name, NamedTextColor.BLUE)
-                                            .append(component(" 철문", NamedTextColor.WHITE)))
+                                        .setDisplayName(
+                                            component(name, NamedTextColor.BLUE)
+                                                .append(component(" 철문", NamedTextColor.WHITE))
+                                        )
                                         .addPersistentData("NameRegister", "true")
                                         .addPersistentData("Name", name)
                                         .build()
@@ -104,12 +107,12 @@ class KeyCardCommand : BaseCommand {
                         executes {
                             val name: String by it
 
-                            transaction {
+                            loggedTransaction {
                                 var itemInHand = player.inventory.itemInMainHand
-                                if (itemInHand.type == Material.IRON_DOOR) return@transaction
+                                if (itemInHand.type == Material.IRON_DOOR) return@loggedTransaction
                                 if (itemInHand.isEmpty) {
                                     player.sendMessage("아이템을 손에 들고 명령어를 입력해 주세요.")
-                                    return@transaction
+                                    return@loggedTransaction
                                 }
 
                                 if (KeyCard.isExistsKeyName(name)) {

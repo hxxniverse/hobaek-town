@@ -7,7 +7,7 @@ import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.transactions.transaction
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 
 /**
  * Doors 테이블
@@ -27,7 +27,7 @@ object KeyCardDoors : IntIdTable() {
 class KeyCardDoor(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<KeyCardDoor>(KeyCardDoors) {
         fun insertDoorData(location: Location, name: String) {
-            transaction {
+            loggedTransaction {
                 val baseLocation = location.clone().apply { y = 0.0 }
                 KeyCardDoor.new {
                     this.location = baseLocation
@@ -36,16 +36,16 @@ class KeyCardDoor(id: EntityID<Int>) : IntEntity(id) {
             }
         }
         fun delete(location: Location) {
-            transaction {
+            loggedTransaction {
                 val baseLocation = location.clone().apply { y = 0.0 }
                 KeyCardDoor.find {
                     KeyCardDoors.location eq baseLocation
                 }.forEach { it.delete() }
             }
         }
-        fun checkName(location: Location, name: String) = transaction {
+        fun checkName(location: Location, name: String) = loggedTransaction {
             val baseLocation = location.clone().apply { y = 0.0 }
-            return@transaction KeyCardDoor.find {
+            return@loggedTransaction KeyCardDoor.find {
                 (KeyCardDoors.location eq baseLocation) and
                         (KeyCardDoors.name eq name)
             }.count() > 0;
