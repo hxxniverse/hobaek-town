@@ -1,10 +1,12 @@
 package io.github.hxxniverse.hobeaktown.feature.quarry
 
+import io.github.hxxniverse.hobeaktown.feature.area.Area
+import io.github.hxxniverse.hobeaktown.feature.area.AreaType
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
-import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 
 class QuarryListener : Listener {
     @EventHandler
@@ -13,7 +15,13 @@ class QuarryListener : Listener {
         val block = event.block
         val item = player.inventory.itemInMainHand
 
-        if (loggedTransaction { Quarry.all().none { it.inQuarry(block) } }) {
+        val area = loggedTransaction { Area.all().find { it.inArea(block) } }
+
+        if (area == null) {
+            return
+        }
+
+        if (area.type != AreaType.MINE) {
             return
         }
 
@@ -25,7 +33,14 @@ class QuarryListener : Listener {
 
         block.getDrops(item).forEach { player.inventory.addItem(it) }
 
-        val availableTypes = listOf(Material.STONE, Material.COAL_ORE, Material.IRON_ORE, Material.GOLD_ORE, Material.DIAMOND_ORE, Material.EMERALD_ORE)
+        val availableTypes = listOf(
+            Material.STONE,
+            Material.COAL_ORE,
+            Material.IRON_ORE,
+            Material.GOLD_ORE,
+            Material.DIAMOND_ORE,
+            Material.EMERALD_ORE
+        )
 
         if (availableTypes.contains(block.type)) {
             val random = Math.random()

@@ -1,7 +1,7 @@
 package io.github.hxxniverse.hobeaktown.feature.quarry
 
-import io.github.hxxniverse.hobeaktown.sub_feature.pos1
-import io.github.hxxniverse.hobeaktown.sub_feature.pos2
+import io.github.hxxniverse.hobeaktown.feature.area.pos1
+import io.github.hxxniverse.hobeaktown.feature.area.pos2
 import io.github.hxxniverse.hobeaktown.util.base.BaseCommand
 import io.github.hxxniverse.hobeaktown.util.command_help.help
 import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction

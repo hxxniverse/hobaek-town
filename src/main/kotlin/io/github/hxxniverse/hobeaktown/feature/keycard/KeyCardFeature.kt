@@ -1,21 +1,12 @@
 package io.github.hxxniverse.hobeaktown.feature.keycard
 
 import io.github.hxxniverse.hobeaktown.feature.keycard.commands.KeyCardCommand
-import io.github.hxxniverse.hobeaktown.feature.keycard.commands.TagCommand
-import io.github.hxxniverse.hobeaktown.feature.keycard.entity.*
 import io.github.hxxniverse.hobeaktown.util.base.BaseFeature
 import org.bukkit.plugin.java.JavaPlugin
-import org.jetbrains.exposed.sql.SchemaUtils
-import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 
 class KeyCardFeature : BaseFeature {
     override fun onEnable(plugin: JavaPlugin) {
-        loggedTransaction {
-            SchemaUtils.create(KeyCards, KeyCardDoors, Roles, UserKeyCards)
-            Role.initialize()
-        }
         KeyCardCommand().register(plugin)
-        TagCommand().register(plugin)
 
         plugin.server.pluginManager.registerEvents(KeyCardListener(), plugin)
     }
