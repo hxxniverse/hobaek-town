@@ -20,6 +20,7 @@ import io.github.hxxniverse.hobeaktown.feature.traffic.TrafficFeature
 import io.github.hxxniverse.hobeaktown.feature.user.UserFeature
 import io.github.hxxniverse.hobeaktown.feature.user_trade.UserTradeFeature
 import io.github.hxxniverse.hobeaktown.feature.vote.VoteFeature
+import io.github.hxxniverse.hobeaktown.feature.wasteland.WasteLandFeature
 import io.github.hxxniverse.hobeaktown.util.command_help.help
 import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 import io.github.monun.kommand.kommand
@@ -54,7 +55,8 @@ class HobeakTownPlugin : JavaPlugin() {
         TrafficFeature(),
         FactoryFeature(),
         NbtFeature(),
-        SchoolFeature()
+        SchoolFeature(),
+        WasteLandFeature()
     )
 
     override fun onEnable() {
