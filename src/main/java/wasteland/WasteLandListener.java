@@ -1,4 +1,4 @@
-package io.github.hxxniverse.hobeaktown.feature.wasteland;
+package wasteland;
 
 import io.github.hxxniverse.hobeaktown.HobeakTownPlugin;
 import org.bukkit.Bukkit;

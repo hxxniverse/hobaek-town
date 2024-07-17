@@ -1,6 +1,7 @@
-package io.github.hxxniverse.hobeaktown.feature.wasteland;
+package wasteland;
 
 import io.github.hxxniverse.hobeaktown.util.base.BaseFeature;
+import kotlin.jvm.functions.Function1;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -22,6 +23,7 @@ public class WasteLandFeature implements BaseFeature {
     public void onEnable(@NotNull JavaPlugin plugin) {
         instance = this;
         gui = new WasteLandGui();
+        WasteLandCommand command = new WasteLandCommand();
         loadData();
     }
 
@@ -31,10 +33,10 @@ public class WasteLandFeature implements BaseFeature {
 
         // 블럭이 바뀌는 3분 동안 서버(플러그인)가 종료되는 경우 즉시 변경 실행
         Block block;
-        for(Map.Entry entry : brushedBlocks.entrySet()) {
+        for (Map.Entry entry : brushedBlocks.entrySet()) {
             block = ((Location) entry.getKey()).getBlock();
 
-            if(block.getType() == Material.AIR) {
+            if (block.getType() == Material.AIR) {
                 continue;
             }
 
@@ -61,7 +63,11 @@ public class WasteLandFeature implements BaseFeature {
     public void saveData() {
         // TODO (데이터 I/O 관련 API 학습 필요)
         // guiMap -> 영구저장소
-
+        //
+        WasteLandConfig.INSTANCE.updateConfigData(기존데이터 -> 기존데이터.copy(
+                기존데이터.getSendRewards(),
+                기존데이터.getGraveRewards()
+        ));
     }
 
     public void loadData() {
@@ -84,9 +90,9 @@ public class WasteLandFeature implements BaseFeature {
         Map<ItemStack, Double> map = new HashMap<>();
 
         // guiItemMap 에서 ItemStack 을 뽑아 map 으로 put 하며 가중치 부여
-        for(Map.Entry<Integer, ItemStack> entry : guiItemMap.entrySet()) {
+        for (Map.Entry<Integer, ItemStack> entry : guiItemMap.entrySet()) {
             // 솔 등급에 따라 확률적으로 받을 수 있는 아이템 거르기
-            if(entry.getKey() % 9 >= level) {
+            if (entry.getKey() % 9 >= level) {
                 continue;
             }
 
@@ -97,7 +103,7 @@ public class WasteLandFeature implements BaseFeature {
         double totalWeight = 0.0D;
 
         // 총 가중치 합 계산
-        for(Double weight : map.values()) {
+        for (Double weight : map.values()) {
             totalWeight += weight;
         }
 
@@ -105,9 +111,9 @@ public class WasteLandFeature implements BaseFeature {
         double cumulativeWeight = 0.0D;
 
         // 가중치에 기반하여 랜덤한 ItemStack 뽑기
-        for(Map.Entry<ItemStack, Double> entry : map.entrySet()) {
+        for (Map.Entry<ItemStack, Double> entry : map.entrySet()) {
             cumulativeWeight += entry.getValue();
-            if(randomValue <= cumulativeWeight) {
+            if (randomValue <= cumulativeWeight) {
                 return entry.getKey();
             }
         }

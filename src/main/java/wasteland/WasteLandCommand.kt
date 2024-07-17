@@ -1,4 +1,4 @@
-package io.github.hxxniverse.hobeaktown.feature.wasteland
+package wasteland
 
 import io.github.hxxniverse.hobeaktown.util.base.BaseCommand
 import io.github.monun.kommand.getValue

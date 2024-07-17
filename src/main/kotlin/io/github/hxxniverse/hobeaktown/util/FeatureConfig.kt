@@ -1,6 +1,7 @@
 package io.github.hxxniverse.hobeaktown.util
 
 import io.github.hxxniverse.hobeaktown.HobeakTownPlugin.Companion.plugin
+import io.github.hxxniverse.hobeaktown.util.serializer.ItemStackSerializer
 import io.github.hxxniverse.hobeaktown.util.serializer.LocationSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
@@ -46,6 +47,7 @@ abstract class FeatureConfig<T>(
         prettyPrint = true
         serializersModule = SerializersModule {
             contextual(LocationSerializer)
+            contextual(ItemStackSerializer)
         }
     }
 

@@ -1,22 +1,17 @@
 package io.github.hxxniverse.hobeaktown.feature.school;
 
-import io.github.hxxniverse.hobeaktown.feature.keycard.entity.Role
-import io.github.hxxniverse.hobeaktown.feature.keycard.entity.Roles
-import io.github.hxxniverse.hobeaktown.feature.keycard.entity.UserKeyCard
-import io.github.hxxniverse.hobeaktown.feature.keycard.entity.UserKeyCards
+import io.github.hxxniverse.hobeaktown.feature.user.Job
+import io.github.hxxniverse.hobeaktown.feature.user.user
 import io.github.hxxniverse.hobeaktown.util.base.BaseCommand
-import io.github.hxxniverse.hobeaktown.util.extension.send
 import io.github.hxxniverse.hobeaktown.util.extension.component
+import io.github.hxxniverse.hobeaktown.util.extension.send
 import io.github.monun.kommand.StringType
 import io.github.monun.kommand.getValue
 import io.github.monun.kommand.kommand
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
-import org.jetbrains.exposed.sql.transactions.transaction
-import java.util.*
 
-@Suppress("CAST_NEVER_SUCCEEDS")
 class GradeCommand : BaseCommand {
     override fun register(plugin: JavaPlugin) {
         plugin.kommand {
@@ -49,14 +44,7 @@ class GradeCommand : BaseCommand {
                         val room = args.split(" ")[0]
                         val description = args.split(" ")[1]
 
-                        val studentRoleId = Role.getId("학생")
-
-                        val userKeyCardsForStudentRole = transaction {
-                            UserKeyCard.find { UserKeyCards.role eq studentRoleId }.toList()
-                        }
-
-                        userKeyCardsForStudentRole.forEach { userKeyCard ->
-                            val player = Bukkit.getPlayer(userKeyCard.id as UUID)
+                        Bukkit.getOnlinePlayers().filter { it.user.job == Job.STUDENT }.forEach { player ->
                             plugin.logger.info("학생 리스트: $player}")
                             player?.sendMessage(
                                 component("----------[학교]----------").appendNewline()
@@ -73,25 +61,15 @@ class GradeCommand : BaseCommand {
             register("강의종료") {
                 requires { sender is Player }
                 executes {
-                    val studentRole = transaction {
-                        Role.find { Roles.role eq "학생" }.firstOrNull()
-                    }
-
-                    val userKeyCardsForStudentRole = studentRole?.let { role ->
-                        transaction {
-                            UserKeyCard.find { UserKeyCards.role eq role.id }.toList()
-                        } ?: emptyList()
-                    }
-
-                    userKeyCardsForStudentRole?.forEach { userKeyCard ->
-                        val player = Bukkit.getPlayer(userKeyCard.id as UUID)
-                        player?.sendMessage(
+                    Bukkit.getOnlinePlayers().filter { it.user.job == Job.STUDENT }.forEach { player ->
+                        player.sendMessage(
                             component("----------[학교]----------").appendNewline()
                                 .append(component("강의가 종료되었습니다.")).appendNewline()
-                                .append(component("강사 : ").append(component((sender.name)).appendNewline())
-//                                .append(component("강의실 : ").append(component(room)).appendNewline())
-//                                .append(component("강의내용 : ").append(component(description)).appendNewline())
-                                .append(component("------------------------")))
+                                .append(component("강사 : "))
+                                .append(component((sender.name)).appendNewline())
+                                //                                .append(component("강의실 : ").append(component(room)).appendNewline())
+                                //                                .append(component("강의내용 : ").append(component(description)).appendNewline())
+                                .append(component("------------------------"))
                         )
                     }
                 }
