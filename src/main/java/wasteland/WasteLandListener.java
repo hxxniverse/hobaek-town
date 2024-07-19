@@ -2,6 +2,7 @@ package wasteland;
 
 import io.github.hxxniverse.hobeaktown.HobeakTownPlugin;
 import io.github.hxxniverse.hobeaktown.util.ItemStackBuilder;
+import io.papermc.paper.event.player.AsyncChatEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -47,7 +48,7 @@ public class WasteLandListener implements Listener {
             return;
         }
 
-        e.setCancelled(true);
+//        e.setCancelled(true);
 
         // 아이템을 획득할 수 있는 블럭이 아닌 경우
         if(feature.getIdByLocation(e.getClickedBlock().getLocation()) == null) {
@@ -67,7 +68,7 @@ public class WasteLandListener implements Listener {
         Bukkit.getScheduler().runTaskLater(HobeakTownPlugin.plugin, () -> {
             block.setType(map.get(block.getLocation()));
             map.remove(block.getLocation());
-        }, 3 * 60 * 20);
+        }, 20); // <- 테스트 위해 20틱으로 바꿔둠 ( 3 * 60 * 20)
     }
 
     @EventHandler
@@ -108,7 +109,7 @@ public class WasteLandListener implements Listener {
 
     @EventHandler
     public void onBrushGUIClick(InventoryClickEvent e) {
-        if(e.getClickedInventory() == null || !(e.getClickedInventory() instanceof WasteLandBrushGUI)) {
+        if(e.getClickedInventory() == null || !(e.getClickedInventory().getHolder() instanceof WasteLandBrushGUI)) {
             return;
         }
 
@@ -129,18 +130,18 @@ public class WasteLandListener implements Listener {
 
             if(item != null && item.getType() != Material.AIR) {
                 WasteLandFeature.INSTANCE.deleteBrush(item);
-                ((WasteLandBrushGUI) e.getClickedInventory()).reloadGUI();
+                ((WasteLandBrushGUI) e.getClickedInventory().getHolder()).reloadGUI();
             }
         }
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
-        if(e.getClickedInventory() == null || !(e.getClickedInventory() instanceof WasteLandGUI)) {
+        if(e.getClickedInventory() == null || !(e.getClickedInventory().getHolder() instanceof WasteLandGUI)) {
             return;
         }
 
-        if(e.getCurrentItem() != null && e.getCurrentItem().getType() == Material.GLASS_PANE) {
+        if(e.getRawSlot() <= 8 || (18 <= e.getRawSlot() && e.getRawSlot() <= 35) || (45 <= e.getRawSlot() && e.getRawSlot() <= 50) || e.getRawSlot() == 52) {
             e.setCancelled(true);
             return;
         }
@@ -174,7 +175,7 @@ public class WasteLandListener implements Listener {
 
             String id = UUID.randomUUID().toString().split("-")[0];
 
-            ItemStack block = new ItemStackBuilder(Material.SAND).setDisplayName(id).build();
+            ItemStack block = new ItemStackBuilder(e.getCurrentItem().getType()).setDisplayName(id).build();
             e.getWhoClicked().getInventory().addItem(block);
             e.getWhoClicked().closeInventory();
             e.getWhoClicked().sendMessage("§6[황무지]§7 입력한 보상을 얻을 수 있는 블럭을 지급하였습니다.");

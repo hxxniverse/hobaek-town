@@ -1,6 +1,7 @@
 package wasteland;
 
 import io.github.hxxniverse.hobeaktown.util.base.BaseFeature;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -19,7 +20,6 @@ public class WasteLandFeature implements BaseFeature {
     private final Map<Location, String> locIdMap = new HashMap<>();
     private final Map<String, Map<Integer, ItemStack>> idRewardMap = new HashMap<>();
 
-//    private final Map<Integer, ItemStack> guiItemMap = new HashMap<>();
     private final Map<ItemStack, Integer> brushLevelMap = new HashMap<>();
     private final Map<Location, Material> brushedBlocks = new HashMap<>();
 
@@ -27,13 +27,15 @@ public class WasteLandFeature implements BaseFeature {
     public void onEnable(@NotNull JavaPlugin plugin) {
         INSTANCE = this;
 
+        Bukkit.getPluginManager().registerEvents(new WasteLandListener(), plugin);
         WasteLandCommand command = new WasteLandCommand();
         command.register(plugin);
 
         loadData();
 
-        int count = optimizeData();
-        if(count > 0) System.out.println("§6[황무지]§r 자동으로 " + count + "개의 더미 데이터를 최적화 하였습니다.");
+        // 테스트용으로 임시 비활성화 - [문제없음 확인 7/20]
+//        int count = optimizeData();
+//        if(count > 0) System.out.println("§6[황무지]§r 자동으로 " + count + "개의 더미 데이터를 최적화 하였습니다.");
 
         BRUSH_GUI = new WasteLandBrushGUI();
     }
@@ -147,6 +149,7 @@ public class WasteLandFeature implements BaseFeature {
         }
 
         brushLevelMap.put(item, level);
+        reloadBrushGUI();
     }
 
     public int getBrushLevel(ItemStack item) {
@@ -215,6 +218,9 @@ public class WasteLandFeature implements BaseFeature {
         return BRUSH_GUI.getInventory();
     }
 
+    public void reloadBrushGUI() {
+        BRUSH_GUI.reloadGUI();
+    }
 
     private double getWeight(int i) {
         return switch (i) {
