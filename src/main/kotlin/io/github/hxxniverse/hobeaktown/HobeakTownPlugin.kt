@@ -20,7 +20,6 @@ import io.github.hxxniverse.hobeaktown.feature.traffic.TrafficFeature
 import io.github.hxxniverse.hobeaktown.feature.user.UserFeature
 import io.github.hxxniverse.hobeaktown.feature.user_trade.UserTradeFeature
 import io.github.hxxniverse.hobeaktown.feature.vote.VoteFeature
-import wasteland.WasteLandFeature
 import io.github.hxxniverse.hobeaktown.util.command_help.help
 import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 import io.github.monun.kommand.kommand
@@ -28,6 +27,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
+import wasteland.WasteLandFeature
 
 class HobeakTownPlugin : JavaPlugin() {
 
@@ -90,6 +90,7 @@ class HobeakTownPlugin : JavaPlugin() {
                         command("키카드") { description = "키카드 관련 명령어" }
                         command("태그") { description = "태그 관련 명령어" }
                         command("택배") { description = "택배 관련 명령어" }
+                        command("황무지") { description = "황무지 관련 명령어 "}
                     }
                 }
             }

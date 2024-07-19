@@ -1,4 +1,4 @@
-package io.github.hxxniverse.hobeaktown.feature.wasteland;
+package wasteland;
 
 import io.github.hxxniverse.hobeaktown.util.ItemStackBuilder;
 import org.bukkit.Bukkit;
@@ -8,12 +8,10 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Map;
-
-public class WasteLandGui implements InventoryHolder {
+public class WasteLandGUI implements InventoryHolder {
     private final Inventory inventory;
 
-    public WasteLandGui() {
+    public WasteLandGUI() {
         inventory = Bukkit.createInventory(this, 27, "황무지 아이템설정");
 
         // GUI 구성1 : 유리판 경계 생성
@@ -43,10 +41,10 @@ public class WasteLandGui implements InventoryHolder {
         inventory.setItem(35, new ItemStackBuilder(Material.WHITE_STAINED_GLASS).setDisplayName("§r0.5%").build());
 
         // guiMap 에서 inventory 로 ItemStack 불러오기
-        Map<Integer, ItemStack> map = WasteLandFeature.getInstance().getGuiMap();
-        for(Map.Entry<Integer, ItemStack> entry : map.entrySet()) {
-            inventory.setItem(entry.getKey(), entry.getValue());
-        }
+//        Map<Integer, ItemStack> map = WasteLandFeature.INSTANCE.getGuiMap();
+//        for(Map.Entry<Integer, ItemStack> entry : map.entrySet()) {
+//            inventory.setItem(entry.getKey(), entry.getValue());
+//        }
     }
 
     @Override

@@ -14,7 +14,7 @@ class WasteLandCommand : BaseCommand {
                 requires { sender is Player && sender.isOp }
                 then("아이템설정") {
                     executes {
-                        player.openInventory(WasteLandFeature.getInstance().gui);
+                        player.openInventory(WasteLandFeature.INSTANCE.createGUI());
                     }
                 }
                 then("솔") {
@@ -27,9 +27,14 @@ class WasteLandCommand : BaseCommand {
                                 }
 
                                 val level : Int by it
-                                WasteLandFeature.getInstance().setBrushLevel(player.inventory.itemInMainHand, level);
+                                WasteLandFeature.INSTANCE.setBrushLevel(player.inventory.itemInMainHand, level);
                                 player.sendMessage("§6[황무지]§7 손에 들고있는 솔의 등급을§f " + level + "레벨§7로 변경하였습니다.");
                             }
+                        }
+                    }
+                    then("조회") {
+                        executes {
+                            player.openInventory(WasteLandFeature.INSTANCE.openBrushGUI())
                         }
                     }
                 }
