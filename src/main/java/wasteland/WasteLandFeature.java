@@ -14,7 +14,7 @@ import java.util.*;
 
 public class WasteLandFeature implements BaseFeature {
     public static WasteLandFeature INSTANCE;
-    private static final WasteLandBrushGUI BRUSH_GUI = new WasteLandBrushGUI();
+    private WasteLandBrushGUI BRUSH_GUI;
 
     private final Map<Location, String> locIdMap = new HashMap<>();
     private final Map<String, Map<Integer, ItemStack>> idRewardMap = new HashMap<>();
@@ -34,6 +34,8 @@ public class WasteLandFeature implements BaseFeature {
 
         int count = optimizeData();
         if(count > 0) System.out.println("§6[황무지]§r 자동으로 " + count + "개의 더미 데이터를 최적화 하였습니다.");
+
+        BRUSH_GUI = new WasteLandBrushGUI();
     }
 
     @Override

@@ -90,7 +90,7 @@ class HobeakTownPlugin : JavaPlugin() {
                         command("키카드") { description = "키카드 관련 명령어" }
                         command("태그") { description = "태그 관련 명령어" }
                         command("택배") { description = "택배 관련 명령어" }
-                        command("황무지") { description = "황무지 관련 명령어 "}
+                        command("황무지") { description = "황무지 관련 명령어 " }
                     }
                 }
             }
