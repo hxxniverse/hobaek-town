@@ -46,7 +46,7 @@ class BeehiveEditUi(val code: String) : CustomInventory("벌통 수정", 54) {
             Beehive.editRewards(code, newRewards)
 
             it.whoClicked.closeInventory()
-            it.whoClicked.sendMessage("보상이 수정되었습니다.")
+            it.whoClicked.sendMessage("§6[양봉]§7 보상이 성공적으로 수정되었습니다.")
         }
     }
 }

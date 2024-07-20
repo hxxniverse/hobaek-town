@@ -28,14 +28,12 @@ class BeeListener : Listener {
 
         val name: String = e.itemInHand.itemMeta.displayName
 
-        println("호출된건: $name")
-
         if(name.contains("벌통 생성 블럭: ")) {
             val code: String = name.split("벌통 생성 블럭: ")[1]
             BeehiveSetup.getSetupByCode(code) ?: return
             Beehive.createBeehive(code, e.block.location, null, BeehiveSetup.getItemsByCode(code))
 
-            e.player.sendMessage("양봉이 가능한 벌통을 놓았습니다. $code")
+            e.player.sendMessage("§6[양봉]§7 양봉이 가능한 벌통을 놓았습니다. $code")
         }
     }
 
@@ -48,7 +46,7 @@ class BeeListener : Listener {
         Beehive.getByLocation(e.block.location) ?: return
         Beehive.deleteBeehive(e.block.location)
 
-        e.player.sendMessage("양봉이 가능한 벌통을 부셨습니다.")
+        e.player.sendMessage("§6[양봉]§7 양봉이 가능한 벌통을 부셨습니다.")
     }
 
     @EventHandler
@@ -61,11 +59,11 @@ class BeeListener : Listener {
             val bee = Beehive.getByLocation(e.clickedBlock!!.location)
 
             if(bee == null) {
-                e.player.sendMessage("벌통 감지되지 않음")
+//                e.player.sendMessage("벌통 감지되지 않음")
             } else {
                 if(bee.started) {
                     if(bee.ownerUUID!! != e.player.uniqueId) {
-                        e.player.sendMessage("이 벌통은 타인의 것입니다.")
+                        e.player.sendMessage("§6[양봉]§7 이 벌통은 다른 사람이 사용중에 있습니다!")
                         return
                     }
 

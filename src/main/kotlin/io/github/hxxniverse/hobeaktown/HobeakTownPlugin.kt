@@ -28,7 +28,6 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
-import wasteland.WasteLandFeature
 
 class HobeakTownPlugin : JavaPlugin() {
 
@@ -57,7 +56,6 @@ class HobeakTownPlugin : JavaPlugin() {
         FactoryFeature(),
         NbtFeature(),
         SchoolFeature(),
-        WasteLandFeature(),
         BeeFeature()
     )
 

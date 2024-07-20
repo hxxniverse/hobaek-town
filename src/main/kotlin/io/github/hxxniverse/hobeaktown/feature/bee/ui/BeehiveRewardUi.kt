@@ -43,7 +43,7 @@ class BeehiveRewardUi(private val beehive: Beehive) : CustomInventory("벌통", 
             }
 
             it.whoClicked.closeInventory()
-            it.whoClicked.sendMessage("보상이 지급되었습니다.")
+            it.whoClicked.sendMessage("§6[양봉]§7 양봉 보상이 지급되었습니다!")
 
             beehive.reset()
             rewardMap.remove(beehive.id.value)

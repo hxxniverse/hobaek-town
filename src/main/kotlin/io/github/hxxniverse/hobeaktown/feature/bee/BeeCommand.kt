@@ -24,7 +24,7 @@ class BeeCommand : BaseCommand {
                             set.forEach {
                                 sender.sendMessage("[" + (index++) + "] " + it)
                             }
-                            sender.sendMessage("등록된 모든 벌통을 조회하였습니다.")
+                            sender.sendMessage("§6[양봉]§7 등록된 모든 벌통을 조회하였습니다.")
                         }
                     }
                     then("받기") {
@@ -33,12 +33,12 @@ class BeeCommand : BaseCommand {
                                 val name : String by it
 
                                 if(!Beehive.existCode(name)) {
-                                    sender.sendMessage("해당 이름을 가진 벌통은 존재하지 않습니다.")
+                                    sender.sendMessage("§6[양봉]§7 해당 이름을 가진 벌통은 존재하지 않습니다.")
                                     return@executes
                                 }
 
-                                (sender as Player).inventory.addItem(ItemStackBuilder(Material.BEEHIVE).setDisplayName("벌통 생성 블럭: " + name).build())
-                                sender.sendMessage("해당 이름의 벌통을 지급하였습니다.")
+                                (sender as Player).inventory.addItem(ItemStackBuilder(Material.BEEHIVE).setDisplayName("벌통 생성 블럭: $name").build())
+                                sender.sendMessage("§6[양봉]§7 해당 이름을 가진 벌통을 지급하였습니다.")
                             }
                         }
                     }
@@ -48,7 +48,7 @@ class BeeCommand : BaseCommand {
                                 val name : String by it
 
                                 if(Beehive.existCode(name)) {
-                                    sender.sendMessage("해당 이름의 벌통은 이미 존재합니다.")
+                                    sender.sendMessage("§6[양봉]§7 해당 이름의 벌통은 이미 존재합니다.")
                                     return@executes
                                 }
 
@@ -62,7 +62,7 @@ class BeeCommand : BaseCommand {
                                 val name : String by it
 
                                 if(!Beehive.existCode(name)) {
-                                    sender.sendMessage("해당 이름의 벌통이 존재하지 않습니다.")
+                                    sender.sendMessage("§6[양봉]§7 해당 이름의 벌통이 존재하지 않습니다.")
                                     return@executes
                                 }
 

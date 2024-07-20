@@ -24,7 +24,7 @@ class BeehiveUi(private val beehive: Beehive) : CustomInventory("벌통", 54) {
         button(5 to 4, 5 to 6, icon {
             type = Material.GREEN_STAINED_GLASS_PANE
             name = "§a양봉 시작".component()
-            lore = listOf("".component(), "§7꿀을 1개씩 가득 채우고 눌러주세요".component())
+            lore = listOf("".component(), "§7꿀을 1개씩 가득 채우고 누르세요.".component())
         }) {
             val player = it.whoClicked as Player
             val currentState = mutableMapOf<Int, ItemStack>()
@@ -49,7 +49,7 @@ class BeehiveUi(private val beehive: Beehive) : CustomInventory("벌통", 54) {
                 }
 
                 player.closeInventory()
-                player.sendMessage("§c모든 슬롯을 꿀 블록 1개씩으로 채워주세요.")
+                player.sendMessage("§6[양봉]§7 모든 슬롯을 벌집 1개씩 채워주세요!")
 
                 return@button
             }
@@ -57,7 +57,7 @@ class BeehiveUi(private val beehive: Beehive) : CustomInventory("벌통", 54) {
             beehive.start(player.uniqueId)
 
             player.closeInventory()
-            player.sendMessage("양봉이 시작되었습니다.")
+            player.sendMessage("§6[양봉]§7 양봉이 시작되었습니다! 1시간이 소요됩니다.")
         }
     }
 }
