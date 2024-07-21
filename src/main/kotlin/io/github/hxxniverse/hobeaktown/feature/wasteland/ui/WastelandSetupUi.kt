@@ -61,7 +61,7 @@ class WastelandSetupUi(private val code: String) : CustomInventory("황무지 �
 
             player.inventory.addItem(ItemStackBuilder(Material.GRAVEL).setDisplayName("황무지 설정 블럭 - $code").build())
             player.closeInventory()
-            player.sendMessage("황무지용 자갈 블럭이 생성되었습니다: $code")
+            player.sendMessage("§6[황무지]§7 황무지용 자갈 블럭이 생성되었습니다: $code")
         }
 
         button(6 to 9, ItemStackBuilder(Material.SAND).setDisplayName("모래 블럭 생성").build()) {
@@ -91,7 +91,7 @@ class WastelandSetupUi(private val code: String) : CustomInventory("황무지 �
 
             player.inventory.addItem(ItemStackBuilder(Material.SAND).setDisplayName("황무지 설정 블럭 - $code").build())
             player.closeInventory()
-            player.sendMessage("황무지용 모래 블럭이 생성되었습니다: $code")
+            player.sendMessage("§6[황무지]§7 황무지용 모래 블럭이 생성되었습니다: $code")
         }
     }
 }

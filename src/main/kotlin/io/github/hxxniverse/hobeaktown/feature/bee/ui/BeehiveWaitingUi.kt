@@ -9,6 +9,7 @@ class BeehiveWaitingUi(private val beehive: Beehive) : CustomInventory("벌통",
     init {
         background(BACKGROUND)
 
+        // TODO(구현 연구)
         display(3 to 4, 4 to 6, ItemStackBuilder(Material.CLOCK)
             .setDisplayName("진행중")
             .addLore("")

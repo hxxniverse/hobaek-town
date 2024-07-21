@@ -10,24 +10,26 @@ import org.jetbrains.exposed.dao.id.IntIdTable
 
 object Brushes : IntIdTable() {
     val level = integer("level")
+    val name = text("name")
     val item = itemStack("itemstack")
 }
 
 class Brush(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<Brush>(Brushes) {
-        fun registerBrush(item: ItemStack, level: Int) {
+        fun registerBrush(name: String, item: ItemStack, level: Int) {
             loggedTransaction {
                 Brush.new {
+                    this.name = name
                     this.item = item
                     this.level = level
                 }
             }
         }
 
-        fun unregisterBrush(item: ItemStack) {
+        fun unregisterBrush(name: String) {
             loggedTransaction {
                 Brush.find {
-                    Brushes.item eq item
+                    Brushes.name eq name
                 }.forEach { it.delete() }
             }
         }
@@ -37,8 +39,23 @@ class Brush(id: EntityID<Int>) : IntEntity(id) {
                 Brush.all().toList()
             }
         }
+
+        fun getByName(name: String): Brush? {
+            return loggedTransaction {
+                Brush.find {
+                    Brushes.name eq name
+                }.firstOrNull()
+            }
+        }
+
+        fun getByItemStack(itemStack: ItemStack): Brush? {
+            return loggedTransaction {
+                Brush.find { Brushes.item eq itemStack }.firstOrNull()
+            }
+        }
     }
 
     var level by Brushes.level
+    var name by Brushes.name
     var item by Brushes.item
 }
