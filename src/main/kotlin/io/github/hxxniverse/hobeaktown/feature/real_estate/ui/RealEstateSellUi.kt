@@ -12,11 +12,11 @@ class RealEstateSellUi(
             // 5,2 - 정보
             button(2 to 5, realEstate.toItemStack())
             // 2,3 ~ 3,3 - 취소
-            button(3 to 2, 3 to 3, CANCEL) {
+            button(3 to 2, 3 to 3, CANCEL_ICON) {
                 player.closeInventory()
             }
             // 7,3 ~ 8,3 - 확인
-            button(3 to 7, 3 to 8, CONFIRM) {
+            button(3 to 7, 3 to 8, CONFIRM_ICON) {
                 realEstate.sell(player)
                 player.closeInventory()
                 player.inventory.itemInMainHand.amount = 0

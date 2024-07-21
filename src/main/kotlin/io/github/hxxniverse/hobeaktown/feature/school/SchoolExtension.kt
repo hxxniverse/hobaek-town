@@ -14,3 +14,15 @@ var Player.curGrade: Int
             UserGrade.findOrCreate(uniqueId).curGrade
         }
     }
+
+var Player.maxGrade: Int
+    get() {
+        return transaction {
+            UserGrade.findOrCreate(uniqueId).maxGrade
+        }
+    }
+    set(value) {
+        transaction {
+            UserGrade.findOrCreate(uniqueId).maxGrade = value
+        }
+    }

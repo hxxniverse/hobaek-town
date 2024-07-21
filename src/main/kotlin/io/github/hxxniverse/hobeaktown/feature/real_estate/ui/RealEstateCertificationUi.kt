@@ -4,6 +4,7 @@ import io.github.hxxniverse.hobeaktown.feature.real_estate.RealEstate
 import io.github.hxxniverse.hobeaktown.feature.real_estate.toItemStack
 import io.github.hxxniverse.hobeaktown.util.AnvilInventory
 import io.github.hxxniverse.hobeaktown.util.extension.component
+import io.github.hxxniverse.hobeaktown.util.extension.sendErrorMessage
 import io.github.hxxniverse.hobeaktown.util.inventory.CustomInventory
 import net.wesjd.anvilgui.AnvilGUI
 import org.bukkit.Bukkit
@@ -50,12 +51,12 @@ class RealEstateCertificationUi(
                         val offlinePlayer = Bukkit.getOfflinePlayerIfCached(nickname)
 
                         if (offlinePlayer == null) {
-                            player.sendMessage("존재하지 않는 플레이어입니다.")
+                            player.sendErrorMessage("존재하지 않는 플레이어입니다.")
                             return@AnvilInventory listOf(AnvilGUI.ResponseAction.close())
                         }
 
                         if (!offlinePlayer.hasPlayedBefore()) {
-                            player.sendMessage("존재하지 않는 플레이어입니다.")
+                            player.sendErrorMessage("존재하지 않는 플레이어입니다.")
                             return@AnvilInventory listOf(AnvilGUI.ResponseAction.close())
                         }
 

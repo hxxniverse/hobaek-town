@@ -1,12 +1,12 @@
 package io.github.hxxniverse.hobeaktown.feature.economy.ui
 
 import io.github.hxxniverse.hobeaktown.feature.economy.util.money
+import io.github.hxxniverse.hobeaktown.feature.user.user
 import io.github.hxxniverse.hobeaktown.util.AnvilInventory
-import io.github.hxxniverse.hobeaktown.util.edit
+import io.github.hxxniverse.hobeaktown.util.extension.sendErrorMessage
+import io.github.hxxniverse.hobeaktown.util.extension.sendInfoMessage
 import net.wesjd.anvilgui.AnvilGUI
-import org.bukkit.Material
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 
 class AtmRemittanceAmountUi(
     private val target: Player,
@@ -15,38 +15,32 @@ class AtmRemittanceAmountUi(
         AnvilInventory(
             title = "송금 금액 입력",
             text = "송금하실 금액을 입력해주세요",
-            itemInputLeft = ItemStack(Material.PAPER).edit {
-                addLore("금액을 입력해주세요.")
-            },
-            itemOutput = ItemStack(Material.PAPER).edit {
-                addLore("클릭 시 송금이 완료됩니다.")
-            },
             onClose = {
             },
             onClickResult = { result ->
                 val money = result.text.replace("_", "").toIntOrNull()
                 if (money == null) {
-                    player.sendMessage("숫자만 입력해주세요.")
+                    player.sendErrorMessage("숫자만 입력해주세요.")
                     return@AnvilInventory listOf(AnvilGUI.ResponseAction.replaceInputText("_"))
                 }
 
                 if (money <= 0) {
-                    player.sendMessage("0보다 큰 금액을 입력해주세요.")
+                    player.sendErrorMessage("0보다 큰 금액을 입력해주세요.")
                     return@AnvilInventory listOf(AnvilGUI.ResponseAction.replaceInputText("_"))
                 }
 
-                if (player.money < money) {
-                    player.sendMessage("돈이 부족합니다.")
+                if (player.user.money < money) {
+                    player.sendErrorMessage("돈이 부족합니다.")
                     return@AnvilInventory listOf(AnvilGUI.ResponseAction.replaceInputText("_"))
                 }
 
-                player.money -= money
-                target.money += money
+                player.user.money -= money
+                target.user.money += money
 
-                player.sendMessage("송금이 완료되었습니다.")
+                player.sendInfoMessage("송금이 완료되었습니다.")
 
                 if (target.isOnline) {
-                    target.sendMessage("${player.name}님으로부터 ${money}원을 받았습니다.")
+                    target.sendInfoMessage("${player.name}님으로부터 ${money}원을 받았습니다.")
                 }
 
                 return@AnvilInventory listOf(AnvilGUI.ResponseAction.close())

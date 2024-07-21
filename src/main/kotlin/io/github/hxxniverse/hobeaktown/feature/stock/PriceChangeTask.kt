@@ -5,7 +5,7 @@ import io.github.hxxniverse.hobeaktown.feature.stock.entity.StockHistory
 import io.github.hxxniverse.hobeaktown.util.BaseScheduler
 import io.github.hxxniverse.hobeaktown.util.extension.component
 import org.bukkit.Bukkit
-import org.jetbrains.exposed.sql.transactions.transaction
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 
 object PriceChangeTask : BaseScheduler(
     repeat = true,
@@ -15,7 +15,7 @@ object PriceChangeTask : BaseScheduler(
     }
 
     override suspend fun onEach(count: Int) {
-        transaction {
+        loggedTransaction {
             Stock.all().forEach {
                 if (it.currentPrice == -1) {
                     return@forEach
@@ -31,7 +31,7 @@ object PriceChangeTask : BaseScheduler(
                     it.beforePrice = -1
                     Bukkit.broadcast("${it.name}이 상장폐지 되었습니다.".component())
                 }
-                transaction {
+                loggedTransaction {
                     StockHistory.new(
                         stock = it,
                         price = it.currentPrice,

@@ -4,7 +4,7 @@ import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
-import org.jetbrains.exposed.sql.transactions.transaction
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 
 class QuarryListener : Listener {
     @EventHandler
@@ -13,17 +13,17 @@ class QuarryListener : Listener {
         val block = event.block
         val item = player.inventory.itemInMainHand
 
-        if (transaction { Quarry.all().none { it.inQuarry(block) } }) {
-            println("not in quarry")
+        if (loggedTransaction { Quarry.all().none { it.inQuarry(block) } }) {
             return
         }
 
         event.isCancelled = true
 
         if (!item.isPickForMining()) {
-            println("not pickaxe")
             return
         }
+
+        block.getDrops(item).forEach { player.inventory.addItem(it) }
 
         val availableTypes = listOf(Material.STONE, Material.COAL_ORE, Material.IRON_ORE, Material.GOLD_ORE, Material.DIAMOND_ORE, Material.EMERALD_ORE)
 

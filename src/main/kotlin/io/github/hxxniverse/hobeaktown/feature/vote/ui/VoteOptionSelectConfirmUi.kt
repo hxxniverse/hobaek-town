@@ -9,7 +9,7 @@ import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import org.jetbrains.exposed.sql.transactions.transaction
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 
 class VoteOptionSelectConfirmUi(
     private val vote: Vote,
@@ -17,7 +17,7 @@ class VoteOptionSelectConfirmUi(
 ) : CustomInventory("VoteOptionSelectConfirm", 54) {
     init {
         inventory {
-            transaction {
+            loggedTransaction {
                 background(ItemStack(Material.GRAY_STAINED_GLASS_PANE))
 
                 button(

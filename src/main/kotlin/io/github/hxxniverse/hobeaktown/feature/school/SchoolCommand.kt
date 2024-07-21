@@ -1,5 +1,6 @@
 package io.github.hxxniverse.hobeaktown.feature.school;
 
+import io.github.hxxniverse.hobeaktown.HobeakTownPlugin.Companion.plugin
 import io.github.hxxniverse.hobeaktown.feature.keycard.entity.Role
 import io.github.hxxniverse.hobeaktown.feature.keycard.entity.Roles
 import io.github.hxxniverse.hobeaktown.feature.keycard.entity.UserKeyCard
@@ -12,8 +13,11 @@ import io.github.monun.kommand.getValue
 import io.github.monun.kommand.kommand
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
+import org.bukkit.boss.BarColor
+import org.bukkit.boss.BarStyle
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
+import org.bukkit.scheduler.BukkitRunnable
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
@@ -115,7 +119,7 @@ class SchoolCommand : BaseCommand {
                     executes { player.sendMessage("명령어 도우미: /학교 help") }
                     then("answer" to string(StringType.QUOTABLE_PHRASE)){
                         executes {
-
+                            QuestionTask.startTimer(plugin, sender as Player)
                         }
                     }
                 }
@@ -126,7 +130,10 @@ class SchoolCommand : BaseCommand {
                     then("player" to player()){
                         then("credit" to int()){
                             executes {
-
+                                val player: Player by it
+                                val credit: Int by it
+                                player.curGrade = (player.curGrade + credit).coerceAtMost(player.maxGrade);
+                                player.sendMessage("학점이 ${credit}점 추가되었습니다.")
                             }
                         }
                     }
@@ -139,12 +146,18 @@ class SchoolCommand : BaseCommand {
             }
             register("졸업"){
                 executes {
-
+                    if(player.curGrade == 10){
+                        player.sendMessage("축하드립니다! 졸업하셨습니다!")
+                        UserKeyCard.updateMemberRole(player.uniqueId, "졸업생")
+                    }
                 }
                 then("관리"){
                     requires { sender.isOp }
-                    executes {
-
+                    then("player" to player()){
+                        executes {
+                            val player: Player by it
+                            UserKeyCard.updateMemberRole(player.uniqueId, "졸업생")
+                        }
                     }
                 }
             }

@@ -3,6 +3,7 @@ package io.github.hxxniverse.hobeaktown.feature.real_estate
 import io.github.hxxniverse.hobeaktown.feature.economy.util.hasMoney
 import io.github.hxxniverse.hobeaktown.feature.economy.util.money
 import io.github.hxxniverse.hobeaktown.feature.real_estate.RealEstateMembers.expirationDate
+import io.github.hxxniverse.hobeaktown.feature.user.user
 import io.github.hxxniverse.hobeaktown.util.database.location
 import io.github.hxxniverse.hobeaktown.util.extension.getBlockList
 import io.github.hxxniverse.hobeaktown.util.extension.component
@@ -23,7 +24,9 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.javatime.datetime
-import org.jetbrains.exposed.sql.transactions.transaction
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
+import io.github.hxxniverse.hobeaktown.util.extension.sendErrorMessage
+import io.github.hxxniverse.hobeaktown.util.extension.sendInfoMessage
 import java.time.LocalDateTime
 import kotlin.math.max
 import kotlin.math.min
@@ -55,7 +58,7 @@ class RealEstate(id: EntityID<Int>) : IntEntity(id) {
             pos1: Location,
             pos2: Location,
             signLocation: Location,
-        ) = transaction {
+        ) = loggedTransaction {
             new {
                 this.name = name
                 this.price = price
@@ -68,10 +71,10 @@ class RealEstate(id: EntityID<Int>) : IntEntity(id) {
         }
 
         fun list(player: Player) {
-            player.sendMessage("부동산 목록")
-            transaction {
+            player.sendInfoMessage("부동산 목록")
+            loggedTransaction {
                 RealEstate.find { RealEstates.owner eq player.uniqueId }.forEach {
-                    player.sendMessage("${it.name} ${it.pos1} ${it.due}일")
+                    player.sendInfoMessage("${it.name} ${it.pos1} ${it.due}일")
                 }
             }
         }
@@ -101,7 +104,7 @@ class RealEstate(id: EntityID<Int>) : IntEntity(id) {
         return "RealEstate(name='$name', price=$price, due=$due, type=$type, owner=$owner, pos1=$pos1, pos2=$pos2, rentStartDate=$rentStartDate, rentEndDate=$rentEndDate, signLocation=$signLocation, grade=$grade)"
     }
 
-    fun updateSign() = transaction {
+    fun updateSign() = loggedTransaction {
         val line1 = name
         val line2 = "가격 : $price"
         // 만약 rentStartDate 가 null 이라면 due 값을 그게 아니라면 rentStartDate ~ rentEndDate 값을 보여줌 포맷은 MM.dd
@@ -117,7 +120,6 @@ class RealEstate(id: EntityID<Int>) : IntEntity(id) {
             it.setLine(2, line3)
             it.setLine(3, line4)
             it.update(true)
-            println(it)
         }
 
         armorStands.filter {
@@ -172,35 +174,35 @@ class RealEstate(id: EntityID<Int>) : IntEntity(id) {
     }
 
     // 해당 영토에 있는지 체크
-    fun isInside(location: Location): Boolean = transaction {
+    fun isInside(location: Location): Boolean = loggedTransaction {
         if (type == RealEstateType.LAND) {
             if (pos1.y == pos2.y) {
-                return@transaction location.x.toInt() in pos1.x.toInt()..pos2.x.toInt() && location.z.toInt() in pos1.z.toInt()..pos2.z.toInt()
+                return@loggedTransaction location.x.toInt() in pos1.x.toInt()..pos2.x.toInt() && location.z.toInt() in pos1.z.toInt()..pos2.z.toInt()
             }
         }
 
-        return@transaction location.x.toInt() in pos1.x.toInt()..pos2.x.toInt() && location.y.toInt() in pos1.y.toInt()..pos2.y.toInt() && location.z.toInt() in pos1.z.toInt()..pos2.z.toInt()
+        return@loggedTransaction location.x.toInt() in pos1.x.toInt()..pos2.x.toInt() && location.y.toInt() in pos1.y.toInt()..pos2.y.toInt() && location.z.toInt() in pos1.z.toInt()..pos2.z.toInt()
     }
 
-    fun isOwner(player: OfflinePlayer): Boolean = transaction {
-        return@transaction player.uniqueId == owner
+    fun isOwner(player: OfflinePlayer): Boolean = loggedTransaction {
+        return@loggedTransaction player.uniqueId == owner
     }
 
-    fun isMember(player: Player): Boolean = transaction {
-        return@transaction RealEstateMember.find {
+    fun isMember(player: Player): Boolean = loggedTransaction {
+        return@loggedTransaction RealEstateMember.find {
             RealEstateMembers.realEstate eq this@RealEstate.id and (RealEstateMembers.member eq player.uniqueId) and (expirationDate greaterEq LocalDateTime.now())
         }.firstOrNull() != null
     }
 
-    fun buy(player: Player) = transaction {
+    fun buy(player: Player) = loggedTransaction {
         if (isOwner(player)) {
-            player.sendMessage("이미 소유하고 있는 토지입니다.")
-            return@transaction
+            player.sendErrorMessage("이미 소유하고 있는 토지입니다.")
+            return@loggedTransaction
         }
 
-        if (player.hasMoney(price).not()) {
-            player.sendMessage("돈이 부족합니다.")
-            return@transaction
+        if (player.user.hasMoney(price).not()) {
+            player.sendErrorMessage("돈이 부족합니다.")
+            return@loggedTransaction
         }
 
         owner = player.uniqueId
@@ -208,15 +210,20 @@ class RealEstate(id: EntityID<Int>) : IntEntity(id) {
         rentEndDate = rentStartDate?.plusDays(due.toLong())
         val certificate = RealEstatesItem.REAL_ESTATE_CERTIFICATE(this@RealEstate)
         player.inventory.addItem(certificate)
-        player.sendMessage("토지를 구매하였습니다.")
-        return@transaction
+        player.sendInfoMessage("토지를 구매하였습니다.")
+        player.user.money -= price
+        player.sendInfoMessage("토지를 구매하여 ${price}원이 차감되었습니다.")
+        return@loggedTransaction
     }
 
-    fun sell(player: Player) = transaction {
+    fun sell(player: Player) = loggedTransaction {
+
         if (isOwner(player).not()) {
-            player.sendMessage("소유하고 있지 않은 토지입니다.")
-            return@transaction
+            player.sendErrorMessage("소유하고 있지 않은 토지입니다.")
+            return@loggedTransaction
         }
+
+
 
         owner = null
         rentStartDate = null
@@ -225,26 +232,26 @@ class RealEstate(id: EntityID<Int>) : IntEntity(id) {
 
         updateSign()
 
-        player.money += price
-        player.sendMessage("토지를 판매하였습니다.")
+        player.user.money += price
+        player.sendInfoMessage("토지를 판매하였습니다.")
     }
 
-    fun transfer(player: Player, target: OfflinePlayer) = transaction {
+    fun transfer(player: Player, target: OfflinePlayer) = loggedTransaction {
         if (isOwner(player).not()) {
-            player.sendMessage("소유하고 있지 않은 토지입니다.")
-            return@transaction
+            player.sendErrorMessage("소유하고 있지 않은 토지입니다.")
+            return@loggedTransaction
         }
 
         if (isOwner(target)) {
-            player.sendMessage("이미 소유하고 있는 토지입니다.")
-            return@transaction
+            player.sendErrorMessage("이미 소유하고 있는 토지입니다.")
+            return@loggedTransaction
         }
 
         owner = target.uniqueId
-        player.sendMessage("토지를 양도하였습니다.")
+        player.sendInfoMessage("토지를 양도하였습니다.")
     }
 
-    fun clean() = transaction {
+    fun clean() = loggedTransaction {
         val initBlocks = getScheme()
         val currentBlocks = (pos1 to pos2).getBlockList()
 
@@ -253,27 +260,27 @@ class RealEstate(id: EntityID<Int>) : IntEntity(id) {
         diff.forEach { block -> block.type = Material.AIR }
     }
 
-    fun invite(player: Player, target: Player) = transaction {
+    fun invite(player: Player, target: Player) = loggedTransaction {
         if (isOwner(player).not()) {
-            player.sendMessage("소유하고 있지 않은 토지입니다.")
-            return@transaction
+            player.sendErrorMessage("소유하고 있지 않은 토지입니다.")
+            return@loggedTransaction
         }
 
         // 이미 초대되고, 권한이 만기가 안되어 있다면
         if (isMember(target)) {
-            player.sendMessage("이미 초대한 플레이어입니다.")
-            return@transaction
+            player.sendErrorMessage("이미 초대한 플레이어입니다.")
+            return@loggedTransaction
         }
 
         RealEstateMember.create(this@RealEstate, target.uniqueId, LocalDateTime.now().withYear(2500))
-        player.sendMessage("플레이어를 초대하였습니다.")
-        target.sendMessage("토지에 초대되었습니다.")
+        player.sendInfoMessage("플레이어를 초대하였습니다.")
+        target.sendInfoMessage("토지에 초대되었습니다.")
     }
 
-    fun kick(player: Player, target: Player) = transaction {
+    fun kick(player: Player, target: Player) = loggedTransaction {
         if (isOwner(player).not()) {
-            player.sendMessage("소유하고 있지 않은 토지입니다.")
-            return@transaction
+            player.sendErrorMessage("소유하고 있지 않은 토지입니다.")
+            return@loggedTransaction
         }
 
         val member = RealEstateMember.find {
@@ -281,46 +288,46 @@ class RealEstate(id: EntityID<Int>) : IntEntity(id) {
         }.firstOrNull()
 
         if (member == null) {
-            player.sendMessage("초대되지 않은 플레이어입니다.")
-            return@transaction
+            player.sendErrorMessage("초대되지 않은 플레이어입니다.")
+            return@loggedTransaction
         }
 
         member.delete()
-        player.sendMessage("플레이어를 추방하였습니다.")
-        target.sendMessage("토지에서 추방되었습니다.")
+        player.sendInfoMessage("플레이어를 추방하였습니다.")
+        target.sendInfoMessage("토지에서 추방되었습니다.")
     }
 
-    fun listMembers(player: Player) = transaction {
-        player.sendMessage("토지 멤버 목록")
+    fun listMembers(player: Player) = loggedTransaction {
+        player.sendInfoMessage("토지 멤버 목록")
         RealEstateMember.find { RealEstateMembers.realEstate eq this@RealEstate.id }.forEach {
-            player.sendMessage("${Bukkit.getOfflinePlayer(it.member).name} ${it.expirationDate}")
+            player.sendInfoMessage("${Bukkit.getOfflinePlayer(it.member).name} ${it.expirationDate}")
         }
     }
 
-    fun extend(player: Player) = transaction {
+    fun extend(player: Player) = loggedTransaction {
         if (isOwner(player).not()) {
-            player.sendMessage("소유하고 있지 않은 토지입니다.")
-            return@transaction
+            player.sendErrorMessage("소유하고 있지 않은 토지입니다.")
+            return@loggedTransaction
         }
 
         rentEndDate = rentEndDate?.plusDays(due.toLong())
-        player.sendMessage("토지 기간을 연장하였습니다.")
+        player.sendInfoMessage("토지 기간을 연장하였습니다.")
     }
 
     // 대여는 멤버 추가하고 상태를 RENT 로 변경
-    fun rent(player: Player, target: Player, price: Int) = transaction {
+    fun rent(player: Player, target: Player, price: Int) = loggedTransaction {
         if (isOwner(player).not()) {
-            player.sendMessage("소유하고 있지 않은 토지입니다.")
-            return@transaction
+            player.sendErrorMessage("소유하고 있지 않은 토지입니다.")
+            return@loggedTransaction
         }
 
         if (isOwner(target)) {
-            player.sendMessage("이미 소유하고 있는 토지입니다.")
-            return@transaction
+            player.sendErrorMessage("이미 소유하고 있는 토지입니다.")
+            return@loggedTransaction
         }
 
         RealEstateMember.create(this@RealEstate, target.uniqueId, LocalDateTime.now().plusDays(due.toLong()))
-        player.sendMessage("토지를 대여하였습니다.")
+        player.sendInfoMessage("토지를 대여하였습니다.")
     }
 }
 

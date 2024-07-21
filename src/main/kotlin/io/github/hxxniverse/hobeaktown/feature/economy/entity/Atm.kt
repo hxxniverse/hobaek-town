@@ -6,7 +6,7 @@ import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
-import org.jetbrains.exposed.sql.transactions.transaction
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 
 object Atms : IntIdTable() {
     val location = location("location")
@@ -16,12 +16,12 @@ object Atms : IntIdTable() {
 class Atm(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<Atm>(Atms) {
         // find by location
-        fun findByLocation(location: Location) = transaction {
+        fun findByLocation(location: Location) = loggedTransaction {
             find { Atms.location eq location }.firstOrNull()
         }
 
         // create
-        fun create(location: Location) = transaction {
+        fun create(location: Location) = loggedTransaction {
             new {
                 this.location = location
             }

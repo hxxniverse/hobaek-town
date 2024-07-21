@@ -6,11 +6,11 @@ import io.github.hxxniverse.hobeaktown.feature.keycard.entity.*
 import io.github.hxxniverse.hobeaktown.util.base.BaseFeature
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.transactions.transaction
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 
 class KeyCardFeature : BaseFeature {
     override fun onEnable(plugin: JavaPlugin) {
-        transaction {
+        loggedTransaction {
             SchemaUtils.create(KeyCards, KeyCardDoors, Roles, UserKeyCards)
             Role.initialize()
         }
@@ -21,6 +21,7 @@ class KeyCardFeature : BaseFeature {
     }
 
     override fun onDisable(plugin: JavaPlugin) {
+        plugin.logger.info("[키카드 플러그인] 키카드 역할 플러그인 종료")
     }
 }
 

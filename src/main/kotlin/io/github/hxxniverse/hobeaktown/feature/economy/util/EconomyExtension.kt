@@ -1,42 +1,32 @@
 package io.github.hxxniverse.hobeaktown.feature.economy.util
 
 import io.github.hxxniverse.hobeaktown.feature.economy.entity.UserMoney
+import io.github.hxxniverse.hobeaktown.feature.user.User
 import io.github.hxxniverse.hobeaktown.util.ItemStackBuilder
 import io.github.hxxniverse.hobeaktown.util.edit
 import io.github.hxxniverse.hobeaktown.util.extension.getPersistentData
+import kotlinx.serialization.Serializable
 import org.bukkit.Material
-import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.text.DecimalFormat
-import kotlinx.serialization.Serializable
 
-var Player.money: Int
+var User.money: Int
     set(value) {
-        transaction {
-            UserMoney.findOrCreate(uniqueId).money = value
-        }
+        transaction { UserMoney.findOrCreate(this@money.id.value).money = value }
     }
-    get() {
-        return transaction {
-            UserMoney.findOrCreate(uniqueId).money
-        }
-    }
+    get() = transaction { UserMoney.findOrCreate(this@money.id.value).money }
 
-fun Player.hasMoney(money: Int): Boolean {
+fun User.hasMoney(money: Int): Boolean {
     return this.money >= money
 }
 
-var Player.cash: Int
+var User.cash: Int
     set(value) {
-        transaction {
-            UserMoney.findOrCreate(uniqueId).cash = value
-        }
+        transaction { UserMoney.findOrCreate(this@cash.id.value).cash = value }
     }
     get() {
-        return transaction {
-            UserMoney.findOrCreate(uniqueId).cash
-        }
+        return transaction { UserMoney.findOrCreate(this@cash.id.value).cash }
     }
 
 @Serializable

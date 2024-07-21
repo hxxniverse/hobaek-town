@@ -13,6 +13,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.SQLException
 
@@ -51,7 +52,7 @@ class TagCommand() : BaseCommand {
 
                             player.sendMessage("입력된 역할: $role")
 
-                            transaction {
+                            loggedTransaction {
                                 try {
                                     if (!Role.isExistsRole(role)) {
                                         Role.new {
@@ -123,7 +124,7 @@ class TagCommand() : BaseCommand {
                                 val player: Player by it
                                 val role: String by it
 
-                                transaction {
+                                loggedTransaction {
                                     try {
                                         UserKeyCard.updateMemberRole(player.uniqueId, role);
                                         player.sendMessage("플레이어의 역할이 변경되었습니다.")

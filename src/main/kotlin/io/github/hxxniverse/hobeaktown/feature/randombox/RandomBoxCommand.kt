@@ -4,12 +4,12 @@ import io.github.hxxniverse.hobeaktown.feature.randombox.entity.RandomBox
 import io.github.hxxniverse.hobeaktown.feature.randombox.entity.RandomBoxes
 import io.github.hxxniverse.hobeaktown.util.ItemStackBuilder
 import io.github.hxxniverse.hobeaktown.util.base.BaseCommand
-import io.github.hxxniverse.hobeaktown.util.edit
+import io.github.hxxniverse.hobeaktown.util.command_help.help
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 import io.github.monun.kommand.getValue
 import io.github.monun.kommand.kommand
 import org.bukkit.Material
 import org.bukkit.plugin.java.JavaPlugin
-import org.jetbrains.exposed.sql.transactions.transaction
 
 /**
  * 명령어 리스트 ( Command list )
@@ -24,15 +24,36 @@ class RandomBoxCommand : BaseCommand {
     override fun register(plugin: JavaPlugin) {
         plugin.kommand {
             register("randombox") {
+                then("help") {
+                    executes {
+                        help("randombox") {
+                            command("randombox create <name>") {
+                                description = "랜덤박스를 생성합니다."
+                            }
+                            command("randombox delete <name>") {
+                                description = "랜덤박스를 삭제합니다."
+                            }
+                            command("randombox edit <name>") {
+                                description = "랜덤박스를 수정합니다."
+                            }
+                            command("randombox list") {
+                                description = "랜덤박스 목록을 확인합니다."
+                            }
+                            command("randombox get <name>") {
+                                description = "랜덤박스를 얻습니다."
+                            }
+                        }
+                    }
+                }
                 then("create") {
                     then("name" to string()) {
                         executes {
-                            transaction {
+                            loggedTransaction {
                                 val name: String by it
 
                                 if (RandomBox.find { RandomBoxes.name eq name }.firstOrNull() != null) {
                                     player.sendMessage("이미 존재하는 이름의 랜덤박스입니다.")
-                                    return@transaction
+                                    return@loggedTransaction
                                 }
 
                                 val randomBox = RandomBox.new {
@@ -57,14 +78,14 @@ class RandomBoxCommand : BaseCommand {
                 then("delete") {
                     then("name" to string()) {
                         executes {
-                            transaction {
+                            loggedTransaction {
                                 val name: String by it
 
                                 val randomBox = RandomBox.find { RandomBoxes.name eq name }.firstOrNull()
 
                                 if (randomBox == null) {
                                     player.sendMessage("해당 이름의 랜덤박스가 존재하지 않습니다.")
-                                    return@transaction
+                                    return@loggedTransaction
                                 }
 
                                 randomBox.delete()
@@ -76,14 +97,14 @@ class RandomBoxCommand : BaseCommand {
                 then("edit") {
                     then("name" to string()) {
                         executes {
-                            transaction {
+                            loggedTransaction {
                                 val name: String by it
 
                                 val randomBox = RandomBox.find { RandomBoxes.name eq name }.firstOrNull()
 
                                 if (randomBox == null) {
                                     player.sendMessage("해당 이름의 랜덤박스가 존재하지 않습니다.")
-                                    return@transaction
+                                    return@loggedTransaction
                                 }
 
                                 RandomBoxSetItemUi(randomBox).open(player)
@@ -94,7 +115,7 @@ class RandomBoxCommand : BaseCommand {
                 }
                 then("list") {
                     executes {
-                        transaction {
+                        loggedTransaction {
                             val randomBoxes = RandomBox.all()
                             randomBoxes.forEach {
                                 sender.sendMessage(it.name)
@@ -105,14 +126,14 @@ class RandomBoxCommand : BaseCommand {
                 then("get") {
                     then("name" to string()) {
                         executes {
-                            transaction {
+                            loggedTransaction {
                                 val name: String by it
 
                                 val randomBox = RandomBox.find { RandomBoxes.name eq name }.firstOrNull()
 
                                 if (randomBox == null) {
                                     player.sendMessage("해당 이름의 랜덤박스가 존재하지 않습니다.")
-                                    return@transaction
+                                    return@loggedTransaction
                                 }
 
                                 player.inventory.addItem(randomBox.itemStack)

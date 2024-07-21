@@ -1,20 +1,19 @@
 package io.github.hxxniverse.hobeaktown.feature.stock.util
 
 import io.github.hxxniverse.hobeaktown.feature.stock.entity.*
-import io.github.hxxniverse.hobeaktown.feature.user.user
-import org.bukkit.entity.Player
+import io.github.hxxniverse.hobeaktown.feature.user.User
 import org.jetbrains.exposed.sql.and
 
-fun Player.getStocks() = UserStock.find { UserStocks.user eq user.id }.toList()
+fun User.getStocks() = UserStock.find { UserStocks.user eq id }.toList()
 
-fun Player.getStock(stock: Stock) =
-    UserStock.find { (UserStocks.user eq user.id) and (UserStocks.stockId eq stock.id) }.firstOrNull()
+fun User.getStock(stock: Stock) =
+    UserStock.find { (UserStocks.user eq id) and (UserStocks.stockId eq stock.id) }.firstOrNull()
 
-fun Player.addStock(stock: Stock, amount: Int) {
+fun User.addStock(stock: Stock, amount: Int) {
     val playerStock = getStock(stock)
     if (playerStock == null) {
         UserStock.new(
-            user = user,
+            user = this@addStock,
             stock = stock,
             amount = amount,
         )
@@ -29,7 +28,7 @@ fun Player.addStock(stock: Stock, amount: Int) {
     )
 }
 
-fun Player.removeStock(stock: Stock, amount: Int) {
+fun User.removeStock(stock: Stock, amount: Int) {
     val playerStock = getStock(stock)
     if (playerStock != null) {
         playerStock.amount -= amount
@@ -45,4 +44,4 @@ fun Player.removeStock(stock: Stock, amount: Int) {
     )
 }
 
-fun Player.hasStock(stock: Stock, amount: Int) = (getStock(stock)?.amount ?: 0) >= amount
+fun User.hasStock(stock: Stock, amount: Int) = (getStock(stock)?.amount ?: 0) >= amount

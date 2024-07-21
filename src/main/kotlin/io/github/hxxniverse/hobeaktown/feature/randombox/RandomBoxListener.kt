@@ -4,16 +4,16 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
-import org.jetbrains.exposed.sql.transactions.transaction
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 
 class RandomBoxListener : Listener {
 
     @EventHandler
-    fun onPlayerInteractEvent(event: PlayerInteractEvent) = transaction {
+    fun onPlayerInteractEvent(event: PlayerInteractEvent) = loggedTransaction {
         val player = event.player
-        val item = event.item ?: return@transaction
+        val item = event.item ?: return@loggedTransaction
 
-        val randomBox = item.getRandomBox() ?: return@transaction
+        val randomBox = item.getRandomBox() ?: return@loggedTransaction
 
         if (player.isSneaking) {
             if (event.action == Action.LEFT_CLICK_AIR || event.action == Action.LEFT_CLICK_BLOCK) {

@@ -3,9 +3,11 @@ package io.github.hxxniverse.hobeaktown.feature.real_estate
 import io.github.hxxniverse.hobeaktown.feature.real_estate.ui.RealEstateBuyUi
 import io.github.hxxniverse.hobeaktown.feature.real_estate.ui.RealEstateCertificationUi
 import io.github.hxxniverse.hobeaktown.util.coroutine.Hobeak
-import io.github.hxxniverse.hobeaktown.util.extension.getPersistentData
-import io.github.hxxniverse.hobeaktown.util.extension.pretty
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 import io.github.hxxniverse.hobeaktown.util.extension.component
+import io.github.hxxniverse.hobeaktown.util.extension.getPersistentData
+import io.github.hxxniverse.hobeaktown.util.extension.sendErrorMessage
+import io.github.hxxniverse.hobeaktown.util.extension.sendInfoMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,7 +22,6 @@ import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.block.SignChangeEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Duration
 
 class RealEstateListener : Listener {
@@ -38,27 +39,26 @@ class RealEstateListener : Listener {
             if (!event.player.isSneaking) {
                 realEstateSelection.copy(pos1 = location).toItemStack()
                     .also { player.inventory.setItemInMainHand(it) }
-                player.sendMessage("부동산 선택지의 첫번째 지점을 설정하셨습니다.")
+                player.sendInfoMessage("부동산 선택지의 첫번째 지점을 설정하셨습니다.")
             } else {
                 realEstateSelection.copy(pos2 = location).toItemStack()
                     .also { player.inventory.setItemInMainHand(it) }
-                player.sendMessage("부동산 선택지의 두번째 지점을 설정하셨습니다.")
+                player.sendInfoMessage("부동산 선택지의 두번째 지점을 설정하셨습니다.")
             }
             return
         }
     }
 
     @EventHandler
-    fun onRealEstateSelectionRightClick(event: PlayerInteractEvent) = transaction {
-        val player = event.player
-        val block = event.clickedBlock ?: return@transaction
+    fun onRealEstateSelectionRightClick(event: PlayerInteractEvent) = loggedTransaction {
+        val block = event.clickedBlock ?: return@loggedTransaction
 
         if (event.hand != EquipmentSlot.HAND) {
-            return@transaction
+            return@loggedTransaction
         }
 
         val realEstate =
-            RealEstate.find { RealEstates.signLocation eq block.location }.firstOrNull() ?: return@transaction
+            RealEstate.find { RealEstates.signLocation eq block.location }.firstOrNull() ?: return@loggedTransaction
 
         event.isCancelled = true
         realEstate.updateSign()
@@ -72,7 +72,7 @@ class RealEstateListener : Listener {
         if (itemStack.getItemStackRealEstateSelection() != null) {
             val realEstateSelection = itemStack.getItemStackRealEstateSelection()!!
 
-            transaction {
+            loggedTransaction {
                 RealEstate.create(
                     realEstateSelection.name,
                     realEstateSelection.price,
@@ -87,7 +87,7 @@ class RealEstateListener : Listener {
             }
 
             player.inventory.setItemInMainHand(null)
-            player.sendMessage("부동산 선택지를 설치하셨습니다.")
+            player.sendInfoMessage("부동산 선택지를 설치하셨습니다.")
             return
         }
     }
@@ -97,9 +97,9 @@ class RealEstateListener : Listener {
         val player = event.player
         val block = event.clickedBlock ?: return
 
-        if (block.type != Material.OAK_SIGN) return
+        if (!(block.type == Material.OAK_SIGN || block.type == Material.OAK_WALL_SIGN)) return
 
-        val realEstate = transaction {
+        val realEstate = loggedTransaction {
             RealEstate.find { RealEstates.signLocation eq block.location }.firstOrNull()
         } ?: return
 
@@ -121,12 +121,12 @@ class RealEstateListener : Listener {
         if (itemStack.isSimilar(RealEstatesItem.LAND_APPRAISAL_CERTIFICATE)) {
             event.isCancelled = true
             val block = event.clickedBlock ?: return
-            val realEstate = transaction {
+            val realEstate = loggedTransaction {
                 RealEstate.find { RealEstates.signLocation eq block.location }.firstOrNull()
             }
 
             if (realEstate == null) {
-                player.sendMessage("해당 지역은 부동산이 아닙니다.")
+                player.sendErrorMessage("해당 지역은 부동산이 아닙니다.")
                 return
             }
 
@@ -139,7 +139,7 @@ class RealEstateListener : Listener {
             CoroutineScope(Dispatchers.Hobeak).launch {
                 // 1초에 5번씩 랜덤으로 등급을 바꿔줌
                 repeat(5 * 10) {
-                    transaction {
+                    loggedTransaction {
                         val grade = RealEstateGrade.entries.random()
                         realEstate.grade = grade
                         realEstate.pos2 = realEstate.pos2.clone().set(
@@ -147,7 +147,6 @@ class RealEstateListener : Listener {
                             realEstate.pos1.y + grade.yLimit,
                             realEstate.pos2.z
                         )
-                        println("pos1: ${realEstate.pos1.pretty()} pos2: ${realEstate.pos2.pretty()} grade: ${realEstate.grade}")
                     }
                     player.showTitle(
                         Title.title(
@@ -177,7 +176,7 @@ class RealEstateListener : Listener {
         val itemStack = event.item ?: return
 
         val realEstate = itemStack.getPersistentData<Int>("realEstateId")?.let {
-            transaction {
+            loggedTransaction {
                 RealEstate.findById(it)
             }
         } ?: return
@@ -224,7 +223,7 @@ class RealEstateListener : Listener {
         if (!RealEstateConfig.configData.realEstateWorld.contains(player.world.name)) return true
 
         // 내가 있는 영역이 부동산 영역이고 소유주가 나라면 허용
-        return transaction {
+        return loggedTransaction {
             // 보유중인 부동산 목록
             val realEstates = RealEstate.find { RealEstates.owner eq player.uniqueId }.toList()
             val belongsRealEstate =
@@ -232,11 +231,11 @@ class RealEstateListener : Listener {
 
             listOf(realEstates, belongsRealEstate).flatten().forEach {
                 if (it.isInside(target)) {
-                    return@transaction true
+                    return@loggedTransaction true
                 }
             }
 
-            return@transaction false
+            return@loggedTransaction false
         }
     }
 }

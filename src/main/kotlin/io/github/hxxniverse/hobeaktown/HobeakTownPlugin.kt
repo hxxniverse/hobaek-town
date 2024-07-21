@@ -1,28 +1,32 @@
 package io.github.hxxniverse.hobeaktown
 
+import io.github.hxxniverse.hobeaktown.feature.auction.AuctionFeature
 import io.github.hxxniverse.hobeaktown.feature.coupon.CouponFeature
 import io.github.hxxniverse.hobeaktown.feature.delivery_service.DeliveryServiceFeature
 import io.github.hxxniverse.hobeaktown.feature.economy.EconomyFeature
+import io.github.hxxniverse.hobeaktown.feature.factory.FactoryFeature
 import io.github.hxxniverse.hobeaktown.feature.fatigue.FatigueFeature
 import io.github.hxxniverse.hobeaktown.feature.keycard.KeyCardFeature
+import io.github.hxxniverse.hobeaktown.feature.mail.MailFeature
+import io.github.hxxniverse.hobeaktown.feature.nbt.NbtFeature
+import io.github.hxxniverse.hobeaktown.feature.police.PoliceFeature
 import io.github.hxxniverse.hobeaktown.feature.quarry.QuarryFeature
 import io.github.hxxniverse.hobeaktown.feature.randombox.RandomBoxFeature
 import io.github.hxxniverse.hobeaktown.feature.real_estate.RealEstateFeature
 import io.github.hxxniverse.hobeaktown.feature.school.SchoolFeature
 import io.github.hxxniverse.hobeaktown.feature.stock.StockFeature
+import io.github.hxxniverse.hobeaktown.feature.traffic.TrafficFeature
 import io.github.hxxniverse.hobeaktown.feature.user.UserFeature
 import io.github.hxxniverse.hobeaktown.feature.user_trade.UserTradeFeature
 import io.github.hxxniverse.hobeaktown.feature.vote.VoteFeature
 import io.github.hxxniverse.hobeaktown.sub_feature.PosSelectorFeature
-import io.github.hxxniverse.hobeaktown.util.extension.component
-import io.github.monun.kommand.StringType
-import io.github.monun.kommand.getValue
+import io.github.hxxniverse.hobeaktown.util.command_help.help
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 import io.github.monun.kommand.kommand
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class HobeakTownPlugin : JavaPlugin() {
 
@@ -44,6 +48,12 @@ class HobeakTownPlugin : JavaPlugin() {
         PosSelectorFeature(),
         QuarryFeature(),
         UserTradeFeature(),
+        MailFeature(),
+        AuctionFeature(),
+        PoliceFeature(),
+        TrafficFeature(),
+        FactoryFeature(),
+        NbtFeature(),
         SchoolFeature()
     )
 
@@ -56,19 +66,28 @@ class HobeakTownPlugin : JavaPlugin() {
         }
 
         plugin.kommand {
-            register("hobeaktown") {
-                then("customnickname") {
-                    then("nickname" to string(StringType.GREEDY_PHRASE)) {
-                        executes {
-                            val nickname: String by it
-
-                            if (nickname.length > 16) {
-                                player.sendMessage("닉네임은 16자 이하로 입력해주세요.")
-                                return@executes
-                            }
-
-                            player.customName(nickname.component())
-                        }
+            register("호백타운") {
+                executes {
+                    help("호백타운") {
+                        command("atm") { description = "atm 관련 명령어" }
+                        command("coupon") { description = "coupon 관련 명령어" }
+                        command("help") { description = "help 관련 명령어" }
+                        command("mail") { description = "mail 관련 명령어" }
+                        command("pos") { description = "pos 관련 명령어" }
+                        command("quarry") { description = "quarry 관련 명령어" }
+                        command("randombox") { description = "randombox 관련 명령어" }
+                        command("real") { description = "real 관련 명령어" }
+                        command("reload") { description = "reload 관련 명령어" }
+                        command("stock") { description = "stock 관련 명령어" }
+                        command("traffic") { description = "traffic 관련 명령어" }
+                        command("usertrade") { description = "usertrade 관련 명령어" }
+                        command("vote") { description = "vote 관련 명령어" }
+                        command("경매장") { description = "경매장 관련 명령어" }
+                        command("경찰") { description = "경찰 관련 명령어" }
+                        command("주식") { description = "주식 관련 명령어" }
+                        command("키카드") { description = "키카드 관련 명령어" }
+                        command("태그") { description = "태그 관련 명령어" }
+                        command("택배") { description = "택배 관련 명령어" }
                     }
                 }
             }
@@ -76,7 +95,7 @@ class HobeakTownPlugin : JavaPlugin() {
 
         Database.connect("jdbc:sqlite:${dataFolder.path}/hobeaktown.db", "org.sqlite.JDBC")
 
-        transaction {
+        loggedTransaction {
             addLogger(StdOutSqlLogger)
         }
 

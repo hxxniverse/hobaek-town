@@ -10,7 +10,7 @@ import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.transactions.transaction
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 import java.util.UUID
 
 object Votes : IntIdTable() {
@@ -26,7 +26,7 @@ class Vote(id: EntityID<Int>) : IntEntity(id) {
         fun new(
             question: String,
             options: List<String>,
-        ) = transaction {
+        ) = loggedTransaction {
             Vote.new {
                 this.question = question
                 this.options = options.joinToString(",")
@@ -40,7 +40,7 @@ class Vote(id: EntityID<Int>) : IntEntity(id) {
     var votingBoothLocation by Votes.votingBoothLocation
     var isVoting by Votes.isVoting
 
-    fun vote(playerUUID: UUID, option: Int) = transaction {
+    fun vote(playerUUID: UUID, option: Int) = loggedTransaction {
         VoteHistory.new(
             voter = playerUUID,
             vote = this@Vote,
@@ -49,7 +49,7 @@ class Vote(id: EntityID<Int>) : IntEntity(id) {
     }
 
     fun hasVoted(uniqueId: UUID): Boolean {
-        return transaction {
+        return loggedTransaction {
             VoteHistory.find { (VoteHistories.voter eq uniqueId) and (VoteHistories.vote eq this@Vote.id) }.firstOrNull() != null
         }
     }

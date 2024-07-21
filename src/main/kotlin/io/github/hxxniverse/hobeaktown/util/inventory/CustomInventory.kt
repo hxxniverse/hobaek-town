@@ -2,6 +2,9 @@ package io.github.hxxniverse.hobeaktown.util.inventory
 
 import io.github.hxxniverse.hobeaktown.HobeakTownPlugin.Companion.plugin
 import io.github.hxxniverse.hobeaktown.util.ItemStackBuilder
+import io.github.hxxniverse.hobeaktown.util.coroutine.Hobeak
+import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
+import kotlinx.coroutines.*
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -14,10 +17,10 @@ import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import org.jetbrains.exposed.sql.transactions.transaction
+import java.lang.Runnable
 
 data class Icon(
-    var type: Material = Material.BOOK,
+    var type: Material = Material.GRAY_STAINED_GLASS_PANE,
     var name: Component = Component.text(""),
     var lore: List<Component> = listOf(),
     var amount: Int = 1,
@@ -35,7 +38,7 @@ data class Icon(
         return ItemStackBuilder(itemStack)
             .setDisplayName(name)
             .setLore(*lore.toTypedArray())
-            .setAmount(amount)
+            .setAmount(itemStack.amount)
             .build()
     }
 }
@@ -64,17 +67,18 @@ abstract class CustomInventory private constructor(
 
     lateinit var player: Player
     private val clickEvents: MutableMap<Int, (InventoryClickEvent) -> Unit> = mutableMapOf()
+    var jobs = Job()
 
     companion object {
         val BACKGROUND = ItemStackBuilder(Material.BLACK_STAINED_GLASS_PANE).setDisplayName("").build()
-        val PREVIOUS_PAGE = ItemStackBuilder(Material.OAK_SIGN).setDisplayName("PREVIOUS_PAGE").build()
-        val NEXT_PAGE = ItemStackBuilder(Material.OAK_SIGN).setDisplayName("NEXT_PAGE").build()
+        val PREVIOUS_PAGE_ICON = ItemStackBuilder(Material.OAK_SIGN).setDisplayName("PREVIOUS_PAGE").build()
+        val NEXT_PAGE_ICON = ItemStackBuilder(Material.OAK_SIGN).setDisplayName("NEXT_PAGE").build()
         val CLOSE = ItemStackBuilder(Material.RED_WOOL).setDisplayName("CLOSE").build()
         val BACK = ItemStackBuilder(Material.RED_WOOL).setDisplayName("BACK").build()
         val REFRESH = ItemStackBuilder(Material.BLUE_WOOL).setDisplayName("REFRESH").build()
         val MONEY = ItemStackBuilder(Material.GOLD_INGOT).setDisplayName("MONEY").build()
-        val CANCEL = ItemStackBuilder(Material.RED_STAINED_GLASS_PANE).setDisplayName("CANCEL").build()
-        val CONFIRM = ItemStackBuilder(Material.GREEN_STAINED_GLASS_PANE).setDisplayName("CONFIRM").build()
+        val CANCEL_ICON = ItemStackBuilder(Material.RED_STAINED_GLASS_PANE).setDisplayName("CANCEL").build()
+        val CONFIRM_ICON = ItemStackBuilder(Material.GREEN_STAINED_GLASS_PANE).setDisplayName("CONFIRM").build()
     }
 
     constructor(
@@ -159,6 +163,36 @@ abstract class CustomInventory private constructor(
         }
     }
 
+    fun runTaskRepeat(interval: Long, repeat: Int = -1, task: suspend () -> Unit): Job {
+        return CoroutineScope(Dispatchers.Hobeak + jobs).launch {
+            if (repeat == -1) {
+                while (true) {
+                    task()
+                    delay(interval)
+                }
+            } else {
+                repeat(repeat) {
+                    task()
+                    delay(interval)
+                }
+            }
+        }
+    }
+
+    fun runTaskLater(delay: Long, task: suspend () -> Unit): Job {
+        return CoroutineScope(Dispatchers.Hobeak + jobs).launch {
+            delay(delay)
+            task()
+        }
+    }
+
+    fun runTask(task: suspend () -> Unit): Job {
+        return CoroutineScope(Dispatchers.Hobeak + jobs).launch {
+            task()
+        }
+    }
+
+
     fun onInventoryClose(block: InventoryCloseEvent.() -> Unit) {
         onInventoryClose = block
     }
@@ -198,7 +232,9 @@ abstract class CustomInventory private constructor(
         }
 
         event.isCancelled = true
-        clickEvents[event.rawSlot]?.invoke(event)
+        loggedTransaction {
+            clickEvents[event.rawSlot]?.invoke(event)
+        }
     }
 
     @EventHandler
@@ -207,6 +243,7 @@ abstract class CustomInventory private constructor(
             return
         }
 
+        jobs.cancel()
         onInventoryClose(event)
         InventoryCloseEvent.getHandlerList().unregister(this)
         InventoryClickEvent.getHandlerList().unregister(this)
@@ -235,7 +272,7 @@ abstract class CustomInventory private constructor(
 
     private fun setItem(index: Int, itemStack: ItemStack?, onClick: (InventoryClickEvent) -> Unit = {}) {
         inventory.setItem(index, itemStack)
-        clickEvents[index] = transaction { onClick }
+        clickEvents[index] = loggedTransaction { onClick }
     }
 
     fun getItem(index: Pair<Int, Int>): ItemStack? {
