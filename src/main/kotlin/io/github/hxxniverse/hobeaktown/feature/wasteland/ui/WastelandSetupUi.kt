@@ -7,26 +7,25 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
 class WastelandSetupUi(private val code: String) : CustomInventory("황무지 블럭제작", 54) {
-    init {
-        item(1 to 1, ItemStackBuilder(Material.RED_STAINED_GLASS_PANE).setDisplayName("30%").build())
-        item(1 to 2, ItemStackBuilder(Material.ORANGE_STAINED_GLASS_PANE).setDisplayName("25%").build())
-        item(1 to 3, ItemStackBuilder(Material.YELLOW_STAINED_GLASS_PANE).setDisplayName("15%").build())
-        item(1 to 4, ItemStackBuilder(Material.GREEN_STAINED_GLASS_PANE).setDisplayName("10%").build())
-        item(1 to 5, ItemStackBuilder(Material.BLUE_STAINED_GLASS_PANE).setDisplayName("8%").build())
-        item(1 to 6, ItemStackBuilder(Material.PURPLE_STAINED_GLASS_PANE).setDisplayName("6%").build())
-        item(1 to 7, ItemStackBuilder(Material.BROWN_STAINED_GLASS_PANE).setDisplayName("4%").build())
-        item(1 to 8, ItemStackBuilder(Material.BLACK_STAINED_GLASS_PANE).setDisplayName("1.5%").build())
-        item(1 to 9, ItemStackBuilder(Material.WHITE_STAINED_GLASS_PANE).setDisplayName("0.5%").build())
+    companion object {
+        val items = listOf(
+            Material.RED_STAINED_GLASS_PANE to "30%",
+            Material.ORANGE_STAINED_GLASS_PANE to "25%",
+            Material.YELLOW_STAINED_GLASS_PANE to "15%",
+            Material.GREEN_STAINED_GLASS_PANE to "10%",
+            Material.BLUE_STAINED_GLASS_PANE to "8%",
+            Material.PURPLE_STAINED_GLASS_PANE to "6%",
+            Material.BROWN_STAINED_GLASS_PANE to "4%",
+            Material.BLACK_STAINED_GLASS_PANE to "1.5%",
+            Material.WHITE_STAINED_GLASS_PANE to "0.5%"
+        )
+    }
 
-        item(4 to 1, ItemStackBuilder(Material.RED_STAINED_GLASS_PANE).setDisplayName("30%").build())
-        item(4 to 2, ItemStackBuilder(Material.ORANGE_STAINED_GLASS_PANE).setDisplayName("25%").build())
-        item(4 to 3, ItemStackBuilder(Material.YELLOW_STAINED_GLASS_PANE).setDisplayName("15%").build())
-        item(4 to 4, ItemStackBuilder(Material.GREEN_STAINED_GLASS_PANE).setDisplayName("10%").build())
-        item(4 to 5, ItemStackBuilder(Material.BLUE_STAINED_GLASS_PANE).setDisplayName("8%").build())
-        item(4 to 6, ItemStackBuilder(Material.PURPLE_STAINED_GLASS_PANE).setDisplayName("6%").build())
-        item(4 to 7, ItemStackBuilder(Material.BROWN_STAINED_GLASS_PANE).setDisplayName("4%").build())
-        item(4 to 8, ItemStackBuilder(Material.BLACK_STAINED_GLASS_PANE).setDisplayName("1.5%").build())
-        item(4 to 9, ItemStackBuilder(Material.WHITE_STAINED_GLASS_PANE).setDisplayName("0.5%").build())
+    init {
+        items.forEachIndexed { index, (material, name) ->
+            item(1 to (index + 1), ItemStackBuilder(material).setDisplayName(name).build())
+            item(4 to (index + 1), ItemStackBuilder(material).setDisplayName(name).build())
+        }
 
         display(3 to 1, 3 to 9, ItemStackBuilder(Material.GLASS_PANE).setDisplayName("").build())
         display(6 to 1, 6 to 9, ItemStackBuilder(Material.GLASS_PANE).setDisplayName("").build())

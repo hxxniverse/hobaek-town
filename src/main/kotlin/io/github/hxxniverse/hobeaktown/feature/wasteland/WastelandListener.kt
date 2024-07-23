@@ -74,8 +74,8 @@ class WastelandListener : Listener {
             return
         }
 
-        val block = e.clickedBlock!!
-        val wasteland = Wasteland.getByLocation(block.location) ?: return
+        val block = e.clickedBlock
+        val wasteland = block?.let { Wasteland.getByLocation(it.location) } ?: return
 
         val brush = Brush.getByItemStack(e.player.inventory.itemInMainHand)
         if (brush == null) {
