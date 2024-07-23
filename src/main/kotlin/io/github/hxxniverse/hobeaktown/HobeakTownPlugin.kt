@@ -2,6 +2,7 @@ package io.github.hxxniverse.hobeaktown
 
 import io.github.hxxniverse.hobeaktown.feature.area.AreaFeature
 import io.github.hxxniverse.hobeaktown.feature.auction.AuctionFeature
+import io.github.hxxniverse.hobeaktown.feature.bee.BeeFeature
 import io.github.hxxniverse.hobeaktown.feature.coupon.CouponFeature
 import io.github.hxxniverse.hobeaktown.feature.delivery_service.DeliveryServiceFeature
 import io.github.hxxniverse.hobeaktown.feature.economy.EconomyFeature
@@ -20,6 +21,7 @@ import io.github.hxxniverse.hobeaktown.feature.traffic.TrafficFeature
 import io.github.hxxniverse.hobeaktown.feature.user.UserFeature
 import io.github.hxxniverse.hobeaktown.feature.user_trade.UserTradeFeature
 import io.github.hxxniverse.hobeaktown.feature.vote.VoteFeature
+import io.github.hxxniverse.hobeaktown.feature.wasteland.WastelandFeature
 import io.github.hxxniverse.hobeaktown.util.command_help.help
 import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 import io.github.monun.kommand.kommand
@@ -54,7 +56,9 @@ class HobeakTownPlugin : JavaPlugin() {
         TrafficFeature(),
         FactoryFeature(),
         NbtFeature(),
-        SchoolFeature()
+        SchoolFeature(),
+        WastelandFeature(),
+        BeeFeature()
     )
 
     override fun onEnable() {
@@ -88,6 +92,8 @@ class HobeakTownPlugin : JavaPlugin() {
                         command("키카드") { description = "키카드 관련 명령어" }
                         command("태그") { description = "태그 관련 명령어" }
                         command("택배") { description = "택배 관련 명령어" }
+                        command("황무지") { description = "황무지 관련 명령어 " }
+                        command("양봉") { description = "양봉 관련 명령어 "}
                     }
                 }
             }
