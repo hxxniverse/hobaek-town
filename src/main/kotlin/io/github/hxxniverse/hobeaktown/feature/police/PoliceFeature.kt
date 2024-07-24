@@ -6,6 +6,7 @@ import org.bukkit.plugin.java.JavaPlugin
 class PoliceFeature : BaseFeature {
     override fun onEnable(plugin: JavaPlugin) {
         PoliceCommand().register(plugin)
+        PoliceConfig.load()
     }
 
     override fun onDisable(plugin: JavaPlugin) {

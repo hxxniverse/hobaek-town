@@ -29,30 +29,6 @@ class QuarryCommand : BaseCommand {
                         }
                     }
                 }
-                then("register") {
-                    then("name" to string()) {
-                        executes {
-                            loggedTransaction {
-                                val name: String by it
-
-                                val pos1 = player.pos1()
-                                val pos2 = player.pos2()
-
-                                if (pos1 == null || pos2 == null) {
-                                    player.sendMessage("광산 위치를 설정해주세요.")
-                                    return@loggedTransaction
-                                }
-
-//                                Quarry.new {
-//                                    this.name = name
-//                                    this.pos1 = pos1
-//                                    this.pos2 = pos2
-//                                }
-                                player.sendMessage("광산이 등록되었습니다.")
-                            }
-                        }
-                    }
-                }
                 then("pickaxe") {
                     executes {
                         loggedTransaction {

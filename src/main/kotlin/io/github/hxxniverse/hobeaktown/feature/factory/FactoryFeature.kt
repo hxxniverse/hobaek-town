@@ -13,6 +13,7 @@ import io.github.hxxniverse.hobeaktown.util.extension.sendInfoMessage
 import io.github.hxxniverse.hobeaktown.util.inventory.CustomInventory
 import io.github.monun.kommand.getValue
 import io.github.monun.kommand.kommand
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -26,7 +27,9 @@ import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.javatime.datetime
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -36,7 +39,17 @@ import java.time.format.DateTimeFormatter
  */
 class FactoryFeature : BaseFeature {
     override fun onEnable(plugin: JavaPlugin) {
-
+        transaction {
+            SchemaUtils.create(
+                FactoryMachines,
+                FactoryMachineMaterials,
+                FactoryMachineOutputs,
+                FactoryMachineOutputMaterials,
+                PlacedFactoryMachines
+            )
+        }
+        Bukkit.getPluginManager().registerEvents(FactoryListener(), plugin)
+        FactoryCommand().register(plugin)
     }
 
     override fun onDisable(plugin: JavaPlugin) {
