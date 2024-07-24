@@ -2,7 +2,6 @@ package io.github.hxxniverse.hobeaktown.feature.quarry
 
 import io.github.hxxniverse.hobeaktown.util.FeatureConfig
 import io.github.hxxniverse.hobeaktown.util.base.BaseFeature
-import io.github.hxxniverse.hobeaktown.util.database.location
 import io.github.hxxniverse.hobeaktown.util.edit
 import io.github.hxxniverse.hobeaktown.util.extension.component
 import io.github.hxxniverse.hobeaktown.util.extension.getPersistentData
@@ -10,19 +9,9 @@ import io.github.hxxniverse.hobeaktown.util.itemStack
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import org.bukkit.Bukkit
-import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.block.Block
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
-import org.jetbrains.exposed.dao.IntEntity
-import org.jetbrains.exposed.dao.IntEntityClass
-import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.dao.id.IntIdTable
-import org.jetbrains.exposed.sql.SchemaUtils
-import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
-import kotlin.math.max
-import kotlin.math.min
 
 /**
  * ### 기획
@@ -46,9 +35,6 @@ import kotlin.math.min
  */
 class QuarryFeature : BaseFeature {
     override fun onEnable(plugin: JavaPlugin) {
-        loggedTransaction {
-            SchemaUtils.create(Quarries)
-        }
         QuarryCommand().register(plugin)
         Bukkit.getPluginManager().registerEvents(QuarryListener(), plugin)
     }
@@ -56,32 +42,6 @@ class QuarryFeature : BaseFeature {
     override fun onDisable(plugin: JavaPlugin) {
 
     }
-}
-
-object Quarries : IntIdTable() {
-    val name = varchar("name", 50)
-    val pos1 = location("pos1")
-    val pos2 = location("pos2")
-}
-
-class Quarry(id: EntityID<Int>) : IntEntity(id) {
-    companion object : IntEntityClass<Quarry>(Quarries)
-
-    var name by Quarries.name
-    var pos1 by Quarries.pos1
-    var pos2 by Quarries.pos2
-
-    fun inQuarry(block: Block): Boolean = loggedTransaction {
-        return@loggedTransaction block.location in pos1 to pos2
-    }
-}
-
-private operator fun Pair<Location, Location>.contains(location: Location): Boolean {
-    val (pos1, pos2) = this
-    return location.world == pos1.world &&
-            location.blockX in min(pos1.blockX, pos2.blockX)..max(pos1.blockX, pos2.blockX) &&
-            location.blockY in min(pos1.blockY, pos2.blockY)..max(pos1.blockY, pos2.blockY) &&
-            location.blockZ in min(pos1.blockZ, pos2.blockZ)..max(pos1.blockZ, pos2.blockZ)
 }
 
 object QuarryConfig : FeatureConfig<QuarryConfigData>(

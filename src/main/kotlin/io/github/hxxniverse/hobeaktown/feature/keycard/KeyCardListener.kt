@@ -1,38 +1,23 @@
 package io.github.hxxniverse.hobeaktown.feature.keycard
 
 import io.github.hxxniverse.hobeaktown.HobeakTownPlugin.Companion.plugin
-import io.github.hxxniverse.hobeaktown.feature.keycard.entity.*
-import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
+import io.github.hxxniverse.hobeaktown.feature.keycard.entity.KeyCardDoor
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.block.data.Openable
-import org.bukkit.entity.EntityType
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
-import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.persistence.PersistentDataType
 import java.sql.SQLException
-import java.util.*
 
 class KeyCardListener : Listener {
     private var lastEventTime: Long = 0
     private val EVENT_COOLDOWN: Long = 500
-
-    @EventHandler
-    fun onPlayerJoin(event: PlayerJoinEvent) = loggedTransaction {
-        if (!UserKeyCard.isExists(event.player.uniqueId)) {
-            val role = Role.find { Roles.role eq "시민" }.firstOrNull() ?: return@loggedTransaction;
-            UserKeyCard.new {
-                this.role = role.id;
-            }
-        }
-    }
 
     @EventHandler
     fun onBlockPlace(event: BlockPlaceEvent) {
@@ -98,39 +83,6 @@ class KeyCardListener : Listener {
                         plugin.logger.info("문을 여는 중 오류가 발생했습니다.")
                         e.printStackTrace()
                     }
-                }
-            }
-        }
-    }
-
-    @EventHandler
-    fun onPlayerInteract(event: PlayerInteractEntityEvent) {
-        val currentTime = System.currentTimeMillis()
-        if (currentTime - lastEventTime < EVENT_COOLDOWN) {
-            return
-        }
-        lastEventTime = currentTime
-
-        val itemMeta: ItemMeta = event.player.inventory.itemInMainHand.itemMeta ?: return;
-        if (event.player.inventory.itemInMainHand.type == Material.NETHER_STAR) {
-            if (event.rightClicked.type == EntityType.PLAYER) {
-                val role = itemMeta.persistentDataContainer.get(
-                    NamespacedKey(plugin, "Role"),
-                    PersistentDataType.STRING
-                ).toString()
-                if (Role.isExistsRole(role)) {
-                    UserKeyCard.updateMemberRole(event.rightClicked.uniqueId, role)
-                }
-            }
-        }
-        if (event.player.inventory.itemInMainHand.type == Material.BLAZE_ROD) {
-            if (event.rightClicked.type == EntityType.PLAYER) {
-                val role = itemMeta.persistentDataContainer.get(
-                    NamespacedKey(plugin, "Role"),
-                    PersistentDataType.STRING
-                ).toString()
-                if (Role.isExistsRole(role)) {
-                    UserKeyCard.updateMemberRole(event.rightClicked.uniqueId, "시민")
                 }
             }
         }
