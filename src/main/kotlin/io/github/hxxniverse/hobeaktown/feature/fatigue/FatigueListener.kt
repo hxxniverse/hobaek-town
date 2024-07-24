@@ -66,28 +66,6 @@ class FatigueListener(
     }
 
     @EventHandler
-    fun onPlayerInteract(event: PlayerInteractEvent) {
-        val item: ItemStack? = event.item
-        if (item != null && item.type.isEdible) {
-            event.isCancelled = true
-        }
-    }
-
-    @EventHandler
-    fun onInventoryClick(event: InventoryClickEvent) {
-        val item: ItemStack? = event.currentItem
-        if (item != null && event.isShiftClick) {
-            event.isCancelled = true
-        }
-    }
-
-    @EventHandler
-    fun onPlayerDropItem(event: PlayerDropItemEvent) {
-        val item: ItemStack = event.itemDrop.itemStack
-        event.isCancelled = true
-    }
-
-    @EventHandler
     fun onPlayerMove(event: PlayerMoveEvent) {
         val player = event.player
         val from = event.from
