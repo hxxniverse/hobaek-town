@@ -33,7 +33,7 @@ class WastelandSetupUi(private val code: String) : CustomInventory("황무지 �
         empty(2 to 1, 2 to 9)
         empty(5 to 1, 5 to 9)
 
-        button(6 to 7, ItemStackBuilder(Material.GRAVEL).setDisplayName("자갈 블럭 생성").build()) {
+        button(6 to 7, ItemStackBuilder(Material.SUSPICIOUS_GRAVEL).setDisplayName("자갈 블럭 생성").build()) {
             val rewards: MutableMap<Int, ItemStack> = mutableMapOf()
 
             for (row in 2..2) {
@@ -56,14 +56,14 @@ class WastelandSetupUi(private val code: String) : CustomInventory("황무지 �
                 }
             }
 
-            WastelandSetup.createSetup(code, Material.GRAVEL, rewards)
+            WastelandSetup.createSetup(code, Material.SUSPICIOUS_GRAVEL, rewards)
 
-            player.inventory.addItem(ItemStackBuilder(Material.GRAVEL).setDisplayName("황무지 설정 블럭 - $code").build())
+            player.inventory.addItem(ItemStackBuilder(Material.SUSPICIOUS_GRAVEL).setDisplayName("황무지 설정 블럭 - $code").build())
             player.closeInventory()
             player.sendMessage("§6[황무지]§7 황무지용 자갈 블럭이 생성되었습니다: $code")
         }
 
-        button(6 to 9, ItemStackBuilder(Material.SAND).setDisplayName("모래 블럭 생성").build()) {
+        button(6 to 9, ItemStackBuilder(Material.SUSPICIOUS_SAND).setDisplayName("모래 블럭 생성").build()) {
             val rewards: MutableMap<Int, ItemStack> = mutableMapOf()
 
             for (row in 2..2) {
@@ -86,9 +86,9 @@ class WastelandSetupUi(private val code: String) : CustomInventory("황무지 �
                 }
             }
 
-            WastelandSetup.createSetup(code, Material.SAND, rewards)
+            WastelandSetup.createSetup(code, Material.SUSPICIOUS_SAND, rewards)
 
-            player.inventory.addItem(ItemStackBuilder(Material.SAND).setDisplayName("황무지 설정 블럭 - $code").build())
+            player.inventory.addItem(ItemStackBuilder(Material.SUSPICIOUS_SAND).setDisplayName("황무지 설정 블럭 - $code").build())
             player.closeInventory()
             player.sendMessage("§6[황무지]§7 황무지용 모래 블럭이 생성되었습니다: $code")
         }

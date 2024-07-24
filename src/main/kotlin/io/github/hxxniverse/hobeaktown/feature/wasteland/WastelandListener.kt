@@ -26,7 +26,7 @@ class WastelandListener : Listener {
         val item = e.itemInHand
 
         // 자갈이나 모래 블록을 놓을 때만 처리
-        if (block.type == Material.GRAVEL || block.type == Material.SAND) {
+        if (block.type == Material.SUSPICIOUS_GRAVEL || block.type == Material.SUSPICIOUS_SAND) {
             val name = item.itemMeta.displayName
 
             if (name.contains("황무지 설정 블럭 - ")) {
@@ -47,7 +47,7 @@ class WastelandListener : Listener {
         val block = e.block
 
         // 자갈이나 모래 블록을 파괴할 때만 처리
-        if(block.type == Material.GRAVEL || block.type == Material.SAND || block.type == Material.BEDROCK) {
+        if(block.type == Material.SUSPICIOUS_GRAVEL || block.type == Material.SUSPICIOUS_SAND || block.type == Material.BEDROCK) {
             val location = block.location
             val wasteland = Wasteland.getByLocation(location)
 
@@ -70,7 +70,7 @@ class WastelandListener : Listener {
             return
         }
 
-        if(e.clickedBlock!!.type != Material.SAND && e.clickedBlock!!.type != Material.GRAVEL) {
+        if(e.clickedBlock!!.type != Material.SUSPICIOUS_SAND && e.clickedBlock!!.type != Material.SUSPICIOUS_GRAVEL) {
             return
         }
 
@@ -96,6 +96,6 @@ class WastelandListener : Listener {
                 WastelandFeature.removeWaiting(block.location)
                 block.type = wasteland.material
             }
-        }.runTaskLater(HobeakTownPlugin.plugin, 20L * 60) // TEST
+        }.runTaskLater(HobeakTownPlugin.plugin, 20L * 60 * 3)
     }
 }

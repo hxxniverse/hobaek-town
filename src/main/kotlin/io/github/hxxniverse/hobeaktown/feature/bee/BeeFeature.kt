@@ -8,7 +8,7 @@ import org.jetbrains.exposed.sql.SchemaUtils
 
 class BeeFeature : BaseFeature {
     companion object {
-        val BEEHIVE_DURATION_SECOND: Int = 60 // test
+        val BEEHIVE_DURATION_SECOND: Int = 3600
     }
 
     override fun onEnable(plugin: JavaPlugin) {

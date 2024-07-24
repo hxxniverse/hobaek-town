@@ -22,6 +22,9 @@ class WastelandFeature : BaseFeature {
 
         loggedTransaction {
             Wasteland.all().forEach { wasteland ->
+                if(wasteland.material == Material.GRAVEL) wasteland.material = Material.SUSPICIOUS_GRAVEL
+                if(wasteland.material == Material.SAND) wasteland.material = Material.SUSPICIOUS_SAND
+
                 if(wasteland.location.block.type != wasteland.material) {
                     wasteland.location.block.type = wasteland.material
                 }
@@ -49,7 +52,7 @@ class WastelandFeature : BaseFeature {
             // guiItemMap 에서 ItemStack 을 뽑아 map 으로 put 하며 가중치 부여
             for ((index, itemStack) in rewards) {
                 // 솔 등급에 따라 확률적으로 받을 수 있는 아이템 거르기
-                if (index % 9 >= level) {
+                if(index % 9 >= level) {
                     continue
                 }
 
@@ -68,15 +71,15 @@ class WastelandFeature : BaseFeature {
 
         private fun getWeight(index: Int): Int {
             return when (index) {
-                9, 36 -> 300
-                10, 37 -> 250
-                11, 38 -> 150
-                12, 39 -> 100
-                13, 40 -> 80
-                14, 41 -> 60
-                15, 42 -> 40
-                16, 43 -> 15
-                17, 44 -> 5
+                9, 36 -> 60
+                10, 37 -> 50
+                11, 38 -> 30
+                12, 39 -> 20
+                13, 40 -> 16
+                14, 41 -> 12
+                15, 42 -> 8
+                16, 43 -> 3
+                17, 44 -> 1
                 else -> 0
             }
         }
