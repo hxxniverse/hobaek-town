@@ -2,6 +2,7 @@ package io.github.hxxniverse.hobeaktown.feature.keycard.commands
 
 import io.github.hxxniverse.hobeaktown.feature.keycard.entity.KeyCard
 import io.github.hxxniverse.hobeaktown.feature.user.Job
+import io.github.hxxniverse.hobeaktown.feature.user.user
 import io.github.hxxniverse.hobeaktown.util.ItemStackBuilder
 import io.github.hxxniverse.hobeaktown.util.base.BaseCommand
 import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
@@ -122,6 +123,21 @@ class KeyCardCommand : BaseCommand {
                                     player.inventory.setItemInMainHand(itemInHand)
                                     player.sendMessage("아이템이 $name 키카드로 등록되었습니다.")
                                 } else player.sendMessage("'$name'은 등록되지 않은 이름입니다.")
+                            }
+                        }
+                    }
+                }
+                then("변경"){
+                    requires { sender.isOp }
+                    then("player" to player()){
+                        then("job" to string()){
+                            executes {
+                                val player: Player by it
+                                val job: String by it
+                                loggedTransaction {
+                                    player.user.job = Job.valueOf(job)
+                                    player.sendMessage(component(job, NamedTextColor.BLUE).append(component("직업으로 변경되었습니다.", NamedTextColor.WHITE)))
+                                }
                             }
                         }
                     }
