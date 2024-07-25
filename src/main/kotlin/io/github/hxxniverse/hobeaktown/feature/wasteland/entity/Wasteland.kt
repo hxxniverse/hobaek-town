@@ -42,6 +42,23 @@ class WastelandSetup(id: EntityID<Int>) : IntEntity(id) {
                 WastelandSetup.find { WastelandSetups.code eq code }.firstOrNull()
             }
         }
+
+        fun getItemsByCode(code: String): Map<Int, ItemStack> {
+            return loggedTransaction {
+                val setup = getSetupByCode(code)
+                val items = mutableMapOf<Int, ItemStack>()
+
+                if (setup != null) {
+                    WastelandSetupReward.find {
+                        WastelandSetupRewards.setup eq setup.id
+                    }.forEach { reward ->
+                        items[reward.invIndex] = reward.itemstack
+                    }
+                }
+
+                items
+            }
+        }
     }
 
     var code by WastelandSetups.code
@@ -101,6 +118,36 @@ class Wasteland(id: EntityID<Int>) : IntEntity(id) {
         fun getByLocation(location: Location): Wasteland? {
             return loggedTransaction {
                 Wasteland.find { Wastelands.location eq location }.firstOrNull()
+            }
+        }
+
+        fun editRewards(code: String, newRewards: Map<Int, ItemStack>) {
+            loggedTransaction {
+                val wasteland = getByLocation(
+                    Wasteland.find { Wastelands.code eq code }.firstOrNull()?.location ?: return@loggedTransaction
+                )
+                if (wasteland != null) {
+                    WastelandReward.find { WastelandRewards.wasteland eq wasteland.id }.forEach { it.delete() }
+                    newRewards.forEach { (invIndex, itemStack) ->
+                        WastelandReward.new {
+                            this.wasteland = wasteland
+                            this.invIndex = invIndex
+                            this.itemstack = itemStack
+                        }
+                    }
+
+                    val setup = WastelandSetup.getSetupByCode(code)
+                    if (setup != null) {
+                        WastelandSetupReward.find { WastelandSetupRewards.setup eq setup.id }.forEach { it.delete() }
+                        newRewards.forEach { (invIndex, itemStack) ->
+                            WastelandSetupReward.new {
+                                this.setup = setup
+                                this.invIndex = invIndex
+                                this.itemstack = itemStack
+                            }
+                        }
+                    }
+                }
             }
         }
     }
