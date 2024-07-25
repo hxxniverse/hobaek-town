@@ -2,6 +2,7 @@ package io.github.hxxniverse.hobeaktown.feature.wasteland
 
 import io.github.hxxniverse.hobeaktown.feature.wasteland.entity.Brush
 import io.github.hxxniverse.hobeaktown.feature.wasteland.entity.WastelandSetup
+import io.github.hxxniverse.hobeaktown.feature.wasteland.ui.WastelandEditUi
 import io.github.hxxniverse.hobeaktown.feature.wasteland.ui.WastelandSetupUi
 import io.github.hxxniverse.hobeaktown.util.base.BaseCommand
 import io.github.monun.kommand.getValue
@@ -21,7 +22,8 @@ class WastelandCommand : BaseCommand {
                             val name : String by it
 
                             if(WastelandSetup.getSetupByCode(name) != null) {
-                                player.sendMessage("§6[황무지]§7 해당 이름으로 등록된 황무지들이 이미 존재합니다.")
+                                WastelandEditUi(name).open(player)
+                                return@executes
                             }
 
                             WastelandSetupUi(name).open(player)

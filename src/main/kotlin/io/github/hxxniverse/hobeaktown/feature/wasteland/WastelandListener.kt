@@ -33,7 +33,7 @@ class WastelandListener : Listener {
                 val code = name.split("황무지 설정 블럭 - ")[1]
                 val setup = WastelandSetup.getSetupByCode(code)
 
-                if(setup != null) {
+                if (setup != null) {
                     Wasteland.addWasteland(code, block.location, block.type)
                     player.sendMessage("§6[황무지]§7 황무지가 성공적으로 설치되었습니다: $code")
                 }
@@ -47,11 +47,11 @@ class WastelandListener : Listener {
         val block = e.block
 
         // 자갈이나 모래 블록을 파괴할 때만 처리
-        if(block.type == Material.SUSPICIOUS_GRAVEL || block.type == Material.SUSPICIOUS_SAND || block.type == Material.BEDROCK) {
+        if (block.type == Material.SUSPICIOUS_GRAVEL || block.type == Material.SUSPICIOUS_SAND || block.type == Material.BEDROCK) {
             val location = block.location
             val wasteland = Wasteland.getByLocation(location)
 
-            if(wasteland != null) {
+            if (wasteland != null) {
                 Wasteland.deleteWasteland(location)
                 WastelandFeature.removeWaiting(wasteland.location)
 
@@ -62,15 +62,15 @@ class WastelandListener : Listener {
 
     @EventHandler
     fun onInteractBlock(e: PlayerInteractEvent) {
-        if(e.action != Action.RIGHT_CLICK_BLOCK || e.hand != EquipmentSlot.HAND ||  e.clickedBlock == null) {
+        if (e.action != Action.RIGHT_CLICK_BLOCK || e.hand != EquipmentSlot.HAND || e.clickedBlock == null) {
             return
         }
 
-        if(e.player.inventory.itemInMainHand.type != Material.BRUSH) {
+        if (e.player.inventory.itemInMainHand.type != Material.BRUSH) {
             return
         }
 
-        if(e.clickedBlock!!.type != Material.SUSPICIOUS_SAND && e.clickedBlock!!.type != Material.SUSPICIOUS_GRAVEL) {
+        if (e.clickedBlock!!.type != Material.SUSPICIOUS_SAND && e.clickedBlock!!.type != Material.SUSPICIOUS_GRAVEL) {
             return
         }
 
