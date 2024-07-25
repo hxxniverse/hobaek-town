@@ -51,12 +51,12 @@ class WastelandFeature : BaseFeature {
 
             // guiItemMap 에서 ItemStack 을 뽑아 map 으로 put 하며 가중치 부여
             for ((index, itemStack) in rewards) {
-                // 솔 등급에 따라 확률적으로 받을 수 있는 아이템 거르기
-                if(index % 9 >= level) {
+                // 현재 레벨에 따라 제외할 인덱스 제외
+                if (shouldExclude(index, level)) {
                     continue
                 }
 
-                val weight = getWeight(index) // 가중치를 정수형으로 변환
+                val weight = getWeight(index)
                 if (weight > 0) {
                     map[itemStack] = weight
                 }
@@ -67,6 +67,18 @@ class WastelandFeature : BaseFeature {
 
             // 확장 함수를 사용하여 랜덤한 ItemStack 뽑기
             return map.weightedRandomFromList()
+        }
+
+        private fun shouldExclude(index: Int, level: Int): Boolean {
+            val base = listOf(9, 36)
+            val excludes = mutableSetOf<Int>()
+
+            for (i in 0 until level - 1) {
+                excludes.add(base[0] + i)
+                excludes.add(base[1] + i)
+            }
+
+            return excludes.contains(index)
         }
 
         private fun getWeight(index: Int): Int {
