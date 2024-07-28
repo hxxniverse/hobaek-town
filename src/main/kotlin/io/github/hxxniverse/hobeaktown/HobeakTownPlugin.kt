@@ -8,6 +8,7 @@ import io.github.hxxniverse.hobeaktown.feature.delivery_service.DeliveryServiceF
 import io.github.hxxniverse.hobeaktown.feature.economy.EconomyFeature
 import io.github.hxxniverse.hobeaktown.feature.factory.FactoryFeature
 import io.github.hxxniverse.hobeaktown.feature.fatigue.FatigueFeature
+import io.github.hxxniverse.hobeaktown.feature.fish.FishFeature
 import io.github.hxxniverse.hobeaktown.feature.keycard.KeyCardFeature
 import io.github.hxxniverse.hobeaktown.feature.mail.MailFeature
 import io.github.hxxniverse.hobeaktown.feature.nbt.NbtFeature
@@ -58,7 +59,8 @@ class HobeakTownPlugin : JavaPlugin() {
         NbtFeature(),
         SchoolFeature(),
         WastelandFeature(),
-        BeeFeature()
+        BeeFeature(),
+        FishFeature()
     )
 
     override fun onEnable() {
@@ -94,6 +96,7 @@ class HobeakTownPlugin : JavaPlugin() {
                         command("택배") { description = "택배 관련 명령어" }
                         command("황무지") { description = "황무지 관련 명령어 " }
                         command("양봉") { description = "양봉 관련 명령어 "}
+                        command("낚시") { description = "낚시 관련 명령어" }
                     }
                 }
             }
