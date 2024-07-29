@@ -44,7 +44,7 @@ class FishListener : Listener {
                 val reward = Fish.randomFish(fishingRod.level)
                 FishGame.startGame(player, reward)
             }
-        }.runTaskLater(HobeakTownPlugin.plugin, 1L)
+        }.runTaskLater(HobeakTownPlugin.plugin, 2L)
     }
 
     @EventHandler
@@ -128,7 +128,7 @@ class FishListener : Listener {
         val player = e.player
         val currentTick = player.world.fullTime.toInt()
 
-        val input: Int = when (e.action) {
+        val input: Int = when(e.action) {
             Action.LEFT_CLICK_AIR, Action.LEFT_CLICK_BLOCK -> {
                 val lastRightClickTick = lastRightClickTicks[player.uniqueId]
                 if (lastRightClickTick != null && currentTick == lastRightClickTick) {

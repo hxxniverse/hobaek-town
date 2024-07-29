@@ -41,7 +41,9 @@ class FishingRod(id: EntityID<Int>) : IntEntity(id) {
         fun getByItemStack(itemStack: ItemStack): FishingRod? {
             return loggedTransaction {
                 FishingRod.find {
-                    FishingRods.item eq itemStack
+                    FishingRods.item eq itemStack.clone().apply {
+                        durability = 0
+                    }
                 }.firstOrNull()
             }
         }
