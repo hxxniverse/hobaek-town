@@ -5,13 +5,16 @@ import io.github.hxxniverse.hobeaktown.feature.wasteland.entity.Brush
 import io.github.hxxniverse.hobeaktown.feature.wasteland.entity.Wasteland
 import io.github.hxxniverse.hobeaktown.feature.wasteland.entity.WastelandSetup
 import org.bukkit.Material
+import org.bukkit.block.BrushableBlock
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockDropItemEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 
 /**
@@ -74,27 +77,54 @@ class WastelandListener : Listener {
             return
         }
 
-        val block = e.clickedBlock
-        val wasteland = block?.let { Wasteland.getByLocation(it.location) } ?: return
+        if (Wasteland.getByLocation(e.clickedBlock?.location ?: return) == null) {
+            return
+        }
 
-        val brush = Brush.getByItemStack(e.player.inventory.itemInMainHand)
-        if (brush == null) {
-            e.player.sendMessage("§6[황무지]§7 현재 들고있는 솔은 등록되지 않은 솔입니다.")
+        val block = e.clickedBlock ?: return
+        val state = block.state as BrushableBlock
+
+        if(state.item.type == Material.AIR) {
+            state.setItem(ItemStack(Material.NETHER_STAR))
+            state.update()
+        }
+    }
+
+    @EventHandler
+    fun onBlockDrop(e: BlockDropItemEvent) {
+        if(e.block.type != Material.SUSPICIOUS_SAND && e.block.type != Material.SUSPICIOUS_GRAVEL) {
+            return
+        }
+
+        e.items.clear()
+
+        val wasteland = Wasteland.getByLocation(e.block.location) ?: return
+        val player = e.player
+        val brush = Brush.getByItemStack(player.inventory.itemInMainHand)
+
+        if(brush == null) {
+            player.sendMessage("§6[황무지]§7 이 솔은 레벨이 등록되어 있지 않은 솔입니다.")
             return
         }
 
         val reward = WastelandFeature.randomItem(wasteland.getRewards(), brush.level)
 
-        e.player.sendMessage("§6[황무지]§7 아이템을 찾았습니다.")
-        e.player.inventory.addItem(reward)
+        player.inventory.addItem(reward)
+        player.sendMessage("§6[황무지]§7 아이템을 찾았습니다.")
 
-        WastelandFeature.addWaiting(block.location)
-        block.type = Material.BEDROCK
-
+        // 1틱 후 블럭 베드락으로 변경
         object : BukkitRunnable() {
             override fun run() {
-                WastelandFeature.removeWaiting(block.location)
-                block.type = wasteland.material
+                WastelandFeature.addWaiting(e.block.location)
+                e.block.type = Material.BEDROCK
+            }
+        }.runTaskLater(HobeakTownPlugin.plugin, 1L)
+
+        // 3분 후 블럭 원상 복귀
+        object : BukkitRunnable() {
+            override fun run() {
+                WastelandFeature.removeWaiting(e.block.location)
+                e.block.type = wasteland.material
             }
         }.runTaskLater(HobeakTownPlugin.plugin, 20L * 60 * 3)
     }
