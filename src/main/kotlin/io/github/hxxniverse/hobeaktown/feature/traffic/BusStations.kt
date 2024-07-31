@@ -10,7 +10,7 @@ import org.jetbrains.exposed.dao.id.IntIdTable
 // Define BusStation table
 object BusStations : IntIdTable() {
     val name = varchar("name", 255).uniqueIndex()
-    val position = location("position").nullable() // pos1 or pos2
+    val position = location("position")
     val scenery = location("scenery").nullable()
     val order = integer("order").nullable()
 }
@@ -18,7 +18,7 @@ object BusStations : IntIdTable() {
 // Define SubwayStation table
 object SubwayStations : IntIdTable() {
     val name = varchar("name", 255).uniqueIndex()
-    val position = location("position").nullable() // pos1 or pos2
+    val position = location("position")
     val scenery = location("scenery").nullable()
     val order = integer("order").nullable()
 }
@@ -29,6 +29,18 @@ object Airplanes : IntIdTable() {
     val departurePosition = location("departure_position").nullable() // pos1 or pos2
     val returnPosition = location("return_position").nullable() // pos1 or pos2
     val scenery = location("scenery").nullable()
+}
+
+// Define TicketBox table
+object BusTicketBoxes : IntIdTable() {
+    val to = reference("to", BusStations)
+    val location = location("location")
+}
+
+// Define TicketBox table
+object SubwayTicketBoxes : IntIdTable() {
+    val to = reference("to", SubwayStations)
+    val location = location("location")
 }
 
 // DAO for BusStation
@@ -59,6 +71,22 @@ class Airplane(id: EntityID<Int>) : IntEntity(id) {
     var departurePosition by Airplanes.departurePosition
     var returnPosition by Airplanes.returnPosition
     var scenery by Airplanes.scenery
+}
+
+// DAO for BusTicketBox
+class BusTicketBox(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<BusTicketBox>(BusTicketBoxes)
+
+    var to by BusStation referencedOn BusTicketBoxes.to
+    var location by BusTicketBoxes.location
+}
+
+// DAO for SubwayTicketBox
+class SubwayTicketBox(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<SubwayTicketBox>(SubwayTicketBoxes)
+
+    var to by SubwayStation referencedOn SubwayTicketBoxes.to
+    var location by SubwayTicketBoxes.location
 }
 
 // Function to execute commands

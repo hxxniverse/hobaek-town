@@ -1,6 +1,7 @@
 package io.github.hxxniverse.hobeaktown.feature.traffic
 
 import io.github.hxxniverse.hobeaktown.util.base.BaseCommand
+import io.github.hxxniverse.hobeaktown.util.edit
 import io.github.hxxniverse.hobeaktown.util.extension.sendErrorMessage
 import io.github.hxxniverse.hobeaktown.util.extension.sendInfoMessage
 import io.github.monun.kommand.KommandArgument
@@ -8,6 +9,7 @@ import io.github.monun.kommand.KommandSource
 import io.github.monun.kommand.StringType
 import io.github.monun.kommand.kommand
 import io.github.monun.kommand.node.KommandNode
+import org.bukkit.Location
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -48,6 +50,15 @@ class TrafficCommand : BaseCommand {
                             }
                         }
                     }
+                    then("티켓상자") {
+                        then("생성", "to" to busStation()) {
+                            executes {
+                                player.getTargetBlockExact(10)?.let { block ->
+                                    createBusTicketBox(block.location, it["to"])
+                                }
+                            }
+                        }
+                    }
                 }
                 then("지하철역") {
                     then("추가", "name" to string()) {
@@ -79,6 +90,15 @@ class TrafficCommand : BaseCommand {
                         then("아이템설정") {
                             executes {
                                 setSubwayTicket()
+                            }
+                        }
+                    }
+                    then("티켓상자") {
+                        then("생성", "to" to subwayStation()) {
+                            executes {
+                                player.getTargetBlockExact(10)?.let { block ->
+                                    createSubwayTicketBox(block.location, it["to"])
+                                }
                             }
                         }
                     }
@@ -186,7 +206,9 @@ private fun KommandSource.setBusTicket() {
         return
     }
     TrafficConfig.updateConfigData {
-        copy(busTicket = player.inventory.itemInMainHand)
+        copy(busTicket = player.inventory.itemInMainHand.edit {
+            addPersistentData("busTicket")
+        })
     }
     player.sendInfoMessage("버스 티켓 아이템을 설정하였습니다.")
 }
@@ -197,7 +219,9 @@ private fun KommandSource.setSubwayTicket() {
         return
     }
     TrafficConfig.updateConfigData {
-        copy(subwayTicket = player.inventory.itemInMainHand)
+        copy(subwayTicket = player.inventory.itemInMainHand.edit {
+            addPersistentData("subwayTicket")
+        })
     }
     player.sendInfoMessage("지하철 티켓 아이템을 설정하였습니다.")
 }
@@ -208,7 +232,9 @@ private fun KommandSource.setAirplaneTicket() {
         return
     }
     TrafficConfig.updateConfigData {
-        copy(airplaneTicket = player.inventory.itemInMainHand)
+        copy(airplaneTicket = player.inventory.itemInMainHand.edit {
+            addPersistentData("airplaneTicket")
+        })
     }
     player.sendInfoMessage("비행기 티켓 아이템을 설정하였습니다.")
 }
@@ -253,7 +279,7 @@ private fun KommandSource.createBusStation(name: String) {
         val order = BusStation.all().count().toInt()
         BusStation.new {
             this.name = name
-            this.position = null
+            this.position = player.location
             this.scenery = null
             this.order = order
         }
@@ -301,11 +327,29 @@ private fun KommandSource.createSubwayStation(name: String) {
     transaction {
         SubwayStation.new {
             this.name = name
-            this.position = null
+            this.position = player.location
             this.scenery = null
             this.order = id.value
         }
     }
 
     sender.sendInfoMessage("지하철역 $name 추가 완료")
+}
+
+private fun KommandSource.createBusTicketBox(boxLocation: Location, to: BusStation) {
+    transaction {
+        BusTicketBox.new {
+            this.to = to
+            this.location = boxLocation
+        }
+    }
+}
+
+private fun KommandSource.createSubwayTicketBox(boxLocation: Location, to: SubwayStation) {
+    transaction {
+        SubwayTicketBox.new {
+            this.to = to
+            this.location = boxLocation
+        }
+    }
 }

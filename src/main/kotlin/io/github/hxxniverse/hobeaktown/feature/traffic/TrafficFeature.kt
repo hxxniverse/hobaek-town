@@ -2,6 +2,7 @@ package io.github.hxxniverse.hobeaktown.feature.traffic
 
 import io.github.hxxniverse.hobeaktown.util.base.BaseFeature
 import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
+import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.SchemaUtils
 
@@ -48,6 +49,7 @@ class TrafficFeature : BaseFeature {
              SchemaUtils.create(Airplanes)
         }
         TrafficCommand().register(plugin)
+        Bukkit.getPluginManager().registerEvents(TrafficListener(), plugin)
     }
 
     override fun onDisable(plugin: JavaPlugin) {

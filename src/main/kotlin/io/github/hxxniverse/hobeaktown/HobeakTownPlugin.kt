@@ -26,6 +26,7 @@ import io.github.hxxniverse.hobeaktown.feature.wasteland.WastelandFeature
 import io.github.hxxniverse.hobeaktown.util.command_help.help
 import io.github.hxxniverse.hobeaktown.util.database.loggedTransaction
 import io.github.monun.kommand.kommand
+import kotlinx.coroutines.Job
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.StdOutSqlLogger
@@ -34,8 +35,10 @@ import org.jetbrains.exposed.sql.addLogger
 class HobeakTownPlugin : JavaPlugin() {
 
     companion object {
-        lateinit var plugin: JavaPlugin
+        lateinit var plugin: HobeakTownPlugin
     }
+
+    val jobs = Job()
 
     private val features = mutableListOf(
         UserFeature(),
@@ -117,6 +120,7 @@ class HobeakTownPlugin : JavaPlugin() {
         features.forEach {
             it.onDisable(this)
         }
+        jobs.cancel()
         super.onDisable()
     }
 }
